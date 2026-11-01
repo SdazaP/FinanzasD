@@ -1,0 +1,10 @@
+node_modules/
+dist/
+coverage/
+.env
+.env*.local
+*.log
+.firebase/
+.vercel/
+.DS_Store
+graphify-out/
