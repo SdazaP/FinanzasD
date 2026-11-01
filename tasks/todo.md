@@ -2,12 +2,12 @@
 
 (Las tareas de `core` y `recurring` están completas; ver historial de git.)
 
-- [ ] 1. Mover `dates.ts` a `src/lib`
+- [x] 1. Mover `dates.ts` a `src/lib`
   - Acceptance: `src/lib/dates.ts` y su test; `recurring` importa de ahí; sin cambios de comportamiento.
   - Verify: `npm test` (40 tests en verde) y `npm run build`.
   - Files: `src/lib/dates.ts`, `src/lib/dates.test.ts`, `src/recurring/RecurringList.tsx`, `src/recurring/RecurringDetail.tsx`, `src/recurring/api.ts`
 
-- [ ] 2. Cálculos de crédito
+- [x] 2. Cálculos de crédito
   - Acceptance:
     - `installments(100000, 3)` → `[33333, 33333, 33334]`.
     - `msiSummary` da cuota, pagados, pagos restantes, fecha de término y progreso.
@@ -16,7 +16,7 @@
   - Verify: `npm test`
   - Files: `src/credits/calc.ts`, `src/credits/calc.test.ts`
 
-- [ ] 3. Formulario de crédito
+- [x] 3. Formulario de crédito
   - Acceptance:
     - Selector de tipo, con nombre y próximo pago comunes.
     - **Tarjeta:** saldo (puede ser 0) y límite opcional (> 0 si se llena), con nota de doble conteo.
@@ -26,7 +26,7 @@
   - Verify: `npm test`
   - Files: `src/credits/CreditForm.tsx`, `src/credits/CreditForm.test.tsx`
 
-- [ ] 4. Guardar y listar en Firestore
+- [x] 4. Guardar y listar en Firestore
   - Acceptance:
     - `api.ts` con `watchCredits` y `addCredit`.
     - Rutas `/creditos` y `/creditos/nuevo`.

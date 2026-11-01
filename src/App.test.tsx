@@ -7,6 +7,7 @@ import { AuthContext } from './auth/context'
 
 vi.mock('./firebase', () => ({ auth: {}, db: {} }))
 vi.mock('./recurring/api', () => ({ watchCategories: () => () => {} }))
+vi.mock('./credits/api', () => ({ watchCredits: () => () => {} }))
 
 const renderAt = (path: string) =>
   render(
