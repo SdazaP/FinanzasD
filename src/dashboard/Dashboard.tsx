@@ -9,7 +9,7 @@ import ProgressBar from '../lib/ProgressBar'
 import { watchRecurring, type Recurring } from '../recurring/api'
 import { watchSavings, type Saving } from '../savings/api'
 import { goalSummary, totalSaved } from '../savings/calc'
-import { watchMonthPayments } from './api'
+import { watchMonthPayments } from '../lib/periodPayments'
 import { monthCommitments, monthRange, upcoming } from './calc'
 
 const badges = {

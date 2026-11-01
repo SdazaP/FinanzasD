@@ -7,7 +7,7 @@ import { AuthContext } from './auth/context'
 
 vi.mock('./firebase', () => ({ auth: {}, db: {} }))
 vi.mock('./recurring/api', () => ({ watchCategories: () => () => {}, watchRecurring: () => () => {} }))
-vi.mock('./dashboard/api', () => ({ watchMonthPayments: () => () => {} }))
+vi.mock('./lib/periodPayments', () => ({ watchMonthPayments: () => () => {}, watchPeriodPayments: () => () => {} }))
 vi.mock('./credits/api', () => ({ watchCredits: () => () => {} }))
 vi.mock('./savings/api', () => ({ watchSavings: () => () => {} }))
 

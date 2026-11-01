@@ -17,7 +17,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock('../recurring/api', () => ({ watchRecurring: mocks.watchRecurring }))
 vi.mock('../credits/api', () => ({ watchCredits: mocks.watchCredits }))
 vi.mock('../savings/api', () => ({ watchSavings: mocks.watchSavings }))
-vi.mock('./api', () => ({ watchMonthPayments: mocks.watchMonthPayments }))
+vi.mock('../lib/periodPayments', () => ({ watchMonthPayments: mocks.watchMonthPayments }))
 
 const recurring: Recurring[] = [
   { id: 'renta', name: 'Renta', type: 'fixed', category: 'Vivienda', amount: 850000, nextDue: '2026-11-01', dayOfMonth: 1, active: true },
