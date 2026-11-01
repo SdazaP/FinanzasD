@@ -5,10 +5,11 @@ import RecurringForm from './RecurringForm'
 
 const setup = (initial?: Parameters<typeof RecurringForm>[0]['initial']) => {
   const onSubmit = vi.fn().mockResolvedValue(undefined)
-  render(<RecurringForm categories={defaultCategories} onSubmit={onSubmit} initial={initial} />)
+  const onCreateCategory = vi.fn().mockResolvedValue(undefined)
+  render(<RecurringForm categories={defaultCategories} onSubmit={onSubmit} onCreateCategory={onCreateCategory} initial={initial} />)
   const type = (label: string, value: string) => fireEvent.change(screen.getByLabelText(label), { target: { value } })
   const submit = () => fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
-  return { onSubmit, type, submit }
+  return { onSubmit, onCreateCategory, type, submit }
 }
 
 test('muestra los errores y no envía si faltan datos', async () => {
@@ -49,6 +50,21 @@ test('envía el monto en centavos y el día del mes', async () => {
       dayOfMonth: 31,
     }),
   )
+})
+
+test('crea una categoría nueva y rechaza duplicados', async () => {
+  const { onCreateCategory, type } = setup()
+  type('Categoría', '__new__')
+
+  type('Nombre de la nueva categoría', 'vivienda')
+  fireEvent.click(screen.getByRole('button', { name: 'Agregar' }))
+  expect(await screen.findByText('Esa categoría ya existe.')).toBeInTheDocument()
+  expect(onCreateCategory).not.toHaveBeenCalled()
+
+  type('Nombre de la nueva categoría', ' Mascotas ')
+  fireEvent.click(screen.getByRole('button', { name: 'Agregar' }))
+  await waitFor(() => expect(onCreateCategory).toHaveBeenCalledWith('Mascotas'))
+  await waitFor(() => expect(screen.queryByLabelText('Nombre de la nueva categoría')).not.toBeInTheDocument())
 })
 
 test('precarga los valores al editar', () => {

@@ -3,11 +3,12 @@ import { Navigate, useNavigate, useParams } from 'react-router'
 import { useAuth } from '../auth/context'
 import { formatMXN } from '../lib/money'
 import {
-  deletePayment, deleteRecurring, setRecurringActive, updateRecurring, watchPayments, watchRecurringItem, type Payment, type Recurring,
+  addCategory, deletePayment, deleteRecurring, setRecurringActive, updateRecurring, watchPayments, watchRecurringItem,
+  type Payment, type Recurring,
 } from './api'
-import { defaultCategories } from './categories'
 import { formatDay } from './dates'
 import RecurringForm from './RecurringForm'
+import { useCategories } from './useCategories'
 
 const card = 'rounded-3xl bg-white p-5 shadow-card'
 
@@ -19,6 +20,7 @@ export default function RecurringDetail() {
   const [payments, setPayments] = useState<Payment[]>([])
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  const allCategories = useCategories(uid)
 
   useEffect(() => watchRecurringItem(uid, id, setItem, () => setError('No se pudo cargar el gasto. Revisa tu conexión.')), [uid, id])
   useEffect(() => watchPayments(uid, id, setPayments, () => setError('No se pudo cargar el historial.')), [uid, id])
@@ -38,7 +40,7 @@ export default function RecurringDetail() {
     }
   }
 
-  const categories = defaultCategories.includes(item.category) ? defaultCategories : [...defaultCategories, item.category]
+  const categories = allCategories.includes(item.category) ? allCategories : [...allCategories, item.category]
 
   return (
     <div className="space-y-4">
@@ -53,6 +55,7 @@ export default function RecurringDetail() {
           key={item.id}
           categories={categories}
           initial={item}
+          onCreateCategory={(name) => addCategory(uid, name)}
           onSubmit={async (input) => {
             await updateRecurring(uid, id, input)
             navigate('/gastos-fijos')

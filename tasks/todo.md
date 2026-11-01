@@ -27,7 +27,7 @@
   - Verify: `npm test && npm run build`; flujo completo en el panel a 360 px.
   - Files: `src/recurring/RecurringDetail.tsx`, `src/recurring/api.ts`, `src/App.tsx`
 
-- [ ] 6. Categorías propias
+- [x] 6. Categorías propias
   - Acceptance: opción "Nueva categoría…" en el select pide el nombre (1–30 caracteres, sin duplicar una existente ignorando mayúsculas) y la guarda en `users/{uid}/categories`; el select muestra por defecto + propias ordenadas.
   - Verify: `npm test`; crear una categoría y usarla en otro gasto.
   - Files: `src/recurring/categories.ts`, `src/recurring/RecurringForm.tsx`, `src/recurring/RecurringForm.test.tsx`, `src/recurring/api.ts`

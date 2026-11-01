@@ -13,6 +13,8 @@ const api = vi.hoisted(() => ({
   setRecurringActive: vi.fn(),
   deleteRecurring: vi.fn(),
   deletePayment: vi.fn(),
+  watchCategories: vi.fn(() => () => {}),
+  addCategory: vi.fn(),
 }))
 vi.mock('./api', () => api)
 

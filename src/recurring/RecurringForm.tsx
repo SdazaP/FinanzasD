@@ -1,5 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import { toCents } from '../lib/money'
+import { categoryError } from './categories'
+
+const NEW_CATEGORY = '__new__'
 
 export type RecurringType = 'fixed' | 'subscription'
 
@@ -16,11 +19,12 @@ type Props = {
   categories: string[]
   initial?: Omit<RecurringInput, 'dayOfMonth'>
   onSubmit: (input: RecurringInput) => Promise<void>
+  onCreateCategory: (name: string) => Promise<unknown>
 }
 
 const field = 'min-h-12 w-full rounded-2xl border border-zinc-200 bg-white px-4 text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 aria-invalid:border-red-500'
 
-export default function RecurringForm({ categories, initial, onSubmit }: Props) {
+export default function RecurringForm({ categories, initial, onSubmit, onCreateCategory }: Props) {
   const [name, setName] = useState(initial?.name ?? '')
   const [type, setType] = useState<RecurringType>(initial?.type ?? 'fixed')
   const [category, setCategory] = useState(initial?.category ?? categories[0])
@@ -28,6 +32,21 @@ export default function RecurringForm({ categories, initial, onSubmit }: Props) 
   const [nextDue, setNextDue] = useState(initial?.nextDue ?? '')
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [saving, setSaving] = useState(false)
+  const [newCategory, setNewCategory] = useState<string | null>(null) // null = no se está creando
+
+  async function createCategory() {
+    const clean = (newCategory ?? '').trim()
+    const problem = categoryError(clean, categories)
+    setErrors((prev) => ({ ...prev, category: problem }))
+    if (problem) return
+    try {
+      await onCreateCategory(clean)
+      setCategory(clean)
+      setNewCategory(null)
+    } catch {
+      setErrors((prev) => ({ ...prev, category: 'No se pudo guardar la categoría. Intenta de nuevo.' }))
+    }
+  }
 
   async function submit(e: FormEvent) {
     e.preventDefault()
@@ -87,11 +106,58 @@ export default function RecurringForm({ categories, initial, onSubmit }: Props) 
 
       <div>
         <label htmlFor="category" className="mb-1.5 block text-sm font-medium">Categoría</label>
-        <select id="category" value={category} onChange={(e) => setCategory(e.target.value)} className={field}>
+        <select
+          id="category"
+          value={category}
+          onChange={(e) => (e.target.value === NEW_CATEGORY ? setNewCategory('') : setCategory(e.target.value))}
+          className={field}
+        >
           {categories.map((c) => (
             <option key={c}>{c}</option>
           ))}
+          <option value={NEW_CATEGORY}>Nueva categoría…</option>
         </select>
+        {newCategory !== null && (
+          <div className="mt-3 flex gap-2">
+            <input
+              aria-label="Nombre de la nueva categoría"
+              placeholder="Ej. Mascotas"
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  createCategory()
+                }
+              }}
+              autoFocus
+              aria-invalid={!!errors.category}
+              aria-describedby={errors.category ? 'category-error' : undefined}
+              className={`${field} min-w-0 flex-1`}
+            />
+            <button
+              type="button"
+              onClick={createCategory}
+              className="min-h-12 shrink-0 rounded-2xl bg-primary/10 px-4 font-medium text-primary active:scale-[0.97]"
+            >
+              Agregar
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setNewCategory(null)
+                setErrors((prev) => ({ ...prev, category: '' }))
+              }}
+              aria-label="Cancelar nueva categoría"
+              className="grid size-12 shrink-0 place-items-center rounded-2xl text-zinc-500 active:bg-zinc-100"
+            >
+              <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+                <path d="M6 6l12 12M18 6 6 18" />
+              </svg>
+            </button>
+          </div>
+        )}
+        {error('category')}
       </div>
 
       <div className="space-y-5">

@@ -63,4 +63,13 @@ export async function deleteRecurring(uid: string, id: string) {
   return batch.commit()
 }
 
-export const deletePayment = (uid: string, id: string, paymentId: string) => deleteDoc(doc(paymentsCol(uid, id), paymentId))
+const categoriesCol = (uid: string) => collection(db, 'users', uid, 'categories')
+
+export function watchCategories(uid: string, onData: (names: string[]) => void) {
+  // Si falla la lectura, el formulario sigue con las categorías por defecto
+  return onSnapshot(categoriesCol(uid), (snap) => onData(snap.docs.map((d) => d.data().name as string)), () => onData([]))
+}
+
+export const addCategory = (uid: string, name: string) => addDoc(categoriesCol(uid), { name })
+
+export const deletePayment =(uid: string, id: string, paymentId: string) => deleteDoc(doc(paymentsCol(uid, id), paymentId))
