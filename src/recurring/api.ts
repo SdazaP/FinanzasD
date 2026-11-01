@@ -2,7 +2,7 @@ import {
   addDoc, collection, deleteDoc, doc, getDocs, onSnapshot, orderBy, query, serverTimestamp, updateDoc, writeBatch,
 } from 'firebase/firestore'
 import { db } from '../firebase'
-import { nextDueAfter } from './dates'
+import { nextDueAfter } from '../lib/dates'
 import type { RecurringInput } from './RecurringForm'
 
 export type Recurring = RecurringInput & { id: string; active: boolean }

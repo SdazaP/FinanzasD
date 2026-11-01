@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 import { useAuth } from '../auth/context'
 import { formatMXN } from '../lib/money'
 import { payRecurring, watchRecurring, type Recurring } from './api'
-import { formatDay, monthlyTotal, status, today } from './dates'
+import { formatDay, monthlyTotal, status, today } from '../lib/dates'
 
 const badges = {
   overdue: { text: 'Vencido', className: 'bg-red-50 text-red-700' },

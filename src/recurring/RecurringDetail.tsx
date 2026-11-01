@@ -6,7 +6,7 @@ import {
   addCategory, deletePayment, deleteRecurring, setRecurringActive, updateRecurring, watchPayments, watchRecurringItem,
   type Payment, type Recurring,
 } from './api'
-import { formatDay } from './dates'
+import { formatDay } from '../lib/dates'
 import RecurringForm from './RecurringForm'
 import { useCategories } from './useCategories'
 
