@@ -6,8 +6,12 @@ import { AuthContext } from '../auth/context'
 import type { Recurring } from './api'
 import RecurringList from './RecurringList'
 
-const api = vi.hoisted(() => ({ watchRecurring: vi.fn(), payRecurring: vi.fn() }))
-vi.mock('./api', () => api)
+const api = vi.hoisted(() => ({ watchRecurring: vi.fn(), payRecurring: vi.fn(), watchPeriodPayments: vi.fn() }))
+vi.mock('./api', () => ({ watchRecurring: api.watchRecurring, payRecurring: api.payRecurring }))
+vi.mock('../lib/periodPayments', () => ({ watchPeriodPayments: api.watchPeriodPayments }))
+
+// Pagos del periodo de marzo por gasto (los que no aparecen no tienen pagos)
+const periodPayments: Record<string, { amount: number; lastPaidAt: string | null }> = {}
 
 const item = (over: Partial<Recurring>): Recurring => ({
   id: 'x', name: 'X', type: 'fixed', category: 'Otros', amount: 100, nextDue: '2026-03-20', dayOfMonth: 20, active: true, ...over,
@@ -24,11 +28,15 @@ beforeEach(() => {
   vi.useFakeTimers({ toFake: ['Date'] })
   vi.setSystemTime(new Date(2026, 2, 10))
   api.watchRecurring.mockImplementation((_uid, onData) => (onData(items), () => {}))
+  api.watchPeriodPayments.mockImplementation((_uid, _col, id, _from, _to, onData) => (
+    onData(periodPayments[id] ?? { amount: 0, lastPaidAt: null }), () => {}
+  ))
 })
 
 afterEach(() => {
   vi.useRealTimers()
   vi.clearAllMocks()
+  for (const id of Object.keys(periodPayments)) delete periodPayments[id]
 })
 
 const renderList = () =>
@@ -70,6 +78,33 @@ test('pagar desactiva el botón mientras guarda y solo paga una vez', async () =
 
   finish()
   await vi.waitFor(() => expect(button).toBeEnabled())
+})
+
+test('agrupa en Por pagar, Pagado este mes y Más adelante', () => {
+  api.watchRecurring.mockImplementation((_uid, onData) => (
+    onData([
+      item({ id: 'luz', name: 'Luz', nextDue: '2026-03-15' }), // vence este mes
+      item({ id: 'atrasado', name: 'Agua', nextDue: '2026-03-05' }), // pagó febrero en marzo: marzo sigue pendiente
+      item({ id: 'renta', name: 'Renta', amount: 850000, nextDue: '2026-04-01' }), // ya pagó marzo
+      item({ id: 'seguro', name: 'Seguro', nextDue: '2026-04-20' }), // primer pago en abril
+    ]), () => {}
+  ))
+  periodPayments.renta = { amount: 850000, lastPaidAt: '2026-03-01' }
+  renderList()
+
+  const group = (title: string) => screen.getByRole('heading', { name: title }).parentElement!
+
+  expect(within(group('Por pagar')).getByRole('button', { name: 'Pagar Luz' })).toBeInTheDocument()
+  expect(within(group('Por pagar')).getByRole('button', { name: 'Pagar Agua' })).toBeInTheDocument()
+
+  const paid = group('Pagado este mes')
+  expect(within(paid).getByText('Renta')).toBeInTheDocument()
+  expect(within(paid).getByText(/Pagado el 1 mar/)).toBeInTheDocument()
+  expect(within(paid).queryByRole('button')).not.toBeInTheDocument()
+
+  const later = group('Más adelante')
+  expect(within(later).getByText(/Vence el 20 abr/)).toBeInTheDocument()
+  expect(within(later).queryByRole('button')).not.toBeInTheDocument()
 })
 
 test('avisa si el pago falla', async () => {

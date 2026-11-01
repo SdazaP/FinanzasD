@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { useAuth } from '../auth/context'
+import { formatDay, monthlyTotal, status } from '../lib/dates'
 import { formatMXN } from '../lib/money'
+import { monthStatus } from '../lib/monthStatus'
+import { usePeriodPayments } from '../lib/usePeriodPayments'
+import { useToday } from '../lib/useToday'
 import { payRecurring, watchRecurring, type Recurring } from './api'
-import { formatDay, monthlyTotal, status, today } from '../lib/dates'
 
 const badges = {
   overdue: { text: 'Vencido', className: 'bg-red-50 text-red-700' },
@@ -11,8 +14,13 @@ const badges = {
   ok: null,
 }
 
+function GroupTitle({ children }: { children: string }) {
+  return <h2 className="mb-2 px-1 text-sm font-medium text-zinc-500">{children}</h2>
+}
+
 export default function RecurringList() {
   const uid = useAuth()!.uid
+  const now = useToday()
   const [items, setItems] = useState<Recurring[]>()
   const [loadError, setLoadError] = useState(false)
   const [paying, setPaying] = useState<string>()
@@ -20,12 +28,20 @@ export default function RecurringList() {
 
   useEffect(() => watchRecurring(uid, setItems, () => setLoadError(true)), [uid])
 
+  const active = (items ?? []).filter((i) => i.active)
+  const periodOf = usePeriodPayments(uid, 'recurring', active.map((i) => i.id), now)
+
   if (loadError) return <p role="alert" className="text-red-700">No se pudieron cargar tus gastos. Revisa tu conexión.</p>
   if (!items) return <p className="text-zinc-500">Cargando…</p>
 
-  const active = items.filter((i) => i.active)
   const paused = items.filter((i) => !i.active)
-  const now = today()
+  const statusOf = (item: Recurring) => monthStatus(item.nextDue, !!periodOf(item.id)?.amount, now)
+  const due = active.filter((i) => statusOf(i) === 'due')
+  // Lo que no vence este mes espera a sus pagos del periodo para no saltar de "Más adelante" a "Pagado"
+  const notDue = active.filter((i) => statusOf(i) !== 'due')
+  const notDueLoaded = notDue.every((i) => periodOf(i.id))
+  const paid = notDue.filter((i) => statusOf(i) === 'paid')
+  const later = notDue.filter((i) => statusOf(i) === 'later')
 
   async function pay(item: Recurring) {
     setPaying(item.id)
@@ -38,6 +54,18 @@ export default function RecurringList() {
       setPaying(undefined)
     }
   }
+
+  const header = (item: Recurring, detail: string, amount = item.amount) => (
+    <Link to={`/gastos-fijos/${item.id}`} className="-m-2 flex items-start gap-3 rounded-2xl p-2 active:bg-zinc-50">
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-medium">{item.name}</p>
+        <p className="truncate text-sm text-zinc-500">
+          {item.category} · {detail}
+        </p>
+      </div>
+      <p className="shrink-0 font-display text-lg font-semibold tabular-nums">{formatMXN(amount)}</p>
+    </Link>
+  )
 
   return (
     <div className="space-y-4">
@@ -64,46 +92,74 @@ export default function RecurringList() {
         </p>
       )}
 
-      {active.length > 0 && (
-        <ul className="space-y-3">
-          {active.map((item) => {
-            const badge = badges[status(item.nextDue, now)]
-            return (
-              <li key={item.id} className="rounded-3xl bg-white p-4 shadow-card">
-                <Link to={`/gastos-fijos/${item.id}`} className="-m-2 flex items-start gap-3 rounded-2xl p-2 active:bg-zinc-50">
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium">{item.name}</p>
-                    <p className="truncate text-sm text-zinc-500">
-                      {item.category} · {formatDay(item.nextDue)}
-                    </p>
+      {due.length > 0 && (
+        <section>
+          <GroupTitle>Por pagar</GroupTitle>
+          <ul className="space-y-3">
+            {due.map((item) => {
+              const badge = badges[status(item.nextDue, now)]
+              return (
+                <li key={item.id} className="rounded-3xl bg-white p-4 shadow-card">
+                  {header(item, formatDay(item.nextDue))}
+                  <div className="mt-3 flex items-center justify-between gap-3">
+                    {badge ? <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${badge.className}`}>{badge.text}</span> : <span />}
+                    <button
+                      type="button"
+                      onClick={() => pay(item)}
+                      disabled={paying === item.id}
+                      aria-label={`Pagar ${item.name}`}
+                      className="min-h-11 rounded-xl bg-primary/10 px-5 text-sm font-medium text-primary transition-transform duration-150 ease-out active:scale-[0.97] disabled:opacity-50"
+                    >
+                      {paying === item.id ? 'Guardando…' : 'Pagar'}
+                    </button>
                   </div>
-                  <p className="shrink-0 font-display text-lg font-semibold tabular-nums">{formatMXN(item.amount)}</p>
-                </Link>
-                <div className="mt-3 flex items-center justify-between gap-3">
-                  {badge ? (
-                    <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${badge.className}`}>{badge.text}</span>
-                  ) : (
-                    <span />
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => pay(item)}
-                    disabled={paying === item.id}
-                    aria-label={`Pagar ${item.name}`}
-                    className="min-h-11 rounded-xl bg-primary/10 px-5 text-sm font-medium text-primary transition-transform duration-150 ease-out active:scale-[0.97] disabled:opacity-50"
-                  >
-                    {paying === item.id ? 'Guardando…' : 'Pagar'}
-                  </button>
-                </div>
+                </li>
+              )
+            })}
+          </ul>
+        </section>
+      )}
+
+      {notDue.length > 0 && !notDueLoaded && <p className="px-1 text-sm text-zinc-500">Cargando pagos del mes…</p>}
+
+      {notDueLoaded && paid.length > 0 && (
+        <section>
+          <GroupTitle>Pagado este mes</GroupTitle>
+          <ul className="space-y-3">
+            {paid.map((item) => {
+              const period = periodOf(item.id)!
+              return (
+                <li key={item.id} className="rounded-3xl bg-white p-4 shadow-card">
+                  {header(item, period.lastPaidAt ? `Pagado el ${formatDay(period.lastPaidAt)}` : 'Pagado', period.amount)}
+                  <p className="mt-2 inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
+                    <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="m5 12 5 5 9-10" />
+                    </svg>
+                    Pagado
+                  </p>
+                </li>
+              )
+            })}
+          </ul>
+        </section>
+      )}
+
+      {notDueLoaded && later.length > 0 && (
+        <section>
+          <GroupTitle>Más adelante</GroupTitle>
+          <ul className="space-y-3">
+            {later.map((item) => (
+              <li key={item.id} className="rounded-3xl bg-white p-4 shadow-card">
+                {header(item, `Vence el ${formatDay(item.nextDue)}`)}
               </li>
-            )
-          })}
-        </ul>
+            ))}
+          </ul>
+        </section>
       )}
 
       {paused.length > 0 && (
         <section>
-          <h2 className="mb-2 px-1 text-sm font-medium text-zinc-500">Pausados</h2>
+          <GroupTitle>Pausados</GroupTitle>
           <ul className="space-y-3">
             {paused.map((item) => (
               <li key={item.id}>
