@@ -2,11 +2,11 @@
 
 (Las tareas de los módulos anteriores están completas; ver historial de git.)
 
-- [ ] 1. Cálculos de Inicio
+- [x] 1. Cálculos de Inicio
   - Acceptance:
     - `monthRange('2026-02-10')` → `['2026-02-01', '2026-02-28']` (y 30/31 días).
     - `upcoming` incluye vencidos y hasta +7 días, excluye pausados y créditos en $0, y ordena por fecha mezclando tipos.
-    - `monthCommitments` suma pagado (pagos con `dueDate` en el mes) y pendiente (`nextDue` ≤ fin de mes, con monto, cuota MSI o saldo de tarjeta), sin doble conteo.
+    - `monthCommitments` suma pagado (pagos hechos en el mes, `paidAt`) y pendiente (`nextDue` ≤ fin de mes, con monto, cuota MSI o saldo de tarjeta), sin doble conteo.
   - Verify: `npm test`
   - Files: `src/dashboard/calc.ts`, `src/dashboard/calc.test.ts`
 

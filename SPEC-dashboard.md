@@ -10,7 +10,7 @@ Historias y criterios de aceptación:
 
 1. **Compromisos del mes** (tarjeta morada, arriba). Muestra:
    - **Total del mes** = pagado este mes + pendiente este mes;
-   - **Pagado este mes** = suma de los pagos de gastos fijos y créditos cuyo periodo (`dueDate`) cae en el mes actual;
+   - **Pagado este mes** = suma de los pagos de gastos fijos y créditos **hechos** en el mes actual (`paidAt`). Se usa la fecha de pago y no el periodo para que pagar algo vencido del mes anterior sume a lo pagado al salir de lo pendiente;
    - **Pendiente** = suma de lo que vence hasta fin de mes, incluyendo lo vencido. Cuenta:
      - **gasto fijo activo:** su monto;
      - **MSI:** la cuota sugerida;
@@ -38,7 +38,7 @@ Reutiliza los watchers existentes: `watchRecurring`, `watchCredits` y `watchSavi
 
 Para "pagado este mes" se agrega una lectura por elemento:
 
-- consulta `payments` de cada gasto fijo y de cada crédito con `dueDate` entre el primer y el último día del mes;
+- consulta `payments` de cada gasto fijo y de cada crédito con `paidAt` desde el inicio del mes hasta el inicio del siguiente;
 - son N suscripciones pequeñas, una por elemento, aceptable para uso personal (decenas de elementos);
 - no requiere índices compuestos ni cambios en las reglas: la regla actual de `users/{uid}/**` ya cubre la lectura.
 
@@ -46,7 +46,7 @@ La lógica es pura y vive en `src/dashboard/calc.ts`:
 
 - `monthRange(today)` → primer y último día del mes;
 - `upcoming(recurring, credits, today)` → lista unificada y ordenada de próximos pagos;
-- `monthCommitments(recurring, credits, monthPayments, today)` → `{ paid, pending, total }`.
+- `monthCommitments(recurring, credits, paidThisMonth, today)` → `{ paid, pending, total }`.
 
 ## Estructura
 
