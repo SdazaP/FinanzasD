@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import type { User } from 'firebase/auth'
 import { MemoryRouter } from 'react-router'
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
@@ -48,4 +48,41 @@ test('muestra la deuda total, el uso de la tarjeta y el avance del MSI', () => {
   expect(within(msi).getByText('Nu · MSI · 31 mar')).toBeInTheDocument()
   expect(within(msi).getByRole('progressbar', { name: 'Pagado de Laptop' })).toHaveAttribute('aria-valuenow', '25')
   expect(within(msi).getByText(/9 de 12 pagos restantes · \$1,000\.00 al mes · termina 30 nov 2026/)).toBeInTheDocument()
+})
+
+test('pagar prellena la cuota, valida el monto y paga una sola vez con el monto editado', async () => {
+  let finish!: () => void
+  api.payCredit.mockReturnValue(new Promise<void>((ok) => (finish = ok)))
+  renderList()
+
+  fireEvent.click(screen.getByRole('button', { name: 'Pagar Laptop' }))
+  const input = screen.getByLabelText('Monto a pagar')
+  expect(input).toHaveValue('1000.00')
+
+  fireEvent.change(input, { target: { value: '9500' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Confirmar' }))
+  expect(screen.getByText('No puede ser mayor al saldo ($9,000.00).')).toBeInTheDocument()
+  expect(api.payCredit).not.toHaveBeenCalled()
+
+  fireEvent.change(input, { target: { value: '2,500' } })
+  const confirm = screen.getByRole('button', { name: 'Confirmar' })
+  fireEvent.click(confirm)
+  fireEvent.click(confirm)
+  expect(api.payCredit).toHaveBeenCalledTimes(1)
+  expect(api.payCredit).toHaveBeenCalledWith('owner', credits[1], 250000)
+
+  finish()
+  await vi.waitFor(() => expect(screen.queryByLabelText('Monto a pagar')).not.toBeInTheDocument())
+})
+
+test('la tarjeta prellena el saldo y los créditos en $0 van a Liquidados', () => {
+  api.watchCredits.mockImplementation((_uid, onData) => (onData([...credits, { ...credits[1], id: 'z', name: 'Tele', balance: 0 }]), () => {}))
+  renderList()
+
+  fireEvent.click(screen.getByRole('button', { name: 'Pagar BBVA Azul' }))
+  expect(screen.getByLabelText('Monto a pagar')).toHaveValue('12500.00')
+
+  const settled = screen.getByRole('heading', { name: 'Liquidados' }).parentElement!
+  expect(within(settled).getByText('Tele')).toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: 'Pagar Tele' })).not.toBeInTheDocument()
 })

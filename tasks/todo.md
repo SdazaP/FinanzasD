@@ -36,7 +36,7 @@
   - Verify: `npm test && npm run build`; alta manual en el panel y en tu celular.
   - Files: `src/credits/api.ts`, `src/credits/CreditList.tsx`, `src/credits/CreditList.test.tsx`, `src/credits/CreditNew.tsx`, `src/App.tsx`
 
-- [ ] 5. Pagar y liquidados
+- [x] 5. Pagar y liquidados
   - Acceptance:
     - "Pagar" muestra el monto prellenado y editable con "Confirmar" / "Cancelar".
     - Valida con `paymentError`.
