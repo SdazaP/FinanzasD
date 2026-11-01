@@ -55,7 +55,7 @@
   - Verify: `npm test && npm run build`; flujo en el panel a 360 px.
   - Files: `src/credits/CreditDetail.tsx`, `src/credits/CreditDetail.test.tsx`, `src/credits/api.ts`, `src/App.tsx`
 
-- [ ] 7. Reglas, revisión y deploy
+- [x] 7. Reglas, revisión y deploy
   - Acceptance:
     - Tests de reglas para `credits` y sus `payments`.
     - Revisión a 360 px con nombre largo, saldo de 7 cifras, MSI de 48 meses y lista vacía.

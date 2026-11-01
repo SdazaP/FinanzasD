@@ -9,6 +9,8 @@ const paths = [
   `users/${OWNER}/recurring/netflix`,
   `users/${OWNER}/recurring/netflix/payments/p1`,
   `users/${OWNER}/categories/mascotas`,
+  `users/${OWNER}/credits/bbva`,
+  `users/${OWNER}/credits/bbva/payments/p1`,
 ]
 
 let env: RulesTestEnvironment

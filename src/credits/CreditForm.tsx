@@ -89,7 +89,7 @@ export default function CreditForm({ initial, onSubmit }: Props) {
 
   return (
     <form onSubmit={submit} noValidate className="space-y-5">
-      <fieldset disabled={!!initial}>
+      <fieldset disabled={!!initial} className="disabled:opacity-60">
         <legend className="mb-1.5 text-sm font-medium">Tipo</legend>
         <div className="grid grid-cols-2 gap-1 rounded-2xl bg-zinc-200/60 p-1">
           {([['card', 'Tarjeta'], ['msi', 'Meses sin intereses']] as const).map(([value, label]) => (
@@ -127,7 +127,7 @@ export default function CreditForm({ initial, onSubmit }: Props) {
           <Field id="months" label="Meses" error={errors.months}>
             <input id="months" value={months} onChange={(e) => setMonths(e.target.value)} inputMode="numeric" placeholder="12" className={fieldClass} {...invalid('months')} />
           </Field>
-          <Field id="balance" label="Saldo pendiente" error={errors.balance} hint="Déjalo vacío si es una compra nueva.">
+          <Field id="balance" label="Saldo pendiente" error={errors.balance} hint={initial ? undefined : 'Déjalo vacío si es una compra nueva.'}>
             <input id="balance" value={balance} onChange={(e) => setBalance(e.target.value)} inputMode="decimal" placeholder={total || '0.00'} className={fieldClass} {...invalid('balance')} />
           </Field>
         </>
