@@ -167,16 +167,18 @@ export default function CreditList() {
             const subtitle = credit.kind === 'card' ? 'Tarjeta' : [credit.card, 'MSI'].filter(Boolean).join(' · ')
             return (
               <li key={credit.id} className="rounded-3xl bg-white p-4 shadow-card">
-                <div className="flex items-start gap-3">
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium">{credit.name}</p>
-                    <p className="truncate text-sm text-zinc-500">
-                      {subtitle} · {formatDay(credit.nextDue)}
-                    </p>
+                <Link to={`/creditos/${credit.id}`} className="-m-2 block rounded-2xl p-2 active:bg-zinc-50">
+                  <div className="flex items-start gap-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-medium">{credit.name}</p>
+                      <p className="truncate text-sm text-zinc-500">
+                        {subtitle} · {formatDay(credit.nextDue)}
+                      </p>
+                    </div>
+                    <p className="shrink-0 font-display text-lg font-semibold tabular-nums">{formatMXN(credit.balance)}</p>
                   </div>
-                  <p className="shrink-0 font-display text-lg font-semibold tabular-nums">{formatMXN(credit.balance)}</p>
-                </div>
-                <Details credit={credit} />
+                  <Details credit={credit} />
+                </Link>
                 <PayRow uid={uid} credit={credit} badge={badge} />
               </li>
             )
@@ -189,9 +191,11 @@ export default function CreditList() {
           <h2 className="mb-2 px-1 text-sm font-medium text-zinc-500">Liquidados</h2>
           <ul className="space-y-3">
             {settled.map((credit) => (
-              <li key={credit.id} className="flex items-center gap-3 rounded-3xl bg-white/60 p-4 text-zinc-500">
-                <p className="min-w-0 flex-1 truncate">{credit.name}</p>
-                <p className="shrink-0 text-sm">Liquidado</p>
+              <li key={credit.id}>
+                <Link to={`/creditos/${credit.id}`} className="flex items-center gap-3 rounded-3xl bg-white/60 p-4 text-zinc-500 active:bg-white">
+                  <p className="min-w-0 flex-1 truncate">{credit.name}</p>
+                  <p className="shrink-0 text-sm">Liquidado</p>
+                </Link>
               </li>
             ))}
           </ul>

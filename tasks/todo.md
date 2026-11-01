@@ -46,7 +46,7 @@
   - Verify: `npm test`; pagar en el panel con monto editado.
   - Files: `src/credits/api.ts`, `src/credits/CreditList.tsx`, `src/credits/CreditList.test.tsx`
 
-- [ ] 6. Detalle
+- [x] 6. Detalle
   - Acceptance:
     - `/creditos/:id` con el formulario precargado para editar.
     - Historial de pagos y borrar pago con confirmación.

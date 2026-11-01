@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router'
+import CreditDetail from './credits/CreditDetail'
 import CreditList from './credits/CreditList'
 import CreditNew from './credits/CreditNew'
 import AppLayout from './layout/AppLayout'
@@ -22,6 +23,7 @@ export default function App() {
         <Route path="/gastos-fijos/:id" element={<RecurringDetail />} />
         <Route path="/creditos" element={<CreditList />} />
         <Route path="/creditos/nuevo" element={<CreditNew />} />
+        <Route path="/creditos/:id" element={<CreditDetail />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
