@@ -57,7 +57,9 @@ export default function RecurringForm({ categories, initial, onSubmit, onCreateC
     if (!cents) found.amount = 'Escribe un monto mayor a $0.'
     if (!/^\d{4}-\d{2}-\d{2}$/.test(nextDue)) found.nextDue = 'Elige la fecha del próximo pago.'
     setErrors(found)
-    if (Object.keys(found).length || !cents) return
+    const firstInvalid = Object.keys(found)[0]
+    if (firstInvalid) document.getElementById(firstInvalid)?.focus() // lleva al error aunque esté fuera de pantalla
+    if (firstInvalid || !cents) return
 
     setSaving(true)
     try {

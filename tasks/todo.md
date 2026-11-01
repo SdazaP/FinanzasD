@@ -32,7 +32,7 @@
   - Verify: `npm test`; crear una categoría y usarla en otro gasto.
   - Files: `src/recurring/categories.ts`, `src/recurring/RecurringForm.tsx`, `src/recurring/RecurringForm.test.tsx`, `src/recurring/api.ts`
 
-- [ ] 7. Reglas, revisión visual y deploy
+- [x] 7. Reglas, revisión visual y deploy
   - Acceptance: tests de reglas para `recurring/{id}/payments` y `categories`; revisión a 360 px con nombres largos, montos de 7 cifras y lista vacía (skill `break-ui`); deploy con tu permiso.
   - Verify: `npm run lint && npm test && npm run test:rules && npm run build`; prueba en tu celular.
   - Files: `tests/rules/firestore.test.ts`, ajustes de estilo según la revisión

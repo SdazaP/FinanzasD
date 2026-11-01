@@ -43,7 +43,7 @@ export default function RecurringList() {
     <div className="space-y-4">
       <section className="rounded-3xl bg-primary p-6 text-white shadow-card">
         <p className="text-sm text-white/80">Total mensual</p>
-        <p className="mt-1 font-display text-4xl font-semibold tracking-tight tabular-nums">{formatMXN(monthlyTotal(items))}</p>
+        <p className="mt-1 font-display text-4xl font-semibold tracking-tight tabular-nums [overflow-wrap:anywhere]">{formatMXN(monthlyTotal(items))}</p>
         <p className="mt-1 text-sm text-white/80">
           {active.length === 1 ? '1 gasto activo' : `${active.length} gastos activos`}
         </p>

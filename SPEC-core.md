@@ -33,6 +33,8 @@ Build:           npm run build
 Lint:            npm run lint
 Tests:           npm test
 Tests de reglas: npm run test:rules        # levanta el emulador de Firestore y corre tests/rules
+                                           # En Windows el emulador (java.exe) queda abierto al terminar y la
+                                           # siguiente ejecución da "port taken": ciérralo antes de repetir.
 Deploy reglas:   npx firebase deploy --only firestore:rules
 Deploy app:      automático en Vercel al hacer push a main
 ```

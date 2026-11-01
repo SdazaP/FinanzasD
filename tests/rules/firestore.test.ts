@@ -4,7 +4,12 @@ import { readFileSync } from 'node:fs'
 import { afterAll, beforeAll, describe, test } from 'vitest'
 
 const OWNER = '4MAGAbrwFCSyEfxJM3bHgVIeE0a2'
-const paths = [`users/${OWNER}`, `users/${OWNER}/recurring/netflix`]
+const paths = [
+  `users/${OWNER}`,
+  `users/${OWNER}/recurring/netflix`,
+  `users/${OWNER}/recurring/netflix/payments/p1`,
+  `users/${OWNER}/categories/mascotas`,
+]
 
 let env: RulesTestEnvironment
 

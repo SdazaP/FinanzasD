@@ -19,6 +19,7 @@ test('muestra los errores y no envía si faltan datos', async () => {
   expect(await screen.findByText('Escribe un nombre.')).toBeInTheDocument()
   expect(screen.getByText('Escribe un monto mayor a $0.')).toBeInTheDocument()
   expect(screen.getByText('Elige la fecha del próximo pago.')).toBeInTheDocument()
+  expect(screen.getByLabelText('Nombre')).toHaveFocus()
   expect(onSubmit).not.toHaveBeenCalled()
 })
 
