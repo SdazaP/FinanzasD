@@ -94,7 +94,7 @@ export default function RecurringForm({ categories, initial, onSubmit }: Props) 
         </select>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="space-y-5">
         <div>
           <label htmlFor="amount" className="mb-1.5 block text-sm font-medium">Monto</label>
           <input

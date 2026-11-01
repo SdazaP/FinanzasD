@@ -5,7 +5,7 @@ import { sections } from '../sections'
 export default function AppLayout() {
   const user = useAuth()
   const { pathname } = useLocation()
-  const section = sections.find((s) => s.path === pathname) ?? sections[0]
+  const section = sections.find((s) => s.path !== '/' && pathname.startsWith(s.path)) ?? sections[0]
   const firstName = user?.displayName?.split(' ')[0]
 
   return (
@@ -33,7 +33,7 @@ export default function AppLayout() {
             <li key={s.path} className="flex-1">
               <NavLink
                 to={s.path}
-                end
+                end={s.path === '/'}
                 className={({ isActive }) =>
                   `group flex min-h-16 flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors duration-150 ${
                     isActive ? 'text-primary' : 'text-zinc-500 active:text-ink'

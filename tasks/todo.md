@@ -2,17 +2,17 @@
 
 (Las 8 tareas de `core` están completas; ver historial de git.)
 
-- [ ] 1. Lógica de fechas y totales
+- [x] 1. Lógica de fechas y totales
   - Acceptance: `nextDueAfter('2026-01-31', 31)` → `'2026-02-28'`; `('2028-01-30', 30)` → `'2028-02-29'`; `('2026-12-15', 15)` → `'2027-01-15'`; `status` devuelve `overdue` / `soon` (hoy a +7 días) / `ok`; `monthlyTotal` suma solo activos; `today()` en hora local.
   - Verify: `npm test`
   - Files: `src/recurring/dates.ts`, `src/recurring/dates.test.ts`
 
-- [ ] 2. Formulario y categorías por defecto
+- [x] 2. Formulario y categorías por defecto
   - Acceptance: campos nombre, tipo, categoría, monto, próximo pago; errores visibles por campo (nombre vacío o > 60, monto inválido o 0, fecha vacía); `onSubmit` recibe `amount` en centavos y `dayOfMonth` de la fecha; acepta valores iniciales para editar.
   - Verify: `npm test`
   - Files: `src/recurring/RecurringForm.tsx`, `src/recurring/RecurringForm.test.tsx`, `src/recurring/categories.ts`
 
-- [ ] 3. Guardar y listar en Firestore
+- [x] 3. Guardar y listar en Firestore
   - Acceptance: `api.ts` con `watchRecurring` (onSnapshot) y `addRecurring`; rutas `/gastos-fijos` y `/gastos-fijos/nuevo`; lista ordenada por `nextDue`; estado vacío con botón "Agregar"; NavLink "Gastos" activo en subrutas y título por prefijo.
   - Verify: `npm test && npm run build`; alta manual en el panel y en tu celular.
   - Files: `src/recurring/api.ts`, `src/recurring/RecurringList.tsx`, `src/App.tsx`, `src/layout/AppLayout.tsx`, `src/sections.tsx`
