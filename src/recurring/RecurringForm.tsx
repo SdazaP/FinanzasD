@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { toCents } from '../lib/money'
+import { fieldClass } from '../lib/ui'
 import { categoryError } from './categories'
 
 const NEW_CATEGORY = '__new__'
@@ -22,7 +23,7 @@ type Props = {
   onCreateCategory: (name: string) => Promise<unknown>
 }
 
-const field = 'min-h-12 w-full rounded-2xl border border-zinc-200 bg-white px-4 text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 aria-invalid:border-red-500'
+const field = fieldClass
 
 export default function RecurringForm({ categories, initial, onSubmit, onCreateCategory }: Props) {
   const [name, setName] = useState(initial?.name ?? '')
