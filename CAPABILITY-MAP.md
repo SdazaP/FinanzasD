@@ -3,14 +3,14 @@
 App web mobile-first para una sola persona. Moneda única: MXN.
 Stack: React + Vite, Firebase (Auth + Firestore), hosting en Vercel, repo en GitHub (`https://github.com/SdazaP/FinanzasD`).
 
-| Módulo | Responsabilidad | Depende de |
-|---|---|---|
-| `core` | Proyecto base, login con Google, layout móvil, navegación, reglas de Firestore, deploy | — |
-| `recurring` | Gastos fijos y suscripciones (campo `tipo`): monto, frecuencia, próximo pago, activo | core |
-| `credits` | Créditos: saldo, cuota, tasa, plazo, fechas de pago, registro de pagos | core |
-| `savings` | Metas de ahorro y aportes | core |
-| `investments` | **Pospuesto.** Inversiones: aportado, valor actual (manual), ganancia/pérdida. Hoy la sección muestra "Estamos trabajando en esto." | core |
-| `dashboard` | Resumen del mes y próximos vencimientos | recurring, credits, savings, investments |
+| Módulo | Estado | Responsabilidad | Depende de |
+|---|---|---|---|
+| `core` | Listo | Proyecto base, login con Google, layout móvil, navegación, reglas de Firestore, deploy | — |
+| `recurring` | Listo | Gastos fijos y suscripciones (campo `tipo`): monto, próximo pago, pagos, pausa | core |
+| `credits` | Listo | Tarjetas y compras a MSI: saldo, cuotas, pagos, liquidados | core |
+| `savings` | Listo | Apartados con o sin meta, aportes y retiros | core |
+| `investments` | **Pospuesto** | Inversiones: aportado, valor actual (manual), ganancia/pérdida. Hoy la sección muestra "Estamos trabajando en esto." | core |
+| `dashboard` | Listo (sin inversiones) | Compromisos del mes, próximos pagos, saldos y metas | recurring, credits, savings (investments cuando exista) |
 
 Orden de construcción: core → recurring, credits, savings, investments (cualquier orden) → dashboard
 

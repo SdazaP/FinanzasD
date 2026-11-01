@@ -22,7 +22,7 @@
   - Verify: `npm test && npm run build`; revisión en el panel con tus datos.
   - Files: `src/dashboard/api.ts`, `src/dashboard/Dashboard.tsx`, `src/dashboard/Dashboard.test.tsx`, `src/App.tsx`, `src/App.test.tsx`
 
-- [ ] 3. Revisión y deploy
+- [x] 3. Revisión y deploy
   - Acceptance:
     - A 360 px, sin scroll horizontal con tus datos.
     - Los números coinciden con cada sección.
