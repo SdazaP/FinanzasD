@@ -1,35 +1,21 @@
-# Plan: dashboard
+# Plan: month-context
 
-Implementa `SPEC-dashboard.md`. Tareas en `tasks/todo.md`. (Los planes de los módulos anteriores están completos; quedan en el historial de git. `investments` está pospuesto.)
-
-## Componentes y dependencias
-
-```
-calc.ts (puro, reutiliza cálculos de recurring / credits / savings) ─┐
-api.ts (pagos del mes por elemento) ─────────────────────────────────┼─→ Dashboard en "/" ─→ revisión y deploy
-watchers existentes (recurring, credits, savings) ───────────────────┘
-```
+Implementa `SPEC-month-context.md`. Tareas en `tasks/todo.md`. (Los planes anteriores están en el historial de git.)
 
 ## Orden
 
-1. `calc.ts`: rango del mes, próximos pagos y compromisos del mes (TDD).
-2. `api.ts` + `Dashboard.tsx`: secciones, estados de carga, error y vacío, y enlaces. Reemplaza el placeholder de `/`.
-3. Revisión a 360 px con tus datos y deploy.
-
-## Checkpoints
-
-- Tras 2: revisas Inicio en el panel con tus datos reales.
-- Tras 3: deploy y prueba en tu celular.
+1. Formatos `formatMonthLabel` y `formatLongDate` en `src/lib/dates.ts` (TDD).
+2. Hook `useToday`, que se actualiza a medianoche y al volver al primer plano (TDD con timers simulados).
+3. Encabezado de `AppLayout` con la fecha en la línea del saludo y la píldora del mes; revisión a 360 px; deploy.
 
 ## Riesgos
 
 | Riesgo | Mitigación |
 |---|---|
-| Doble conteo: algo pagado este mes también aparece como pendiente | Pendiente usa `nextDue` (que ya avanzó al pagar); test específico |
-| Muchas suscripciones a Firestore (una por elemento) | Aceptable con decenas de elementos; `shortcut:` en el código si crece |
-| Mes con fechas de fin de mes (28–31) | Tests de `monthRange` |
-| El placeholder de Inicio y su test dejan de existir | Actualizar `App.test.tsx` y `SectionPage` |
+| Timer de medianoche que se pierde con la pantalla bloqueada (el navegador congela timers) | También recalcular en `visibilitychange` y `focus` |
+| Encabezado que se desborda con nombre largo | `truncate` en la línea del saludo y píldora con `shrink-0` |
+| Fuga de timers o listeners al desmontar | Limpiar en el `return` del efecto; test |
 
 ## Acciones que te pido antes de hacer
 
-Dependencias (no prevemos ninguna), cambios de reglas o índices (no previstos), cada `git push`, cada deploy.
+Cada `git push` y cada deploy.
