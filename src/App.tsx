@@ -7,6 +7,7 @@ import SectionPage from './pages/SectionPage'
 import RecurringDetail from './recurring/RecurringDetail'
 import RecurringList from './recurring/RecurringList'
 import RecurringNew from './recurring/RecurringNew'
+import SavingDetail from './savings/SavingDetail'
 import SavingList from './savings/SavingList'
 import SavingNew from './savings/SavingNew'
 import { sections } from './sections'
@@ -28,6 +29,7 @@ export default function App() {
         <Route path="/creditos/:id" element={<CreditDetail />} />
         <Route path="/ahorro" element={<SavingList />} />
         <Route path="/ahorro/nuevo" element={<SavingNew />} />
+        <Route path="/ahorro/:id" element={<SavingDetail />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

@@ -42,7 +42,7 @@
   - Verify: `npm test`; aportar y retirar en el panel.
   - Files: `src/savings/api.ts`, `src/savings/SavingList.tsx`, `src/savings/SavingList.test.tsx`
 
-- [ ] 6. Detalle
+- [x] 6. Detalle
   - Acceptance:
     - `/ahorro/:id` con el formulario precargado, sin saldo inicial.
     - Historial con etiqueta Aporte/Retiro (y "Saldo inicial").
