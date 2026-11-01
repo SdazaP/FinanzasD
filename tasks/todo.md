@@ -25,7 +25,7 @@
   - Verify: `npm test` (3 casos de `RequireAuth` con Auth mockeado); login manual en `npm run dev`.
   - Files: `src/auth/AuthProvider.tsx`, `src/auth/RequireAuth.tsx`, `src/auth/RequireAuth.test.tsx`, `src/auth/LoginPage.tsx`, `src/main.tsx`
 
-- [ ] 6. Reglas de Firestore con tests
+- [x] 6. Reglas de Firestore con tests
   - Acceptance: solo `request.auth.uid == '<tu uid>' && uid == request.auth.uid` lee/escribe `users/{uid}/**`; todo lo demás denegado; script `test:rules` corre el emulador y los tests; reglas desplegadas con tu permiso.
   - Verify: `npm run test:rules` (dueño permitido; otro usuario y anónimo denegados en lectura y escritura).
   - Files: `firestore.rules`, `firebase.json`, `.firebaserc`, `tests/rules/firestore.test.ts`, `package.json`
