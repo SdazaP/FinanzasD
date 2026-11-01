@@ -15,7 +15,7 @@
   - Verify: `npm test`
   - Files: `src/lib/money.ts`, `src/lib/money.test.ts`
 
-- [ ] 4. Proyecto Firebase y conexión
+- [x] 4. Proyecto Firebase y conexión
   - Acceptance: proyecto y app web creados (MCP o consola, con tu permiso); Auth con proveedor Google activo; Firestore creado en modo producción; `src/firebase.ts` lee `import.meta.env.VITE_FIREBASE_*`; `.env.example` sin valores y `.env.local` con valores, no commiteado.
   - Verify: `npm run build` pasa; `git status` no lista `.env.local`.
   - Files: `src/firebase.ts`, `.env.example`, `.env.local`, `package.json`
