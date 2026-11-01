@@ -1,11 +1,11 @@
 # Tareas: core
 
-- [ ] 1. Conectar con GitHub y commitear specs
+- [x] 1. Conectar con GitHub y commitear specs
   - Acceptance: `git init`, remoto `origin` = `https://github.com/SdazaP/FinanzasD.git`, `main` trae el README remoto; `.gitignore` (node_modules, dist, .env*.local, emulador); commit `docs: add capability map and core spec`; push con tu permiso.
   - Verify: `git log --oneline` muestra el commit del README y el de las specs; `git status` limpio.
   - Files: `.gitignore`, `CAPABILITY-MAP.md`, `SPEC-core.md`, `tasks/*`
 
-- [ ] 2. Scaffold: Vite + React + TS + Tailwind + Vitest + ESLint
+- [x] 2. Scaffold: Vite + React + TS + Tailwind + Vitest + oxlint
   - Acceptance: plantilla `react-ts` de Vite, Tailwind v4 con `@tailwindcss/vite`, Vitest + Testing Library con entorno jsdom, scripts `dev/build/lint/test`; página de inicio con un texto estilado por Tailwind y un test que la renderiza.
   - Verify: `npm run lint && npm test && npm run build` pasan; `npm run dev` muestra la página.
   - Files: `package.json`, `vite.config.ts`, `src/index.css`, `src/App.tsx`, `src/App.test.tsx` (más los que genera la plantilla)

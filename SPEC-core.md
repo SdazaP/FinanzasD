@@ -20,6 +20,7 @@ Historias:
 - Firebase JS SDK: Auth (proveedor Google) + Firestore
 - Tailwind CSS v4 (plugin `@tailwindcss/vite`)
 - Vitest + Testing Library (unit/componentes)
+- oxlint (lint, viene con la plantilla de Vite)
 - Firebase Emulator Suite + `@firebase/rules-unit-testing` (reglas de Firestore)
 - Node 22, npm, Git + GitHub, Vercel
 
