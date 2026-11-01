@@ -7,15 +7,17 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "test": "vitest run",
+    "test": "vitest run --project unit",
+    "test:rules": "firebase emulators:exec --only firestore --project demo-finanzas \"vitest run --project rules\"",
     "preview": "vite preview"
   },
   "dependencies": {
-    "firebase": "^13.1.0",
+    "firebase": "^12.19.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },
   "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.2",
     "@tailwindcss/vite": "^4.3.3",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",

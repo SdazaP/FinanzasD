@@ -7,7 +7,13 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   test: {
-    environment: 'jsdom',
-    setupFiles: ['src/test-setup.ts'],
+    projects: [
+      {
+        extends: true,
+        test: { name: 'unit', include: ['src/**/*.test.{ts,tsx}'], environment: 'jsdom', setupFiles: ['src/test-setup.ts'] },
+      },
+      // Necesita el emulador de Firestore: npm run test:rules
+      { test: { name: 'rules', include: ['tests/rules/**/*.test.ts'], environment: 'node' } },
+    ],
   },
 })
