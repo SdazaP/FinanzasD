@@ -6,8 +6,12 @@ import { AuthContext } from '../auth/context'
 import type { Credit } from './api'
 import CreditList from './CreditList'
 
-const api = vi.hoisted(() => ({ watchCredits: vi.fn(), payCredit: vi.fn() }))
-vi.mock('./api', () => api)
+const api = vi.hoisted(() => ({ watchCredits: vi.fn(), payCredit: vi.fn(), watchPeriodPayments: vi.fn() }))
+vi.mock('./api', () => ({ watchCredits: api.watchCredits, payCredit: api.payCredit }))
+vi.mock('../lib/periodPayments', () => ({ watchPeriodPayments: api.watchPeriodPayments }))
+
+// Pagos del periodo de marzo por crédito (los que no aparecen no tienen pagos)
+const periodPayments: Record<string, { amount: number; lastPaidAt: string | null }> = {}
 
 const credits: Credit[] = [
   { id: 'c', kind: 'card', name: 'BBVA Azul', balance: 1250000, limit: 5000000, nextDue: '2026-03-12', dayOfMonth: 12 },
@@ -20,11 +24,36 @@ beforeEach(() => {
   vi.useFakeTimers({ toFake: ['Date'] })
   vi.setSystemTime(new Date(2026, 2, 10))
   api.watchCredits.mockImplementation((_uid, onData) => (onData(credits), () => {}))
+  api.watchPeriodPayments.mockImplementation((_uid, _col, id, _from, _to, onData) => (
+    onData(periodPayments[id] ?? { amount: 0, lastPaidAt: null }), () => {}
+  ))
 })
 
 afterEach(() => {
   vi.useRealTimers()
   vi.clearAllMocks()
+  for (const id of Object.keys(periodPayments)) delete periodPayments[id]
+})
+
+test('tarjeta pagada este mes (dos abonos) va a Pagado y un MSI que empieza en abril a Más adelante', () => {
+  api.watchCredits.mockImplementation((_uid, onData) => (
+    onData([
+      { ...credits[0], nextDue: '2026-04-12' },
+      { ...credits[1], id: 'tv', name: 'Tele', nextDue: '2026-04-30' },
+    ]), () => {}
+  ))
+  periodPayments.c = { amount: 300000, lastPaidAt: '2026-03-08' }
+  renderList()
+
+  const group = (title: string) => screen.getByRole('heading', { name: title }).parentElement!
+  expect(screen.queryByRole('heading', { name: 'Por pagar' })).not.toBeInTheDocument()
+
+  const paid = group('Pagado este mes')
+  expect(within(paid).getByText(/Pagado el 8 mar/)).toBeInTheDocument()
+  expect(within(paid).getByText('Pagaste $3,000.00')).toBeInTheDocument()
+  expect(within(paid).queryByRole('button')).not.toBeInTheDocument()
+
+  expect(within(group('Más adelante')).getByText(/Vence el 30 abr/)).toBeInTheDocument()
 })
 
 const renderList = () =>

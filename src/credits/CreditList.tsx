@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { useAuth } from '../auth/context'
-import { formatDay, status, today } from '../lib/dates'
 import AmountAction from '../lib/AmountAction'
+import { formatDay, status } from '../lib/dates'
 import { formatMXN } from '../lib/money'
+import { monthStatus } from '../lib/monthStatus'
 import Bar from '../lib/ProgressBar'
+import { usePeriodPayments } from '../lib/usePeriodPayments'
+import { useToday } from '../lib/useToday'
 import { payCredit, watchCredits, type Credit } from './api'
 import { debtTotal, msiSummary, paymentError } from './calc'
 
@@ -70,19 +73,51 @@ function PayRow({ uid, credit, badge }: { uid: string; credit: Credit; badge: (t
   )
 }
 
+function GroupTitle({ children }: { children: string }) {
+  return <h2 className="mb-2 px-1 text-sm font-medium text-zinc-500">{children}</h2>
+}
+
+// Encabezado común de la tarjeta de un crédito: nombre, tipo, detalle del mes y saldo
+function CreditHeader({ credit, detail }: { credit: Credit; detail: string }) {
+  const subtitle = credit.kind === 'card' ? 'Tarjeta' : [credit.card, 'MSI'].filter(Boolean).join(' · ')
+  return (
+    <Link to={`/creditos/${credit.id}`} className="-m-2 block rounded-2xl p-2 active:bg-zinc-50">
+      <div className="flex items-start gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-medium">{credit.name}</p>
+          <p className="truncate text-sm text-zinc-500">
+            {subtitle} · {detail}
+          </p>
+        </div>
+        <p className="shrink-0 font-display text-lg font-semibold tabular-nums">{formatMXN(credit.balance)}</p>
+      </div>
+      <Details credit={credit} />
+    </Link>
+  )
+}
+
 export default function CreditList() {
   const uid = useAuth()!.uid
+  const now = useToday()
   const [items, setItems] = useState<Credit[]>()
   const [loadError, setLoadError] = useState(false)
 
   useEffect(() => watchCredits(uid, setItems, () => setLoadError(true)), [uid])
 
+  const active = (items ?? []).filter((c) => c.balance > 0)
+  const periodOf = usePeriodPayments(uid, 'credits', active.map((c) => c.id), now)
+
   if (loadError) return <p role="alert" className="text-red-700">No se pudieron cargar tus créditos. Revisa tu conexión.</p>
   if (!items) return <p className="text-zinc-500">Cargando…</p>
 
-  const now = today()
-  const active = items.filter((c) => c.balance > 0)
   const settled = items.filter((c) => c.balance <= 0)
+  const statusOf = (credit: Credit) => monthStatus(credit.nextDue, !!periodOf(credit.id)?.amount, now)
+  const due = active.filter((c) => statusOf(c) === 'due')
+  // Lo que no vence este mes espera a sus pagos del periodo para no saltar de "Más adelante" a "Pagado"
+  const notDue = active.filter((c) => statusOf(c) !== 'due')
+  const notDueLoaded = notDue.every((c) => periodOf(c.id))
+  const paid = notDue.filter((c) => statusOf(c) === 'paid')
+  const later = notDue.filter((c) => statusOf(c) === 'later')
 
   return (
     <div className="space-y-4">
@@ -105,35 +140,61 @@ export default function CreditList() {
         </p>
       )}
 
-      {active.length > 0 && (
-        <ul className="space-y-3">
-          {active.map((credit) => {
-            const badge = badges[status(credit.nextDue, now)]
-            const subtitle = credit.kind === 'card' ? 'Tarjeta' : [credit.card, 'MSI'].filter(Boolean).join(' · ')
-            return (
+      {due.length > 0 && (
+        <section>
+          <GroupTitle>Por pagar</GroupTitle>
+          <ul className="space-y-3">
+            {due.map((credit) => (
               <li key={credit.id} className="rounded-3xl bg-white p-4 shadow-card">
-                <Link to={`/creditos/${credit.id}`} className="-m-2 block rounded-2xl p-2 active:bg-zinc-50">
-                  <div className="flex items-start gap-3">
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate font-medium">{credit.name}</p>
-                      <p className="truncate text-sm text-zinc-500">
-                        {subtitle} · {formatDay(credit.nextDue)}
-                      </p>
-                    </div>
-                    <p className="shrink-0 font-display text-lg font-semibold tabular-nums">{formatMXN(credit.balance)}</p>
-                  </div>
-                  <Details credit={credit} />
-                </Link>
-                <PayRow uid={uid} credit={credit} badge={badge} />
+                <CreditHeader credit={credit} detail={formatDay(credit.nextDue)} />
+                <PayRow uid={uid} credit={credit} badge={badges[status(credit.nextDue, now)]} />
               </li>
-            )
-          })}
-        </ul>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {notDue.length > 0 && !notDueLoaded && <p className="px-1 text-sm text-zinc-500">Cargando pagos del mes…</p>}
+
+      {notDueLoaded && paid.length > 0 && (
+        <section>
+          <GroupTitle>Pagado este mes</GroupTitle>
+          <ul className="space-y-3">
+            {paid.map((credit) => {
+              const period = periodOf(credit.id)!
+              const when = period.lastPaidAt ? ` el ${formatDay(period.lastPaidAt)}` : ''
+              return (
+                <li key={credit.id} className="rounded-3xl bg-white p-4 shadow-card">
+                  <CreditHeader credit={credit} detail={`Pagado${when}`} />
+                  <p className="mt-3 inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
+                    <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="m5 12 5 5 9-10" />
+                    </svg>
+                    Pagaste {formatMXN(period.amount)}
+                  </p>
+                </li>
+              )
+            })}
+          </ul>
+        </section>
+      )}
+
+      {notDueLoaded && later.length > 0 && (
+        <section>
+          <GroupTitle>Más adelante</GroupTitle>
+          <ul className="space-y-3">
+            {later.map((credit) => (
+              <li key={credit.id} className="rounded-3xl bg-white p-4 shadow-card">
+                <CreditHeader credit={credit} detail={`Vence el ${formatDay(credit.nextDue)}`} />
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
 
       {settled.length > 0 && (
         <section>
-          <h2 className="mb-2 px-1 text-sm font-medium text-zinc-500">Liquidados</h2>
+          <GroupTitle>Liquidados</GroupTitle>
           <ul className="space-y-3">
             {settled.map((credit) => (
               <li key={credit.id}>
