@@ -22,7 +22,7 @@
   - Verify: `npm test`; pagar uno vencido en el panel avanza un mes y aparece en el historial.
   - Files: `src/recurring/api.ts`, `src/recurring/RecurringList.tsx`
 
-- [ ] 5. Detalle: editar, pausar, eliminar, historial
+- [x] 5. Detalle: editar, pausar, eliminar, historial
   - Acceptance: `/gastos-fijos/:id` con el formulario precargado; pausar/reactivar; eliminar con confirmación borrando sus pagos en el mismo batch; historial del más reciente al más antiguo con opción de borrar un pago; id inexistente vuelve a la lista.
   - Verify: `npm test && npm run build`; flujo completo en el panel a 360 px.
   - Files: `src/recurring/RecurringDetail.tsx`, `src/recurring/api.ts`, `src/App.tsx`

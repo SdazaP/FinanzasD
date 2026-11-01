@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router'
 import AppLayout from './layout/AppLayout'
 import SectionPage from './pages/SectionPage'
+import RecurringDetail from './recurring/RecurringDetail'
 import RecurringList from './recurring/RecurringList'
 import RecurringNew from './recurring/RecurringNew'
 import { sections } from './sections'
@@ -16,6 +17,7 @@ export default function App() {
           ))}
         <Route path="/gastos-fijos" element={<RecurringList />} />
         <Route path="/gastos-fijos/nuevo" element={<RecurringNew />} />
+        <Route path="/gastos-fijos/:id" element={<RecurringDetail />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

@@ -70,7 +70,7 @@ export default function RecurringList() {
             const badge = badges[status(item.nextDue, now)]
             return (
               <li key={item.id} className="rounded-3xl bg-white p-4 shadow-card">
-                <div className="flex items-start gap-3">
+                <Link to={`/gastos-fijos/${item.id}`} className="-m-2 flex items-start gap-3 rounded-2xl p-2 active:bg-zinc-50">
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-medium">{item.name}</p>
                     <p className="truncate text-sm text-zinc-500">
@@ -78,7 +78,7 @@ export default function RecurringList() {
                     </p>
                   </div>
                   <p className="shrink-0 font-display text-lg font-semibold tabular-nums">{formatMXN(item.amount)}</p>
-                </div>
+                </Link>
                 <div className="mt-3 flex items-center justify-between gap-3">
                   {badge ? (
                     <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${badge.className}`}>{badge.text}</span>
@@ -106,9 +106,14 @@ export default function RecurringList() {
           <h2 className="mb-2 px-1 text-sm font-medium text-zinc-500">Pausados</h2>
           <ul className="space-y-3">
             {paused.map((item) => (
-              <li key={item.id} className="flex items-center gap-3 rounded-3xl bg-white/60 p-4 text-zinc-500">
-                <p className="min-w-0 flex-1 truncate">{item.name}</p>
-                <p className="shrink-0 tabular-nums">{formatMXN(item.amount)}</p>
+              <li key={item.id}>
+                <Link
+                  to={`/gastos-fijos/${item.id}`}
+                  className="flex items-center gap-3 rounded-3xl bg-white/60 p-4 text-zinc-500 active:bg-white"
+                >
+                  <p className="min-w-0 flex-1 truncate">{item.name}</p>
+                  <p className="shrink-0 tabular-nums">{formatMXN(item.amount)}</p>
+                </Link>
               </li>
             ))}
           </ul>

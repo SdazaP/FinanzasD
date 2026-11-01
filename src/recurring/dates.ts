@@ -24,10 +24,11 @@ export function status(nextDue: string, now = today()): DueStatus {
 }
 
 const dayMonth = new Intl.DateTimeFormat('es-MX', { day: 'numeric', month: 'short' })
+const dayMonthYear = new Intl.DateTimeFormat('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })
 
-export function formatDay(date: string) {
+export function formatDay(date: string, withYear = false) {
   const [y, m, d] = parse(date)
-  return dayMonth.format(new Date(y, m - 1, d))
+  return (withYear ? dayMonthYear : dayMonth).format(new Date(y, m - 1, d))
 }
 
 export const monthlyTotal = (items: { amount: number; active: boolean }[]) =>
