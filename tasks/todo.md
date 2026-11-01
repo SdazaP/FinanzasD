@@ -2,12 +2,12 @@
 
 (Las tareas de `core`, `recurring` y `credits` están completas; ver historial de git.)
 
-- [ ] 1. Extraer `AmountAction`
+- [x] 1. Extraer `AmountAction`
   - Acceptance: componente con etiqueta, monto inicial, validación inyectada (`validate(cents) → mensaje`), `onConfirm(cents)`, "Confirmar" desactivado mientras guarda y "Cancelar"; créditos lo usa sin cambiar su comportamiento.
   - Verify: `npm test` (tests de créditos en verde).
   - Files: `src/lib/AmountAction.tsx`, `src/credits/CreditList.tsx`
 
-- [ ] 2. Cálculos de ahorro
+- [x] 2. Cálculos de ahorro
   - Acceptance:
     - `monthsLeft('2026-10-31', '2026-12-15')` → 3; mismo mes → 1; fecha pasada → 0.
     - `goalSummary` da progreso (máx. 1), faltante, sugerencia redondeada hacia arriba y estado (`reached` / `overdue` / `on-track` / `no-target`).
@@ -16,7 +16,7 @@
   - Verify: `npm test`
   - Files: `src/savings/calc.ts`, `src/savings/calc.test.ts`
 
-- [ ] 3. Formulario de apartado
+- [x] 3. Formulario de apartado
   - Acceptance:
     - Campos: nombre, saldo inicial (solo al crear), objetivo opcional (> 0) y fecha límite opcional.
     - La fecha límite solo se muestra si hay objetivo.
@@ -25,7 +25,7 @@
   - Verify: `npm test`
   - Files: `src/savings/SavingForm.tsx`, `src/savings/SavingForm.test.tsx`
 
-- [ ] 4. Guardar y listar en Firestore
+- [x] 4. Guardar y listar en Firestore
   - Acceptance:
     - `api.ts` con `watchSavings` y `addSaving`. Si el saldo inicial es > 0, el alta crea también el movimiento "Saldo inicial" en el mismo batch.
     - Rutas `/ahorro` y `/ahorro/nuevo`.
