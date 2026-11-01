@@ -35,7 +35,7 @@
   - Verify: `npm test` (la barra navega entre rutas); revisión visual a 360 px.
   - Files: `src/layout/AppLayout.tsx`, `src/layout/AppLayout.test.tsx`, `src/pages/*.tsx`, `src/main.tsx`
 
-- [ ] 8. Deploy en Vercel
+- [x] 8. Deploy en Vercel (https://finanzasd.vercel.app)
   - Acceptance: `vercel.json` con rewrite a `index.html`; repo importado en Vercel con las variables `VITE_*`; dominio de Vercel en dominios autorizados de Firebase Auth; push a `main` despliega.
   - Verify: la URL pública carga en el celular, el login funciona, recargar `/creditos` no da 404; todos los criterios de `SPEC-core.md` cumplidos.
   - Files: `vercel.json`
