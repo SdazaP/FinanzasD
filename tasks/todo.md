@@ -52,7 +52,7 @@
   - Verify: `npm test && npm run build`; flujo en el panel a 360 px.
   - Files: `src/savings/SavingDetail.tsx`, `src/savings/SavingDetail.test.tsx`, `src/savings/api.ts`, `src/App.tsx`
 
-- [ ] 7. Reglas, revisión y deploy
+- [x] 7. Reglas, revisión y deploy
   - Acceptance:
     - Tests de reglas para `savings` y `movements`.
     - Revisión a 360 px con nombre largo, saldo de 7 cifras, meta superada y lista vacía.

@@ -11,6 +11,8 @@ const paths = [
   `users/${OWNER}/categories/mascotas`,
   `users/${OWNER}/credits/bbva`,
   `users/${OWNER}/credits/bbva/payments/p1`,
+  `users/${OWNER}/savings/viaje`,
+  `users/${OWNER}/savings/viaje/movements/m1`,
 ]
 
 let env: RulesTestEnvironment
