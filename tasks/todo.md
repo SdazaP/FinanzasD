@@ -1,64 +1,61 @@
-# Tareas: credits
+# Tareas: savings
 
-(Las tareas de `core` y `recurring` están completas; ver historial de git.)
+(Las tareas de `core`, `recurring` y `credits` están completas; ver historial de git.)
 
-- [x] 1. Mover `dates.ts` a `src/lib`
-  - Acceptance: `src/lib/dates.ts` y su test; `recurring` importa de ahí; sin cambios de comportamiento.
-  - Verify: `npm test` (40 tests en verde) y `npm run build`.
-  - Files: `src/lib/dates.ts`, `src/lib/dates.test.ts`, `src/recurring/RecurringList.tsx`, `src/recurring/RecurringDetail.tsx`, `src/recurring/api.ts`
+- [ ] 1. Extraer `AmountAction`
+  - Acceptance: componente con etiqueta, monto inicial, validación inyectada (`validate(cents) → mensaje`), `onConfirm(cents)`, "Confirmar" desactivado mientras guarda y "Cancelar"; créditos lo usa sin cambiar su comportamiento.
+  - Verify: `npm test` (tests de créditos en verde).
+  - Files: `src/lib/AmountAction.tsx`, `src/credits/CreditList.tsx`
 
-- [x] 2. Cálculos de crédito
+- [ ] 2. Cálculos de ahorro
   - Acceptance:
-    - `installments(100000, 3)` → `[33333, 33333, 33334]`.
-    - `msiSummary` da cuota, pagados, pagos restantes, fecha de término y progreso.
-    - `debtTotal` suma saldos.
-    - `paymentError(monto, saldo)` rechaza 0, negativo, inválido y mayor al saldo; acepta igual al saldo.
+    - `monthsLeft('2026-10-31', '2026-12-15')` → 3; mismo mes → 1; fecha pasada → 0.
+    - `goalSummary` da progreso (máx. 1), faltante, sugerencia redondeada hacia arriba y estado (`reached` / `overdue` / `on-track` / `no-target`).
+    - `totalSaved` suma saldos.
+    - `movementError` rechaza 0 y un retiro mayor al saldo.
   - Verify: `npm test`
-  - Files: `src/credits/calc.ts`, `src/credits/calc.test.ts`
+  - Files: `src/savings/calc.ts`, `src/savings/calc.test.ts`
 
-- [x] 3. Formulario de crédito
+- [ ] 3. Formulario de apartado
   - Acceptance:
-    - Selector de tipo, con nombre y próximo pago comunes.
-    - **Tarjeta:** saldo (puede ser 0) y límite opcional (> 0 si se llena), con nota de doble conteo.
-    - **MSI:** tarjeta opcional, total > 0, meses entre 2 y 48, y saldo pendiente (por defecto el total, ≤ total).
-    - Errores visibles por campo y foco en el primero.
-    - `onSubmit` recibe centavos y `dayOfMonth`, y acepta valores iniciales.
+    - Campos: nombre, saldo inicial (solo al crear), objetivo opcional (> 0) y fecha límite opcional.
+    - La fecha límite solo se muestra si hay objetivo.
+    - Errores por campo con foco en el primero.
+    - `onSubmit` recibe centavos y omite los opcionales vacíos.
   - Verify: `npm test`
-  - Files: `src/credits/CreditForm.tsx`, `src/credits/CreditForm.test.tsx`
+  - Files: `src/savings/SavingForm.tsx`, `src/savings/SavingForm.test.tsx`
 
-- [x] 4. Guardar y listar en Firestore
+- [ ] 4. Guardar y listar en Firestore
   - Acceptance:
-    - `api.ts` con `watchCredits` y `addCredit`.
-    - Rutas `/creditos` y `/creditos/nuevo`.
-    - Tarjeta morada con la deuda total.
-    - Cada crédito muestra saldo, próximo pago y etiqueta. La tarjeta lleva barra de uso si tiene límite; el MSI, cuota, pagos restantes, fecha de término y barra de progreso.
+    - `api.ts` con `watchSavings` y `addSaving`. Si el saldo inicial es > 0, el alta crea también el movimiento "Saldo inicial" en el mismo batch.
+    - Rutas `/ahorro` y `/ahorro/nuevo`.
+    - Total ahorrado; por apartado, progreso, "Faltan", sugerencia y mensajes especiales.
     - Estado vacío.
-  - Verify: `npm test && npm run build`; alta manual en el panel y en tu celular.
-  - Files: `src/credits/api.ts`, `src/credits/CreditList.tsx`, `src/credits/CreditList.test.tsx`, `src/credits/CreditNew.tsx`, `src/App.tsx`
+  - Verify: `npm test && npm run build`; alta en el panel y en tu celular.
+  - Files: `src/savings/api.ts`, `src/savings/SavingList.tsx`, `src/savings/SavingList.test.tsx`, `src/savings/SavingNew.tsx`, `src/App.tsx`
 
-- [x] 5. Pagar y liquidados
+- [ ] 5. Aportar y retirar
   - Acceptance:
-    - "Pagar" muestra el monto prellenado y editable con "Confirmar" / "Cancelar".
-    - Valida con `paymentError`.
-    - Un solo `writeBatch` guarda el pago, aplica `increment(-monto)` y avanza `nextDue`.
-    - "Confirmar" se desactiva mientras guarda.
-    - Los créditos con saldo 0 van a "Liquidados", sin botón de pagar.
-  - Verify: `npm test`; pagar en el panel con monto editado.
-  - Files: `src/credits/api.ts`, `src/credits/CreditList.tsx`, `src/credits/CreditList.test.tsx`
+    - Botones "Aportar" y "Retirar" (este último solo si el saldo es > 0) con `AmountAction`.
+    - Un batch guarda el movimiento y aplica `increment(±monto)`.
+    - Un retiro mayor al saldo se rechaza.
+  - Verify: `npm test`; aportar y retirar en el panel.
+  - Files: `src/savings/api.ts`, `src/savings/SavingList.tsx`, `src/savings/SavingList.test.tsx`
 
-- [x] 6. Detalle
+- [ ] 6. Detalle
   - Acceptance:
-    - `/creditos/:id` con el formulario precargado para editar.
-    - Historial de pagos y borrar pago con confirmación.
-    - Eliminar con confirmación junto con sus pagos.
+    - `/ahorro/:id` con el formulario precargado, sin saldo inicial.
+    - Historial con etiqueta Aporte/Retiro (y "Saldo inicial").
+    - Borrar un movimiento revierte el saldo en un batch y se bloquea si lo dejaría negativo.
+    - Eliminar con confirmación junto con sus movimientos.
     - Un id inexistente vuelve a la lista.
   - Verify: `npm test && npm run build`; flujo en el panel a 360 px.
-  - Files: `src/credits/CreditDetail.tsx`, `src/credits/CreditDetail.test.tsx`, `src/credits/api.ts`, `src/App.tsx`
+  - Files: `src/savings/SavingDetail.tsx`, `src/savings/SavingDetail.test.tsx`, `src/savings/api.ts`, `src/App.tsx`
 
-- [x] 7. Reglas, revisión y deploy
+- [ ] 7. Reglas, revisión y deploy
   - Acceptance:
-    - Tests de reglas para `credits` y sus `payments`.
-    - Revisión a 360 px con nombre largo, saldo de 7 cifras, MSI de 48 meses y lista vacía.
+    - Tests de reglas para `savings` y `movements`.
+    - Revisión a 360 px con nombre largo, saldo de 7 cifras, meta superada y lista vacía.
     - Deploy con tu permiso.
   - Verify: `npm run lint && npm test && npm run test:rules && npm run build`; prueba en tu celular.
   - Files: `tests/rules/firestore.test.ts`, ajustes según la revisión
