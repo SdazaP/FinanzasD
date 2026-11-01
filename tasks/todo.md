@@ -1,38 +1,64 @@
-# Tareas: recurring
+# Tareas: credits
 
-(Las 8 tareas de `core` están completas; ver historial de git.)
+(Las tareas de `core` y `recurring` están completas; ver historial de git.)
 
-- [x] 1. Lógica de fechas y totales
-  - Acceptance: `nextDueAfter('2026-01-31', 31)` → `'2026-02-28'`; `('2028-01-30', 30)` → `'2028-02-29'`; `('2026-12-15', 15)` → `'2027-01-15'`; `status` devuelve `overdue` / `soon` (hoy a +7 días) / `ok`; `monthlyTotal` suma solo activos; `today()` en hora local.
+- [ ] 1. Mover `dates.ts` a `src/lib`
+  - Acceptance: `src/lib/dates.ts` y su test; `recurring` importa de ahí; sin cambios de comportamiento.
+  - Verify: `npm test` (40 tests en verde) y `npm run build`.
+  - Files: `src/lib/dates.ts`, `src/lib/dates.test.ts`, `src/recurring/RecurringList.tsx`, `src/recurring/RecurringDetail.tsx`, `src/recurring/api.ts`
+
+- [ ] 2. Cálculos de crédito
+  - Acceptance:
+    - `installments(100000, 3)` → `[33333, 33333, 33334]`.
+    - `msiSummary` da cuota, pagados, pagos restantes, fecha de término y progreso.
+    - `debtTotal` suma saldos.
+    - `paymentError(monto, saldo)` rechaza 0, negativo, inválido y mayor al saldo; acepta igual al saldo.
   - Verify: `npm test`
-  - Files: `src/recurring/dates.ts`, `src/recurring/dates.test.ts`
+  - Files: `src/credits/calc.ts`, `src/credits/calc.test.ts`
 
-- [x] 2. Formulario y categorías por defecto
-  - Acceptance: campos nombre, tipo, categoría, monto, próximo pago; errores visibles por campo (nombre vacío o > 60, monto inválido o 0, fecha vacía); `onSubmit` recibe `amount` en centavos y `dayOfMonth` de la fecha; acepta valores iniciales para editar.
+- [ ] 3. Formulario de crédito
+  - Acceptance:
+    - Selector de tipo, con nombre y próximo pago comunes.
+    - **Tarjeta:** saldo (puede ser 0) y límite opcional (> 0 si se llena), con nota de doble conteo.
+    - **MSI:** tarjeta opcional, total > 0, meses entre 2 y 48, y saldo pendiente (por defecto el total, ≤ total).
+    - Errores visibles por campo y foco en el primero.
+    - `onSubmit` recibe centavos y `dayOfMonth`, y acepta valores iniciales.
   - Verify: `npm test`
-  - Files: `src/recurring/RecurringForm.tsx`, `src/recurring/RecurringForm.test.tsx`, `src/recurring/categories.ts`
+  - Files: `src/credits/CreditForm.tsx`, `src/credits/CreditForm.test.tsx`
 
-- [x] 3. Guardar y listar en Firestore
-  - Acceptance: `api.ts` con `watchRecurring` (onSnapshot) y `addRecurring`; rutas `/gastos-fijos` y `/gastos-fijos/nuevo`; lista ordenada por `nextDue`; estado vacío con botón "Agregar"; NavLink "Gastos" activo en subrutas y título por prefijo.
+- [ ] 4. Guardar y listar en Firestore
+  - Acceptance:
+    - `api.ts` con `watchCredits` y `addCredit`.
+    - Rutas `/creditos` y `/creditos/nuevo`.
+    - Tarjeta morada con la deuda total.
+    - Cada crédito muestra saldo, próximo pago y etiqueta. La tarjeta lleva barra de uso si tiene límite; el MSI, cuota, pagos restantes, fecha de término y barra de progreso.
+    - Estado vacío.
   - Verify: `npm test && npm run build`; alta manual en el panel y en tu celular.
-  - Files: `src/recurring/api.ts`, `src/recurring/RecurringList.tsx`, `src/App.tsx`, `src/layout/AppLayout.tsx`, `src/sections.tsx`
+  - Files: `src/credits/api.ts`, `src/credits/CreditList.tsx`, `src/credits/CreditList.test.tsx`, `src/credits/CreditNew.tsx`, `src/App.tsx`
 
-- [x] 4. Pagar, estados y total
-  - Acceptance: botón "Pagar" con `writeBatch` (pago + `nextDue` avanzado) y deshabilitado mientras guarda; etiquetas Vencido / Pronto; tarjeta morada con el total mensual; sección "Pausados".
-  - Verify: `npm test`; pagar uno vencido en el panel avanza un mes y aparece en el historial.
-  - Files: `src/recurring/api.ts`, `src/recurring/RecurringList.tsx`
+- [ ] 5. Pagar y liquidados
+  - Acceptance:
+    - "Pagar" muestra el monto prellenado y editable con "Confirmar" / "Cancelar".
+    - Valida con `paymentError`.
+    - Un solo `writeBatch` guarda el pago, aplica `increment(-monto)` y avanza `nextDue`.
+    - "Confirmar" se desactiva mientras guarda.
+    - Los créditos con saldo 0 van a "Liquidados", sin botón de pagar.
+  - Verify: `npm test`; pagar en el panel con monto editado.
+  - Files: `src/credits/api.ts`, `src/credits/CreditList.tsx`, `src/credits/CreditList.test.tsx`
 
-- [x] 5. Detalle: editar, pausar, eliminar, historial
-  - Acceptance: `/gastos-fijos/:id` con el formulario precargado; pausar/reactivar; eliminar con confirmación borrando sus pagos en el mismo batch; historial del más reciente al más antiguo con opción de borrar un pago; id inexistente vuelve a la lista.
-  - Verify: `npm test && npm run build`; flujo completo en el panel a 360 px.
-  - Files: `src/recurring/RecurringDetail.tsx`, `src/recurring/api.ts`, `src/App.tsx`
+- [ ] 6. Detalle
+  - Acceptance:
+    - `/creditos/:id` con el formulario precargado para editar.
+    - Historial de pagos y borrar pago con confirmación.
+    - Eliminar con confirmación junto con sus pagos.
+    - Un id inexistente vuelve a la lista.
+  - Verify: `npm test && npm run build`; flujo en el panel a 360 px.
+  - Files: `src/credits/CreditDetail.tsx`, `src/credits/CreditDetail.test.tsx`, `src/credits/api.ts`, `src/App.tsx`
 
-- [x] 6. Categorías propias
-  - Acceptance: opción "Nueva categoría…" en el select pide el nombre (1–30 caracteres, sin duplicar una existente ignorando mayúsculas) y la guarda en `users/{uid}/categories`; el select muestra por defecto + propias ordenadas.
-  - Verify: `npm test`; crear una categoría y usarla en otro gasto.
-  - Files: `src/recurring/categories.ts`, `src/recurring/RecurringForm.tsx`, `src/recurring/RecurringForm.test.tsx`, `src/recurring/api.ts`
-
-- [x] 7. Reglas, revisión visual y deploy
-  - Acceptance: tests de reglas para `recurring/{id}/payments` y `categories`; revisión a 360 px con nombres largos, montos de 7 cifras y lista vacía (skill `break-ui`); deploy con tu permiso.
+- [ ] 7. Reglas, revisión y deploy
+  - Acceptance:
+    - Tests de reglas para `credits` y sus `payments`.
+    - Revisión a 360 px con nombre largo, saldo de 7 cifras, MSI de 48 meses y lista vacía.
+    - Deploy con tu permiso.
   - Verify: `npm run lint && npm test && npm run test:rules && npm run build`; prueba en tu celular.
-  - Files: `tests/rules/firestore.test.ts`, ajustes de estilo según la revisión
+  - Files: `tests/rules/firestore.test.ts`, ajustes según la revisión

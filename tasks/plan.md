@@ -1,44 +1,44 @@
-# Plan: recurring
+# Plan: credits
 
-Implementa `SPEC-recurring.md`. Tareas en `tasks/todo.md`. (El plan de `core` está completo; queda en el historial de git.)
+Implementa `SPEC-credits.md`. Tareas en `tasks/todo.md`. (Los planes de `core` y `recurring` están completos; quedan en el historial de git.)
 
 ## Componentes y dependencias
 
 ```
-dates.ts (puro) ──┐
-                  ├─→ api.ts + lista + alta ─→ pagar + estados + total ─→ detalle (editar, pausar, eliminar, historial) ─┐
-RecurringForm ────┘                                                                                                      ├─→ verificación y deploy
-categorías por defecto ─────────────────────────────────────→ categorías propias ───────────────────────────────────────┘
+mover dates.ts a src/lib ─┐
+                          ├─→ api + lista + alta ─→ pagar (monto editable) + liquidados ─→ detalle ─→ reglas, revisión y deploy
+calc.ts (puro) ───────────┤
+CreditForm ───────────────┘
 ```
 
 ## Orden
 
-1. Lógica de fechas y totales, sin Firestore (TDD).
-2. Formulario con validación y categorías por defecto, sin Firestore (TDD).
-3. Capa `api.ts`, rutas y lista con alta: primer corte vertical que guarda en Firestore real.
-4. Pagar, etiquetas Vencido/Pronto y tarjeta del total.
-5. Detalle: editar, pausar/reactivar, eliminar con sus pagos, historial y borrar pago.
-6. Categorías propias creadas desde el formulario.
-7. Tests de reglas para `payments` y `categories`, revisión visual con datos extremos y deploy.
+1. Mover `src/recurring/dates.ts` a `src/lib/dates.ts` y actualizar imports; `recurring` debe seguir en verde.
+2. `calc.ts`: cuota, resumen de MSI, deuda total y validación del pago (TDD).
+3. `CreditForm` con los dos tipos y su validación (TDD).
+4. Capa `api.ts`, rutas, lista con deuda total, progreso y pagos restantes, y alta. Es el primer corte vertical que guarda en Firestore real.
+5. Pagar con monto editable en la tarjeta, validación y sección "Liquidados".
+6. Detalle: editar, historial, borrar pago y eliminar.
+7. Tests de reglas, revisión a 360 px con datos extremos y deploy.
 
-Las tareas 1 y 2 no dependen entre sí. La 6 puede ir después de la 3.
+Las tareas 1, 2 y 3 no dependen entre sí.
 
 ## Checkpoints
 
-- Tras 3: agregas un gasto desde el celular y aparece en la lista.
-- Tras 5: flujo completo (pagar, editar, pausar, eliminar) revisado en el panel a 360 px.
-- Tras 7: deploy en Vercel y prueba en tu celular.
+- Tras 4: registras una tarjeta y una compra a MSI desde el celular.
+- Tras 6: flujo completo revisado en el panel a 360 px.
+- Tras 7: deploy y prueba en tu celular.
 
 ## Riesgos
 
 | Riesgo | Mitigación |
 |---|---|
-| Fechas corridas un día por zona horaria | Fechas como `YYYY-MM-DD` en hora local; nunca `new Date('YYYY-MM-DD')` (se interpreta en UTC) |
-| Pago guardado pero fecha sin avanzar (o al revés) | `writeBatch` para ambas escrituras |
-| Pagos huérfanos al eliminar un gasto | Borrar pagos y gasto en el mismo batch (límite 500 escrituras: suficiente para ~40 años de pagos mensuales) |
-| Doble toque en "Pagar" registra dos pagos | Deshabilitar el botón mientras se guarda |
-| La barra inferior no marca "Gastos" en `/gastos-fijos/:id` | Quitar `end` del NavLink salvo en Inicio; título por prefijo |
+| Saldo negativo por pagar de más o por dos toques | Validar monto ≤ saldo y desactivar "Confirmar" mientras guarda |
+| Saldo desactualizado si pagas desde dos pestañas a la vez | `increment(-monto)` en lugar de escribir el saldo calculado en el cliente |
+| Doble conteo tarjeta + MSI | Nota bajo el campo de saldo de la tarjeta (spec, pregunta 1) |
+| Romper `recurring` al mover `dates.ts` | Tarea separada con su propio commit y los 40 tests como red |
+| Redondeo de cuotas | La última cuota absorbe la diferencia; probado con $1,000 / 3 |
 
 ## Acciones que te pido antes de hacer
 
-Instalar dependencias (no prevemos ninguna), cambiar reglas, cada `git push`, cada deploy.
+Dependencias (no prevemos ninguna), cambios de reglas (no previstos), cada `git push`, cada deploy.
