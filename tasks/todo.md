@@ -20,7 +20,7 @@
   - Verify: `npm run build` pasa; `git status` no lista `.env.local`.
   - Files: `src/firebase.ts`, `.env.example`, `.env.local`, `package.json`
 
-- [ ] 5. Login con Google y guarda de acceso
+- [x] 5. Login con Google y guarda de acceso
   - Acceptance: `AuthProvider` expone el usuario; `RequireAuth` muestra login sin sesión, "Acceso no autorizado" (con botón de salir) si `uid !== VITE_OWNER_UID`, y el contenido si coincide; la pantalla de acceso muestra tu uid para copiarlo.
   - Verify: `npm test` (3 casos de `RequireAuth` con Auth mockeado); login manual en `npm run dev`.
   - Files: `src/auth/AuthProvider.tsx`, `src/auth/RequireAuth.tsx`, `src/auth/RequireAuth.test.tsx`, `src/auth/LoginPage.tsx`, `src/main.tsx`
