@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { useAuth } from '../auth/context'
 import { formatDay, status, today } from '../lib/dates'
-import { formatMXN, toCents } from '../lib/money'
-import { fieldClass } from '../lib/ui'
+import AmountAction from '../lib/AmountAction'
+import { formatMXN } from '../lib/money'
+import Bar from '../lib/ProgressBar'
 import { payCredit, watchCredits, type Credit } from './api'
 import { debtTotal, msiSummary, paymentError } from './calc'
 
@@ -11,15 +12,6 @@ const badges = {
   overdue: { text: 'Vencido', className: 'bg-red-50 text-red-700' },
   soon: { text: 'Pronto', className: 'bg-accent-yellow/35 text-amber-900' },
   ok: null,
-}
-
-function Bar({ value, label }: { value: number; label: string }) {
-  const percent = Math.round(Math.min(Math.max(value, 0), 1) * 100)
-  return (
-    <div role="progressbar" aria-label={label} aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100} className="h-2 overflow-hidden rounded-full bg-zinc-100">
-      <div className="h-full rounded-full bg-primary" style={{ width: `${percent}%` }} />
-    </div>
-  )
 }
 
 function Details({ credit }: { credit: Credit }) {
@@ -48,35 +40,15 @@ function Details({ credit }: { credit: Credit }) {
 }
 
 function PayRow({ uid, credit, badge }: { uid: string; credit: Credit; badge: (typeof badges)[keyof typeof badges] }) {
-  const [amount, setAmount] = useState<string | null>(null) // null = cerrado
-  const [error, setError] = useState('')
-  const [saving, setSaving] = useState(false)
+  const [open, setOpen] = useState(false)
 
-  const suggested = credit.kind === 'card' ? credit.balance : msiSummary(credit).suggested
-
-  async function confirm() {
-    const cents = toCents(amount ?? '')
-    const problem = paymentError(cents, credit.balance)
-    setError(problem)
-    if (problem || !cents) return
-    setSaving(true)
-    try {
-      await payCredit(uid, credit, cents)
-      setAmount(null)
-    } catch {
-      setError('No se pudo registrar el pago. Intenta de nuevo.')
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  if (amount === null) {
+  if (!open) {
     return (
       <div className="mt-3 flex items-center justify-between gap-3">
         {badge ? <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${badge.className}`}>{badge.text}</span> : <span />}
         <button
           type="button"
-          onClick={() => setAmount((suggested / 100).toFixed(2))}
+          onClick={() => setOpen(true)}
           aria-label={`Pagar ${credit.name}`}
           className="min-h-11 rounded-xl bg-primary/10 px-5 text-sm font-medium text-primary transition-transform duration-150 ease-out active:scale-[0.97]"
         >
@@ -86,42 +58,15 @@ function PayRow({ uid, credit, badge }: { uid: string; credit: Credit; badge: (t
     )
   }
 
-  const inputId = `pay-${credit.id}`
   return (
-    <div className="mt-3 rounded-2xl bg-canvas p-3">
-      <label htmlFor={inputId} className="mb-1.5 block text-sm font-medium">Monto a pagar</label>
-      <input
-        id={inputId}
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        inputMode="decimal"
-        autoFocus
-        aria-invalid={!!error}
-        aria-describedby={error ? `${inputId}-error` : undefined}
-        className={fieldClass}
-      />
-      {error && <p id={`${inputId}-error`} className="mt-1 text-sm text-red-700">{error}</p>}
-      <div className="mt-3 grid grid-cols-2 gap-2">
-        <button
-          type="button"
-          onClick={() => {
-            setAmount(null)
-            setError('')
-          }}
-          className="min-h-11 rounded-xl bg-white text-sm font-medium active:scale-[0.97]"
-        >
-          Cancelar
-        </button>
-        <button
-          type="button"
-          onClick={confirm}
-          disabled={saving}
-          className="min-h-11 rounded-xl bg-primary text-sm font-medium text-white transition-transform duration-150 ease-out active:scale-[0.97] disabled:opacity-60"
-        >
-          {saving ? 'Guardando…' : 'Confirmar'}
-        </button>
-      </div>
-    </div>
+    <AmountAction
+      id={`pay-${credit.id}`}
+      label="Monto a pagar"
+      initialCents={credit.kind === 'card' ? credit.balance : msiSummary(credit).suggested}
+      validate={(cents) => paymentError(cents, credit.balance)}
+      onConfirm={(cents) => payCredit(uid, credit, cents)}
+      onDone={() => setOpen(false)}
+    />
   )
 }
 
