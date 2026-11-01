@@ -39,7 +39,7 @@ export const sections = [
     path: '/inversiones',
     label: 'Inversiones',
     title: 'Inversiones',
-    empty: 'Pronto podrás registrar tus inversiones y su valor actual.',
+    empty: 'Estamos trabajando en esto.',
     icon: icon(<path d="m3 17 6-6 4 4 8-8M15 7h6v6" />),
   },
 ]

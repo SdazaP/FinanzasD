@@ -9,7 +9,7 @@ Stack: React + Vite, Firebase (Auth + Firestore), hosting en Vercel, repo en Git
 | `recurring` | Gastos fijos y suscripciones (campo `tipo`): monto, frecuencia, próximo pago, activo | core |
 | `credits` | Créditos: saldo, cuota, tasa, plazo, fechas de pago, registro de pagos | core |
 | `savings` | Metas de ahorro y aportes | core |
-| `investments` | Inversiones: aportado, valor actual (manual), ganancia/pérdida | core |
+| `investments` | **Pospuesto.** Inversiones: aportado, valor actual (manual), ganancia/pérdida. Hoy la sección muestra "Estamos trabajando en esto." | core |
 | `dashboard` | Resumen del mes y próximos vencimientos | recurring, credits, savings, investments |
 
 Orden de construcción: core → recurring, credits, savings, investments (cualquier orden) → dashboard
