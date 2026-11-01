@@ -1,41 +1,35 @@
-# Plan: savings
+# Plan: dashboard
 
-Implementa `SPEC-savings.md`. Tareas en `tasks/todo.md`. (Los planes de `core`, `recurring` y `credits` están completos; quedan en el historial de git.)
+Implementa `SPEC-dashboard.md`. Tareas en `tasks/todo.md`. (Los planes de los módulos anteriores están completos; quedan en el historial de git. `investments` está pospuesto.)
 
 ## Componentes y dependencias
 
 ```
-AmountAction (extraído de credits) ─┐
-calc.ts (puro) ─────────────────────┼─→ api + lista + alta ─→ aportar / retirar ─→ detalle (historial que revierte) ─→ reglas, revisión y deploy
-SavingForm ─────────────────────────┘
+calc.ts (puro, reutiliza cálculos de recurring / credits / savings) ─┐
+api.ts (pagos del mes por elemento) ─────────────────────────────────┼─→ Dashboard en "/" ─→ revisión y deploy
+watchers existentes (recurring, credits, savings) ───────────────────┘
 ```
 
 ## Orden
 
-1. Extraer `AmountAction` de `credits/CreditList.tsx` a `src/lib`; créditos sigue en verde.
-2. `calc.ts`: meses restantes, resumen de meta, total y validación del movimiento (TDD).
-3. `SavingForm` con objetivo y fecha opcionales (TDD).
-4. Capa `api.ts` (alta con movimiento "Saldo inicial"), rutas y lista con total, progreso y sugerencia.
-5. Aportar y retirar con `AmountAction`.
-6. Detalle: editar, historial con borrado que revierte el saldo y eliminar.
-7. Tests de reglas, revisión a 360 px con datos extremos y deploy.
-
-Las tareas 1, 2 y 3 no dependen entre sí.
+1. `calc.ts`: rango del mes, próximos pagos y compromisos del mes (TDD).
+2. `api.ts` + `Dashboard.tsx`: secciones, estados de carga, error y vacío, y enlaces. Reemplaza el placeholder de `/`.
+3. Revisión a 360 px con tus datos y deploy.
 
 ## Checkpoints
 
-- Tras 4: creas un apartado con meta desde el celular.
-- Tras 6: flujo completo revisado en el panel.
-- Tras 7: deploy y prueba en tu celular.
+- Tras 2: revisas Inicio en el panel con tus datos reales.
+- Tras 3: deploy y prueba en tu celular.
 
 ## Riesgos
 
 | Riesgo | Mitigación |
 |---|---|
-| Saldo negativo por retiro o por borrar un aporte | Validar en cliente con el saldo actual; borrar movimiento usa `increment` inverso y se bloquea si dejaría el saldo < 0 |
-| Sugerencia mal calculada en cambio de año | Tests con oct → ene del año siguiente |
-| Romper créditos al extraer `AmountAction` | Tarea separada, con sus tests como red |
+| Doble conteo: algo pagado este mes también aparece como pendiente | Pendiente usa `nextDue` (que ya avanzó al pagar); test específico |
+| Muchas suscripciones a Firestore (una por elemento) | Aceptable con decenas de elementos; `shortcut:` en el código si crece |
+| Mes con fechas de fin de mes (28–31) | Tests de `monthRange` |
+| El placeholder de Inicio y su test dejan de existir | Actualizar `App.test.tsx` y `SectionPage` |
 
 ## Acciones que te pido antes de hacer
 
-Dependencias (no prevemos ninguna), cambios de reglas (no previstos), cada `git push`, cada deploy.
+Dependencias (no prevemos ninguna), cambios de reglas o índices (no previstos), cada `git push`, cada deploy.
