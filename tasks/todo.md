@@ -1,35 +1,44 @@
-# Tareas: paid-status
+# Tareas: spending
 
 (Las tareas anteriores están completas; ver historial de git.)
 
-- [x] 1. Regla `monthStatus`
-  - Acceptance: `due` si `nextDue ≤ fin de mes` (incluye vencidos); `paid` si no y hay pago del periodo; `later` si no hay pago; casos de último día del mes y diciembre a enero.
+- [ ] 1. Categorías compartidas
+  - Acceptance: `src/lib/categories.ts` con `categoryError(name, existing)` y `mergeCategories(custom, defaults)`; gastos fijos las usa con sus defaults; sin cambios de comportamiento.
+  - Verify: `npm test` (gastos fijos en verde).
+  - Files: `src/lib/categories.ts`, `src/lib/categories.test.ts`, `src/recurring/categories.ts`, `src/recurring/categories.test.ts`, `src/recurring/useCategories.ts`, `src/recurring/RecurringForm.tsx`
+
+- [ ] 2. Cálculos de hormiga
+  - Acceptance: `groupByDay` con "Hoy" / "Ayer" / fecha y subtotal; `totalsByCategory` de mayor a menor; `capSummary` sin tope, por debajo, exacto y excedido.
   - Verify: `npm test`
-  - Files: `src/lib/monthStatus.ts`, `src/lib/monthStatus.test.ts`
+  - Files: `src/spending/calc.ts`, `src/spending/calc.test.ts`
 
-- [x] 2. Pagos del periodo
+- [ ] 3. API y registro rápido
   - Acceptance:
-    - `src/lib/periodPayments.ts` con `watchMonthPayments` (movido de Inicio) y `watchPeriodPayments`, que devuelve `{ amount, lastPaidAt }` de los pagos con `dueDate` en el mes.
-    - `usePeriodPayments(uid, col, ids, today)` devuelve un mapa por id y si ya cargó.
-    - Inicio importa desde `src/lib`.
-  - Verify: `npm test` (Inicio en verde).
-  - Files: `src/lib/periodPayments.ts`, `src/lib/usePeriodPayments.ts`, `src/dashboard/api.ts` (se elimina), `src/dashboard/Dashboard.tsx`, `src/dashboard/Dashboard.test.tsx`, `src/App.test.tsx`
-
-- [x] 3. Gastos fijos por estado del mes
-  - Acceptance:
-    - Secciones Por pagar (con Pagar), Pagado este mes ("Pagado el …" y monto) y Más adelante ("Vence el …"), y Pausados al final.
-    - Tras pagar, el elemento pasa a Pagado este mes.
+    - `api.ts` con `watchMonthSpending` (rango del mes, orden cliente), `addSpending`, categorías propias y tope.
+    - `QuickAdd`: monto (> 0), chips de categoría con "+ Nueva", nota opcional (≤ 80), fecha (hoy por defecto, no futura).
+    - Al guardar se limpia y conserva la categoría; un solo guardado con doble toque.
   - Verify: `npm test`
-  - Files: `src/recurring/RecurringList.tsx`, `src/recurring/RecurringList.test.tsx`
+  - Files: `src/spending/api.ts`, `src/spending/QuickAdd.tsx`, `src/spending/QuickAdd.test.tsx`, `src/spending/useSpendingCategories.ts`
 
-- [x] 4. Créditos por estado del mes
+- [ ] 4. Pantalla de hormiga
   - Acceptance:
-    - Las mismas tres secciones para tarjetas y MSI con saldo, y Liquidados al final.
-    - Dos abonos del periodo se suman.
-  - Verify: `npm test`
-  - Files: `src/credits/CreditList.tsx`, `src/credits/CreditList.test.tsx`
+    - `/gastos-hormiga` con el selector Fijos | Hormiga (también en `/gastos-fijos`).
+    - Título "Gastos hormiga" y "Gastos" activo en la barra.
+    - Tarjeta del mes con total, cantidad, barra del tope y "Definir tope".
+    - Lista por día con subtotales; resumen por categoría colapsable; estado vacío.
+  - Verify: `npm test && npm run build`; registro en el panel y en tu celular.
+  - Files: `src/spending/SpendingList.tsx`, `src/spending/SpendingList.test.tsx`, `src/layout/GastosTabs.tsx`, `src/recurring/RecurringList.tsx`, `src/App.tsx`, `src/sections.tsx`, `src/layout/AppLayout.tsx`
 
-- [x] 5. Revisión y deploy
-  - Acceptance: a 360 px con tus datos, sin desbordes; pagar algo lo mueve a Pagado este mes; deploy con tu permiso.
-  - Verify: `npm run lint && npm test && npm run build`; prueba en tu celular.
-  - Files: ajustes según la revisión
+- [ ] 5. Detalle
+  - Acceptance: `/gastos-hormiga/:id` edita monto, categoría, nota y fecha, y elimina con confirmación; un id inexistente vuelve a la lista.
+  - Verify: `npm test`
+  - Files: `src/spending/SpendingDetail.tsx`, `src/spending/SpendingDetail.test.tsx`, `src/spending/api.ts`, `src/App.tsx`
+
+- [ ] 6. Inicio, reglas, revisión y deploy
+  - Acceptance:
+    - Fila "Gastos hormiga del mes" en Tus saldos.
+    - Tests de reglas para `spending`, `spendingCategories` y `settings`.
+    - Revisión a 360 px con 30 gastos, nota larga, sin tope y tope excedido.
+    - Deploy con tu permiso.
+  - Verify: `npm run lint && npm test && npm run test:rules && npm run build`; prueba en tu celular.
+  - Files: `src/dashboard/Dashboard.tsx`, `src/dashboard/Dashboard.test.tsx`, `tests/rules/firestore.test.ts`
