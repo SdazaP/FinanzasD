@@ -18,8 +18,8 @@ Orden de construcción: core → recurring, credits, savings, investments (cualq
 
 | Módulo | Estado | Responsabilidad | Depende de |
 |---|---|---|---|
-| `month-context` | Pendiente | Encabezado con el mes en curso y la fecha de hoy en todas las secciones | core |
-| `paid-status` | Pendiente | Gastos fijos y créditos agrupados en "Por pagar" y "Pagado este mes"; "Pagar" solo si falta pagar este mes | recurring, credits |
+| `month-context` | Listo | Encabezado con el mes en curso y la fecha de hoy en todas las secciones | core |
+| `paid-status` | Listo | Gastos fijos y créditos agrupados en "Por pagar" y "Pagado este mes"; "Pagar" solo si falta pagar este mes | recurring, credits |
 | `spending` | Pendiente | Gastos discrecionales/hormiga: monto, fecha, categoría, nota; total del mes y tope mensual opcional; sin botón Pagar | core |
 | `money` | Pendiente | Cuentas con saldo e ingresos del mes; pagos, gastos hormiga y aportes a ahorro restan de una cuenta; disponible total y "te queda este mes" (ingresos − pagado y gastado − pendiente) | recurring, credits, savings, spending |
 | `alerts` | Pendiente | Avisos: disponible negativo, tope de gastos hormiga (80% y 100%), gastos sobre un % del ingreso; Inicio muestra el disponible | money, spending, dashboard |

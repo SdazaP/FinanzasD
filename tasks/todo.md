@@ -29,7 +29,7 @@
   - Verify: `npm test`
   - Files: `src/credits/CreditList.tsx`, `src/credits/CreditList.test.tsx`
 
-- [ ] 5. Revisión y deploy
+- [x] 5. Revisión y deploy
   - Acceptance: a 360 px con tus datos, sin desbordes; pagar algo lo mueve a Pagado este mes; deploy con tu permiso.
   - Verify: `npm run lint && npm test && npm run build`; prueba en tu celular.
   - Files: ajustes según la revisión
