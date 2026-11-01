@@ -1,6 +1,8 @@
 export type AccountType = 'debit' | 'cash' | 'other'
 export type Account = { id: string; name: string; type: AccountType; balance: number }
 
+export const accountTypes: [AccountType, string][] = [['debit', 'Débito'], ['cash', 'Efectivo'], ['other', 'Otra']]
+
 // Un movimiento de cualquier módulo visto desde una cuenta: monto con signo (+ entra, − sale)
 export type ActivityEntry = { id: string; label: string; amount: number; date: string; accountId?: string }
 

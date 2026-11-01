@@ -3,13 +3,13 @@ import { Link } from 'react-router'
 import { useAuth } from '../auth/context'
 import { watchCredits, type Credit } from '../credits/api'
 import { debtTotal } from '../credits/calc'
-import { formatDay, monthlyTotal, status, today } from '../lib/dates'
+import { formatDay, monthlyTotal, status } from '../lib/dates'
 import { formatMXN } from '../lib/money'
 import ProgressBar from '../lib/ProgressBar'
 import { watchRecurring, type Recurring } from '../recurring/api'
 import { watchSavings, type Saving } from '../savings/api'
 import { goalSummary, totalSaved } from '../savings/calc'
-import { watchMonthPayments } from '../lib/periodPayments'
+import { usePaidThisMonth } from '../lib/usePaidThisMonth'
 import { useToday } from '../lib/useToday'
 import { watchMonthSpending } from '../spending/api'
 import type { Spending } from '../spending/calc'
@@ -30,26 +30,6 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
       {children}
     </section>
   )
-}
-
-// Suma lo pagado este mes en todos los gastos fijos y créditos (una suscripción por elemento)
-function usePaidThisMonth(uid: string, recurring?: Recurring[], credits?: Credit[]) {
-  const [paid, setPaid] = useState<Record<string, number>>({})
-  const keys = [...(recurring ?? []).map((r) => `recurring/${r.id}`), ...(credits ?? []).map((c) => `credits/${c.id}`)]
-  const keyList = keys.join(',')
-
-  useEffect(() => {
-    if (!keyList) return
-    const [from] = monthRange(today())
-    const [y, m] = from.split('-').map(Number)
-    const unsubscribes = keyList.split(',').map((key) => {
-      const [col, id] = key.split('/') as ['recurring' | 'credits', string]
-      return watchMonthPayments(uid, col, id, new Date(y, m - 1, 1), new Date(y, m, 1), (sum) => setPaid((p) => ({ ...p, [key]: sum })))
-    })
-    return () => unsubscribes.forEach((u) => u())
-  }, [uid, keyList])
-
-  return keys.reduce((sum, key) => sum + (paid[key] ?? 0), 0)
 }
 
 export default function Dashboard() {
@@ -77,7 +57,7 @@ export default function Dashboard() {
     [uid, monthStart, monthEnd],
   )
 
-  const paid = usePaidThisMonth(uid, recurring, credits)
+  const paid = usePaidThisMonth(uid, (recurring ?? []).map((r) => r.id), (credits ?? []).map((c) => c.id), now)
 
   const sources = ['gastos fijos', 'créditos', 'ahorro', 'gastos hormiga']
   const loading = [recurring, credits, savings, spending].some((x, i) => !x && !failed.includes(sources[i]))

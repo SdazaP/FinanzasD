@@ -40,10 +40,20 @@ export const sections: Section[] = [
     icon: icon(<><circle cx="12" cy="12" r="9" /><path d="M12 7v10M14.8 9.5c-.5-.9-1.5-1.3-2.8-1.3-1.6 0-2.8.8-2.8 1.9s1.2 1.6 2.8 1.9 2.8.8 2.8 1.9-1.2 1.9-2.8 1.9c-1.3 0-2.3-.4-2.8-1.3" /></>),
   },
   {
-    path: '/inversiones',
-    label: 'Inversiones',
-    title: 'Inversiones',
-    empty: 'Estamos trabajando en esto.',
-    icon: icon(<path d="m3 17 6-6 4 4 8-8M15 7h6v6" />),
+    path: '/cuentas',
+    label: 'Cuentas',
+    title: 'Cuentas',
+    empty: '',
+    // Inversiones está pospuesta: salió de la barra pero sigue accesible por su URL
+    also: { '/inversiones': 'Inversiones' },
+    icon: icon(<><rect x="3" y="6" width="18" height="14" rx="2" /><path d="M3 10h18M16 15h2M7 6V4h10v2" /></>),
   },
 ]
+
+export const investmentsSection: Section = {
+  path: '/inversiones',
+  label: 'Inversiones',
+  title: 'Inversiones',
+  empty: 'Estamos trabajando en esto.',
+  icon: icon(<path d="m3 17 6-6 4 4 8-8M15 7h6v6" />),
+}

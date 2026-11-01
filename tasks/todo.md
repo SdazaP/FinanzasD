@@ -2,7 +2,7 @@
 
 (Las tareas anteriores están completas; ver historial de git.)
 
-- [ ] 1. Cálculos de dinero
+- [x] 1. Cálculos de dinero
   - Acceptance:
     - `availableTotal` suma saldos (incluye negativos).
     - `leftThisMonth({ incomes, paid, spent, savedNet, pending })` aplica la fórmula.
@@ -11,7 +11,7 @@
   - Verify: `npm test`
   - Files: `src/money/calc.ts`, `src/money/calc.test.ts`
 
-- [ ] 2. API, cuentas y selector
+- [x] 2. API, cuentas y selector
   - Acceptance:
     - `api.ts`: `watchAccounts`, `addAccount` (la primera queda predeterminada), `updateAccount`, `deleteAccount`, `setDefaultAccount`, `adjustBalance` (ajuste + `increment` en batch), `addIncome` / `updateIncome` / `deleteIncome` (con `increment` y corrección entre cuentas), `watchMonthIncomes`.
     - `useAccounts` devuelve cuentas y predeterminada.
@@ -19,7 +19,7 @@
   - Verify: `npm test`
   - Files: `src/money/api.ts`, `src/money/useAccounts.ts`, `src/money/AccountPicker.tsx`, `src/money/AccountPicker.test.tsx`
 
-- [ ] 3. Pantalla Cuentas
+- [x] 3. Pantalla Cuentas
   - Acceptance:
     - `/cuentas` reemplaza a Inversiones en la barra (Inversiones sigue por URL).
     - Tarjeta con disponible total y te queda este mes; lista de cuentas con la predeterminada marcada; ingresos del mes con "Repetir".

@@ -11,7 +11,9 @@ import RecurringNew from './recurring/RecurringNew'
 import SavingDetail from './savings/SavingDetail'
 import SavingList from './savings/SavingList'
 import SavingNew from './savings/SavingNew'
-import { sections } from './sections'
+import AccountNew from './money/AccountNew'
+import AccountsPage from './money/AccountsPage'
+import { investmentsSection } from './sections'
 import SpendingDetail from './spending/SpendingDetail'
 import SpendingList from './spending/SpendingList'
 
@@ -19,11 +21,6 @@ export default function App() {
   return (
     <Routes>
       <Route element={<AppLayout />}>
-        {sections
-          .filter((s) => !['/', '/gastos-fijos', '/creditos', '/ahorro'].includes(s.path))
-          .map((s) => (
-            <Route key={s.path} path={s.path} element={<SectionPage section={s} />} />
-          ))}
         <Route path="/" element={<Dashboard />} />
         <Route path="/gastos-fijos" element={<RecurringList />} />
         <Route path="/gastos-fijos/nuevo" element={<RecurringNew />} />
@@ -36,6 +33,9 @@ export default function App() {
         <Route path="/ahorro" element={<SavingList />} />
         <Route path="/ahorro/nuevo" element={<SavingNew />} />
         <Route path="/ahorro/:id" element={<SavingDetail />} />
+        <Route path="/cuentas" element={<AccountsPage />} />
+        <Route path="/cuentas/nueva" element={<AccountNew />} />
+        <Route path="/inversiones" element={<SectionPage section={investmentsSection} />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

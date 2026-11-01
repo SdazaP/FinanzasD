@@ -1,5 +1,5 @@
 import {
-  collection, deleteField, doc, getDocs, increment, onSnapshot, orderBy, query, serverTimestamp, updateDoc, writeBatch,
+  collection, deleteField, doc, getDocs, increment, onSnapshot, orderBy, query, serverTimestamp, updateDoc, where, writeBatch,
 } from 'firebase/firestore'
 import { db } from '../firebase'
 import { today } from '../lib/dates'
@@ -24,6 +24,15 @@ export function watchSavings(uid: string, onData: (items: Saving[]) => void, onE
 // null = el apartado no existe (o se acaba de eliminar)
 export function watchSaving(uid: string, id: string, onData: (saving: Saving | null) => void, onError: (e: Error) => void) {
   return onSnapshot(savingDoc(uid, id), (snap) => onData(snap.exists() ? ({ id: snap.id, ...snap.data() } as Saving) : null), onError)
+}
+
+// Movimientos de un apartado con fecha en el rango (para el ahorro neto del mes)
+export function watchMonthMovements(uid: string, id: string, from: string, to: string, onData: (movements: Movement[]) => void) {
+  return onSnapshot(
+    query(movementsCol(uid, id), where('date', '>=', from), where('date', '<=', to)),
+    (snap) => onData(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Movement)),
+    () => onData([]),
+  )
 }
 
 export function watchMovements(uid: string, id: string, onData: (movements: Movement[]) => void, onError: (e: Error) => void) {
