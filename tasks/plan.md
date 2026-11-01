@@ -1,20 +1,25 @@
-# Plan: month-context
+# Plan: paid-status
 
-Implementa `SPEC-month-context.md`. Tareas en `tasks/todo.md`. (Los planes anteriores están en el historial de git.)
+Implementa `SPEC-paid-status.md`. Tareas en `tasks/todo.md`. (Los planes anteriores están en el historial de git.)
 
 ## Orden
 
-1. Formatos `formatMonthLabel` y `formatLongDate` en `src/lib/dates.ts` (TDD).
-2. Hook `useToday`, que se actualiza a medianoche y al volver al primer plano (TDD con timers simulados).
-3. Encabezado de `AppLayout` con la fecha en la línea del saludo y la píldora del mes; revisión a 360 px; deploy.
+1. `monthStatus` puro (TDD).
+2. Mover `watchMonthPayments` a `src/lib/periodPayments.ts`, agregar `watchPeriodPayments` (por `dueDate`) y el hook `usePeriodPayments`. Inicio sigue en verde.
+3. Gastos fijos agrupados en Por pagar, Pagado este mes y Más adelante.
+4. Créditos agrupados igual.
+5. Revisión a 360 px con tus datos y deploy.
+
+Las tareas 3 y 4 son independientes una vez hecha la 2.
 
 ## Riesgos
 
 | Riesgo | Mitigación |
 |---|---|
-| Timer de medianoche que se pierde con la pantalla bloqueada (el navegador congela timers) | También recalcular en `visibilitychange` y `focus` |
-| Encabezado que se desborda con nombre largo | `truncate` en la línea del saludo y píldora con `shrink-0` |
-| Fuga de timers o listeners al desmontar | Limpiar en el `return` del efecto; test |
+| Un elemento parpadea entre secciones mientras cargan los pagos del mes | No mostrar "Más adelante" ni "Pagado" hasta que llegue la consulta de ese elemento; mientras, se queda en su grupo por `nextDue` |
+| Romper Inicio al mover `watchMonthPayments` | Tarea separada y tests de Inicio como red |
+| Pago de un periodo atrasado tomado como pago del mes | Se usa `dueDate` del pago (periodo), con un test específico |
+| Muchas suscripciones | Igual que en Inicio, aceptable con decenas; `shortcut:` ya documentado |
 
 ## Acciones que te pido antes de hacer
 
