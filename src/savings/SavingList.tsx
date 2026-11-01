@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { useAuth } from '../auth/context'
 import { today } from '../lib/dates'
+import AmountAction from '../lib/AmountAction'
 import { formatMXN } from '../lib/money'
 import ProgressBar from '../lib/ProgressBar'
-import { watchSavings, type Saving } from './api'
-import { goalSummary, totalSaved } from './calc'
+import { moveSaving, watchSavings, type MovementType, type Saving } from './api'
+import { goalSummary, movementError, totalSaved } from './calc'
 
 const monthYear = new Intl.DateTimeFormat('es-MX', { month: 'long', year: 'numeric' })
 const formatMonth = (date: string) => {
@@ -30,6 +31,37 @@ function Goal({ saving, now }: { saving: Saving; now: string }) {
           Ahorra {formatMXN(goal.monthly)} al mes hasta {formatMonth(saving.deadline!)}
         </p>
       )}
+    </div>
+  )
+}
+
+const actionButton = 'min-h-11 rounded-xl px-5 text-sm font-medium transition-transform duration-150 ease-out active:scale-[0.97]'
+
+function Movements({ uid, saving }: { uid: string; saving: Saving }) {
+  const [open, setOpen] = useState<MovementType | null>(null)
+
+  if (open) {
+    return (
+      <AmountAction
+        id={`${open}-${saving.id}`}
+        label={open === 'deposit' ? 'Monto a aportar' : 'Monto a retirar'}
+        validate={(cents) => movementError(cents, open, saving.balance)}
+        onConfirm={(cents) => moveSaving(uid, saving, open, cents)}
+        onDone={() => setOpen(null)}
+      />
+    )
+  }
+
+  return (
+    <div className="mt-3 flex justify-end gap-2">
+      {saving.balance > 0 && (
+        <button type="button" onClick={() => setOpen('withdrawal')} aria-label={`Retirar de ${saving.name}`} className={`${actionButton} bg-zinc-100`}>
+          Retirar
+        </button>
+      )}
+      <button type="button" onClick={() => setOpen('deposit')} aria-label={`Aportar a ${saving.name}`} className={`${actionButton} bg-primary/10 text-primary`}>
+        Aportar
+      </button>
     </div>
   )
 }
@@ -76,6 +108,7 @@ export default function SavingList() {
                 </div>
                 <Goal saving={saving} now={now} />
               </Link>
+              <Movements uid={uid} saving={saving} />
             </li>
           ))}
         </ul>

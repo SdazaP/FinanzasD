@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import type { User } from 'firebase/auth'
 import { MemoryRouter } from 'react-router'
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
@@ -50,4 +50,34 @@ test('muestra el total, el progreso y la sugerencia mensual', () => {
   expect(within(card('Emergencias')).queryByRole('progressbar')).not.toBeInTheDocument()
   expect(within(card('Coche')).getByText(/Meta alcanzada/)).toBeInTheDocument()
   expect(within(card('Pantalla')).getByText('La fecha ya pasó')).toBeInTheDocument()
+})
+
+test('aportar guarda un depósito una sola vez', async () => {
+  let finish!: () => void
+  api.moveSaving.mockReturnValue(new Promise<void>((ok) => (finish = ok)))
+  renderList()
+
+  fireEvent.click(screen.getByRole('button', { name: 'Aportar a Viaje' }))
+  fireEvent.change(screen.getByLabelText('Monto a aportar'), { target: { value: '2,000' } })
+  const confirm = screen.getByRole('button', { name: 'Confirmar' })
+  fireEvent.click(confirm)
+  fireEvent.click(confirm)
+
+  expect(api.moveSaving).toHaveBeenCalledTimes(1)
+  expect(api.moveSaving).toHaveBeenCalledWith('owner', savings[0], 'deposit', 200000)
+  finish()
+  await vi.waitFor(() => expect(screen.queryByLabelText('Monto a aportar')).not.toBeInTheDocument())
+})
+
+test('retirar más del saldo se rechaza y sin saldo no hay botón de retirar', () => {
+  api.watchSavings.mockImplementation((_uid, onData) => (onData([...savings, { id: 'z', name: 'Vacío', balance: 0 }]), () => {}))
+  renderList()
+
+  fireEvent.click(screen.getByRole('button', { name: 'Retirar de Emergencias' }))
+  fireEvent.change(screen.getByLabelText('Monto a retirar'), { target: { value: '6000' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Confirmar' }))
+  expect(screen.getByText('No puedes retirar más del saldo ($5,000.00).')).toBeInTheDocument()
+  expect(api.moveSaving).not.toHaveBeenCalled()
+
+  expect(screen.queryByRole('button', { name: 'Retirar de Vacío' })).not.toBeInTheDocument()
 })

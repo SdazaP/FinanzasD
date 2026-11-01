@@ -34,7 +34,7 @@
   - Verify: `npm test && npm run build`; alta en el panel y en tu celular.
   - Files: `src/savings/api.ts`, `src/savings/SavingList.tsx`, `src/savings/SavingList.test.tsx`, `src/savings/SavingNew.tsx`, `src/App.tsx`
 
-- [ ] 5. Aportar y retirar
+- [x] 5. Aportar y retirar
   - Acceptance:
     - Botones "Aportar" y "Retirar" (este último solo si el saldo es > 0) con `AmountAction`.
     - Un batch guarda el movimiento y aplica `increment(±monto)`.
