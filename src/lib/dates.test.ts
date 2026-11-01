@@ -1,5 +1,14 @@
 import { describe, expect, test } from 'vitest'
-import { addDays, monthlyTotal, nextDueAfter, status, today } from './dates'
+import { addDays, formatLongDate, formatMonthLabel, monthlyTotal, nextDueAfter, status, today } from './dates'
+
+test.each([
+  ['2026-11-01', 'Noviembre 2026', 'domingo, 1 de noviembre'],
+  ['2026-12-31', 'Diciembre 2026', 'jueves, 31 de diciembre'],
+  ['2027-01-02', 'Enero 2027', 'sábado, 2 de enero'],
+])('%s → %s / %s', (date, month, long) => {
+  expect(formatMonthLabel(date)).toBe(month)
+  expect(formatLongDate(date)).toBe(long)
+})
 
 describe('nextDueAfter', () => {
   test.each([

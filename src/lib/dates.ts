@@ -31,5 +31,21 @@ export function formatDay(date: string, withYear = false) {
   return (withYear ? dayMonthYear : dayMonth).format(new Date(y, m - 1, d))
 }
 
+const monthName = new Intl.DateTimeFormat('es-MX', { month: 'long' })
+const longDate = new Intl.DateTimeFormat('es-MX', { weekday: 'long', day: 'numeric', month: 'long' })
+
+// 'Noviembre 2026' (Intl daría 'noviembre de 2026')
+export function formatMonthLabel(date: string) {
+  const [y, m] = parse(date)
+  const name = monthName.format(new Date(y, m - 1, 1))
+  return `${name[0].toUpperCase()}${name.slice(1)} ${y}`
+}
+
+// 'domingo, 1 de noviembre'
+export function formatLongDate(date: string) {
+  const [y, m, d] = parse(date)
+  return longDate.format(new Date(y, m - 1, d))
+}
+
 export const monthlyTotal = (items: { amount: number; active: boolean }[]) =>
   items.reduce((sum, item) => (item.active ? sum + item.amount : sum), 0)
