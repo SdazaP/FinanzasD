@@ -1,46 +1,44 @@
-# Plan: core
+# Plan: recurring
 
-Implementa `SPEC-core.md`. Tareas en `tasks/todo.md`.
+Implementa `SPEC-recurring.md`. Tareas en `tasks/todo.md`. (El plan de `core` está completo; queda en el historial de git.)
 
 ## Componentes y dependencias
 
 ```
-git + repo ─→ scaffold (Vite/TS/Tailwind/Vitest/ESLint) ─┬─→ money.ts
-                                                          ├─→ Firebase (proyecto + firebase.ts) ─→ auth ─→ reglas + tests ─┐
-                                                          └─→ layout + router + páginas ─────────────────────────────────────┴─→ Vercel
+dates.ts (puro) ──┐
+                  ├─→ api.ts + lista + alta ─→ pagar + estados + total ─→ detalle (editar, pausar, eliminar, historial) ─┐
+RecurringForm ────┘                                                                                                      ├─→ verificación y deploy
+categorías por defecto ─────────────────────────────────────→ categorías propias ───────────────────────────────────────┘
 ```
 
 ## Orden
 
-1. Git: conectar la carpeta al repo de GitHub y commitear las specs.
-2. Scaffold del proyecto con todas las herramientas de verificación.
-3. `money.ts` (sin dependencias de Firebase).
-4. Proyecto Firebase vía MCP + `firebase.ts` + variables de entorno.
-5. Login con Google + `RequireAuth`. Aquí obtenemos tu uid.
-6. Reglas de Firestore con tests en emulador; desplegarlas.
-7. Layout móvil, router y las 5 páginas placeholder.
-8. Deploy en Vercel y verificación final de los criterios de éxito.
+1. Lógica de fechas y totales, sin Firestore (TDD).
+2. Formulario con validación y categorías por defecto, sin Firestore (TDD).
+3. Capa `api.ts`, rutas y lista con alta: primer corte vertical que guarda en Firestore real.
+4. Pagar, etiquetas Vencido/Pronto y tarjeta del total.
+5. Detalle: editar, pausar/reactivar, eliminar con sus pagos, historial y borrar pago.
+6. Categorías propias creadas desde el formulario.
+7. Tests de reglas para `payments` y `categories`, revisión visual con datos extremos y deploy.
 
-Las tareas 3 y 7 no dependen de Firebase y pueden adelantarse si el paso 4 se bloquea.
+Las tareas 1 y 2 no dependen entre sí. La 6 puede ir después de la 3.
 
-## Checkpoints (paro y te muestro)
+## Checkpoints
 
-- Tras 2: `npm run dev` abre la app; lint, test y build en verde.
-- Tras 5: inicias sesión y me pasas el uid que muestra la app.
-- Tras 6: tests de reglas en verde; despliegue de reglas con tu permiso.
-- Tras 8: revisas la URL de Vercel en el celular.
+- Tras 3: agregas un gasto desde el celular y aparece en la lista.
+- Tras 5: flujo completo (pagar, editar, pausar, eliminar) revisado en el panel a 360 px.
+- Tras 7: deploy en Vercel y prueba en tu celular.
 
 ## Riesgos
 
 | Riesgo | Mitigación |
 |---|---|
-| El MCP de Firebase no carga en la sesión | Crear proyecto y app web en la consola; tú me pasas la config |
-| Login con Google falla en Vercel (`auth/unauthorized-domain`) | Agregar el dominio de Vercel en Firebase Auth → dominios autorizados |
-| Popup de Google bloqueado en iOS Safari | Usar `signInWithRedirect` en móvil si `signInWithPopup` falla |
-| Emulador de Firestore requiere Java | Java 25 ya instalado |
-| `.env.local` llega a GitHub | `.gitignore` desde el primer commit; revisar `git status` antes de cada push |
-| Conflicto con el `README.md` del repo | `git pull origin main` antes del primer commit local |
+| Fechas corridas un día por zona horaria | Fechas como `YYYY-MM-DD` en hora local; nunca `new Date('YYYY-MM-DD')` (se interpreta en UTC) |
+| Pago guardado pero fecha sin avanzar (o al revés) | `writeBatch` para ambas escrituras |
+| Pagos huérfanos al eliminar un gasto | Borrar pagos y gasto en el mismo batch (límite 500 escrituras: suficiente para ~40 años de pagos mensuales) |
+| Doble toque en "Pagar" registra dos pagos | Deshabilitar el botón mientras se guarda |
+| La barra inferior no marca "Gastos" en `/gastos-fijos/:id` | Quitar `end` del NavLink salvo en Inicio; título por prefijo |
 
 ## Acciones que te pido antes de hacer
 
-Crear el proyecto de Firebase, instalar dependencias, cada `git push`, desplegar reglas, conectar Vercel.
+Instalar dependencias (no prevemos ninguna), cambiar reglas, cada `git push`, cada deploy.

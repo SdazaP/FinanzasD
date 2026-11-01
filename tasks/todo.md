@@ -1,41 +1,38 @@
-# Tareas: core
+# Tareas: recurring
 
-- [x] 1. Conectar con GitHub y commitear specs
-  - Acceptance: `git init`, remoto `origin` = `https://github.com/SdazaP/FinanzasD.git`, `main` trae el README remoto; `.gitignore` (node_modules, dist, .env*.local, emulador); commit `docs: add capability map and core spec`; push con tu permiso.
-  - Verify: `git log --oneline` muestra el commit del README y el de las specs; `git status` limpio.
-  - Files: `.gitignore`, `CAPABILITY-MAP.md`, `SPEC-core.md`, `tasks/*`
+(Las 8 tareas de `core` están completas; ver historial de git.)
 
-- [x] 2. Scaffold: Vite + React + TS + Tailwind + Vitest + oxlint
-  - Acceptance: plantilla `react-ts` de Vite, Tailwind v4 con `@tailwindcss/vite`, Vitest + Testing Library con entorno jsdom, scripts `dev/build/lint/test`; página de inicio con un texto estilado por Tailwind y un test que la renderiza.
-  - Verify: `npm run lint && npm test && npm run build` pasan; `npm run dev` muestra la página.
-  - Files: `package.json`, `vite.config.ts`, `src/index.css`, `src/App.tsx`, `src/App.test.tsx` (más los que genera la plantilla)
-
-- [x] 3. Utilidades de dinero
-  - Acceptance: `formatMXN(12350)` → `$123.50`; `toCents('1,234.5')` → `123450`; texto inválido o negativo → `null`.
+- [ ] 1. Lógica de fechas y totales
+  - Acceptance: `nextDueAfter('2026-01-31', 31)` → `'2026-02-28'`; `('2028-01-30', 30)` → `'2028-02-29'`; `('2026-12-15', 15)` → `'2027-01-15'`; `status` devuelve `overdue` / `soon` (hoy a +7 días) / `ok`; `monthlyTotal` suma solo activos; `today()` en hora local.
   - Verify: `npm test`
-  - Files: `src/lib/money.ts`, `src/lib/money.test.ts`
+  - Files: `src/recurring/dates.ts`, `src/recurring/dates.test.ts`
 
-- [x] 4. Proyecto Firebase y conexión
-  - Acceptance: proyecto y app web creados (MCP o consola, con tu permiso); Auth con proveedor Google activo; Firestore creado en modo producción; `src/firebase.ts` lee `import.meta.env.VITE_FIREBASE_*`; `.env.example` sin valores y `.env.local` con valores, no commiteado.
-  - Verify: `npm run build` pasa; `git status` no lista `.env.local`.
-  - Files: `src/firebase.ts`, `.env.example`, `.env.local`, `package.json`
+- [ ] 2. Formulario y categorías por defecto
+  - Acceptance: campos nombre, tipo, categoría, monto, próximo pago; errores visibles por campo (nombre vacío o > 60, monto inválido o 0, fecha vacía); `onSubmit` recibe `amount` en centavos y `dayOfMonth` de la fecha; acepta valores iniciales para editar.
+  - Verify: `npm test`
+  - Files: `src/recurring/RecurringForm.tsx`, `src/recurring/RecurringForm.test.tsx`, `src/recurring/categories.ts`
 
-- [x] 5. Login con Google y guarda de acceso
-  - Acceptance: `AuthProvider` expone el usuario; `RequireAuth` muestra login sin sesión, "Acceso no autorizado" (con botón de salir) si `uid !== VITE_OWNER_UID`, y el contenido si coincide; la pantalla de acceso muestra tu uid para copiarlo.
-  - Verify: `npm test` (3 casos de `RequireAuth` con Auth mockeado); login manual en `npm run dev`.
-  - Files: `src/auth/AuthProvider.tsx`, `src/auth/RequireAuth.tsx`, `src/auth/RequireAuth.test.tsx`, `src/auth/LoginPage.tsx`, `src/main.tsx`
+- [ ] 3. Guardar y listar en Firestore
+  - Acceptance: `api.ts` con `watchRecurring` (onSnapshot) y `addRecurring`; rutas `/gastos-fijos` y `/gastos-fijos/nuevo`; lista ordenada por `nextDue`; estado vacío con botón "Agregar"; NavLink "Gastos" activo en subrutas y título por prefijo.
+  - Verify: `npm test && npm run build`; alta manual en el panel y en tu celular.
+  - Files: `src/recurring/api.ts`, `src/recurring/RecurringList.tsx`, `src/App.tsx`, `src/layout/AppLayout.tsx`, `src/sections.tsx`
 
-- [x] 6. Reglas de Firestore con tests
-  - Acceptance: solo `request.auth.uid == '<tu uid>' && uid == request.auth.uid` lee/escribe `users/{uid}/**`; todo lo demás denegado; script `test:rules` corre el emulador y los tests; reglas desplegadas con tu permiso.
-  - Verify: `npm run test:rules` (dueño permitido; otro usuario y anónimo denegados en lectura y escritura).
-  - Files: `firestore.rules`, `firebase.json`, `.firebaserc`, `tests/rules/firestore.test.ts`, `package.json`
+- [ ] 4. Pagar, estados y total
+  - Acceptance: botón "Pagar" con `writeBatch` (pago + `nextDue` avanzado) y deshabilitado mientras guarda; etiquetas Vencido / Pronto; tarjeta morada con el total mensual; sección "Pausados".
+  - Verify: `npm test`; pagar uno vencido en el panel avanza un mes y aparece en el historial.
+  - Files: `src/recurring/api.ts`, `src/recurring/RecurringList.tsx`
 
-- [x] 7. Layout móvil y navegación
-  - Acceptance: React Router con 5 rutas (`/`, `/gastos-fijos`, `/creditos`, `/ahorro`, `/inversiones`); barra inferior fija con enlaces de ≥ 44 px y estado activo; páginas placeholder con su título; sin scroll horizontal a 360 px.
-  - Verify: `npm test` (la barra navega entre rutas); revisión visual a 360 px.
-  - Files: `src/layout/AppLayout.tsx`, `src/layout/AppLayout.test.tsx`, `src/pages/*.tsx`, `src/main.tsx`
+- [ ] 5. Detalle: editar, pausar, eliminar, historial
+  - Acceptance: `/gastos-fijos/:id` con el formulario precargado; pausar/reactivar; eliminar con confirmación borrando sus pagos en el mismo batch; historial del más reciente al más antiguo con opción de borrar un pago; id inexistente vuelve a la lista.
+  - Verify: `npm test && npm run build`; flujo completo en el panel a 360 px.
+  - Files: `src/recurring/RecurringDetail.tsx`, `src/recurring/api.ts`, `src/App.tsx`
 
-- [x] 8. Deploy en Vercel (https://finanzasd.vercel.app)
-  - Acceptance: `vercel.json` con rewrite a `index.html`; repo importado en Vercel con las variables `VITE_*`; dominio de Vercel en dominios autorizados de Firebase Auth; push a `main` despliega.
-  - Verify: la URL pública carga en el celular, el login funciona, recargar `/creditos` no da 404; todos los criterios de `SPEC-core.md` cumplidos.
-  - Files: `vercel.json`
+- [ ] 6. Categorías propias
+  - Acceptance: opción "Nueva categoría…" en el select pide el nombre (1–30 caracteres, sin duplicar una existente ignorando mayúsculas) y la guarda en `users/{uid}/categories`; el select muestra por defecto + propias ordenadas.
+  - Verify: `npm test`; crear una categoría y usarla en otro gasto.
+  - Files: `src/recurring/categories.ts`, `src/recurring/RecurringForm.tsx`, `src/recurring/RecurringForm.test.tsx`, `src/recurring/api.ts`
+
+- [ ] 7. Reglas, revisión visual y deploy
+  - Acceptance: tests de reglas para `recurring/{id}/payments` y `categories`; revisión a 360 px con nombres largos, montos de 7 cifras y lista vacía (skill `break-ui`); deploy con tu permiso.
+  - Verify: `npm run lint && npm test && npm run test:rules && npm run build`; prueba en tu celular.
+  - Files: `tests/rules/firestore.test.ts`, ajustes de estilo según la revisión
