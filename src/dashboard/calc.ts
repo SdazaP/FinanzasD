@@ -1,14 +1,9 @@
 import type { Credit } from '../credits/api'
 import { msiSummary } from '../credits/calc'
-import { addDays } from '../lib/dates'
+import { addDays, monthRange } from '../lib/dates'
 import type { Recurring } from '../recurring/api'
 
-export function monthRange(today: string): [string, string] {
-  const [y, m] = today.split('-').map(Number)
-  const last = new Date(y, m, 0).getDate()
-  const month = String(m).padStart(2, '0')
-  return [`${y}-${month}-01`, `${y}-${month}-${last}`]
-}
+export { monthRange }
 
 export type Upcoming = { id: string; name: string; typeLabel: string; nextDue: string; amount: number; href: string }
 

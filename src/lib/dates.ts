@@ -16,6 +16,12 @@ export function nextDueAfter(due: string, dayOfMonth: number) {
   return format(new Date(y, m, Math.min(dayOfMonth, lastDay)))
 }
 
+// Primer y último día del mes de `date`
+export function monthRange(date: string): [string, string] {
+  const [y, m] = parse(date)
+  return [format(new Date(y, m - 1, 1)), format(new Date(y, m, 0))]
+}
+
 export type DueStatus = 'overdue' | 'soon' | 'ok'
 
 export function status(nextDue: string, now = today()): DueStatus {
