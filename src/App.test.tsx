@@ -37,6 +37,15 @@ test('las subrutas mantienen activa su sección', () => {
   expect(screen.getByRole('link', { name: 'Gastos' })).toHaveAttribute('aria-current', 'page')
 })
 
+test('el encabezado muestra el mes en curso y la fecha de hoy', () => {
+  vi.useFakeTimers({ toFake: ['Date'] })
+  vi.setSystemTime(new Date(2026, 10, 1, 10, 0))
+  renderAt('/creditos')
+  expect(screen.getByText('Noviembre 2026')).toBeInTheDocument()
+  expect(screen.getByText('domingo, 1 de noviembre')).toBeInTheDocument()
+  vi.useRealTimers()
+})
+
 test('una ruta desconocida vuelve al inicio', () => {
   renderAt('/no-existe')
   expect(screen.getByRole('heading', { name: 'Resumen' })).toBeInTheDocument()

@@ -34,7 +34,7 @@ Hola, Sebastian · domingo, 1 de noviembre
 Resumen          [Noviembre 2026] [foto]
 ```
 
-- La fecha se agrega al saludo, en la misma línea y con el mismo estilo gris pequeño.
+- La fecha se agrega al saludo, en la misma línea y con el mismo estilo gris pequeño. **Ajuste tras la revisión a 360 px:** ahí "Hola, Sebastian · domingo, 1 de noviembre" no cabe junto a la píldora y la fecha quedaba en "d…". La fecha va en su propia línea a todo el ancho, sobre el título; en celular muestra solo la fecha ("Domingo, 1 de noviembre") y el saludo se agrega desde 640 px. Para que "Gastos fijos" quepa junto a la píldora más larga ("Septiembre 2026"), en celular el título baja a 24 px y la foto se oculta (vuelve desde 640 px).
 - El mes va como una píldora (`bg-primary/10 text-primary`) a la izquierda de la foto, alineada con el título.
 - Si el saludo y la fecha no caben a 360 px, la línea se trunca con "…". El título no se mueve.
 

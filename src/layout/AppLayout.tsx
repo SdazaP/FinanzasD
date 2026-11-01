@@ -1,5 +1,7 @@
 import { NavLink, Outlet, useLocation } from 'react-router'
 import { useAuth } from '../auth/context'
+import { formatLongDate, formatMonthLabel } from '../lib/dates'
+import { useToday } from '../lib/useToday'
 import { sections } from '../sections'
 
 export default function AppLayout() {
@@ -7,17 +9,25 @@ export default function AppLayout() {
   const { pathname } = useLocation()
   const section = sections.find((s) => s.path !== '/' && pathname.startsWith(s.path)) ?? sections[0]
   const firstName = user?.displayName?.split(' ')[0]
+  const now = useToday()
 
   return (
     <div className="mx-auto min-h-dvh max-w-xl">
-      <header className="flex items-end justify-between gap-4 px-5 pt-[calc(1.5rem+env(safe-area-inset-top,0px))] pb-5">
-        <div className="min-w-0">
-          <p className="text-sm text-zinc-500">{firstName ? `Hola, ${firstName}` : 'Hola'}</p>
-          <h1 className="truncate font-display text-[1.75rem] leading-tight font-semibold tracking-tight">{section.title}</h1>
+      <header className="px-5 pt-[calc(1.5rem+env(safe-area-inset-top,0px))] pb-5">
+        {/* La fecha va en su propia línea a todo el ancho; el saludo solo cabe en pantallas anchas */}
+        <p className="truncate text-sm text-zinc-500 first-letter:uppercase">
+          <span className="hidden sm:inline">{firstName ? `Hola, ${firstName}` : 'Hola'} · </span>
+          <time dateTime={now}>{formatLongDate(now)}</time>
+        </p>
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="min-w-0 truncate font-display text-2xl leading-tight font-semibold tracking-tight sm:text-[1.75rem]">{section.title}</h1>
+          <div className="flex shrink-0 items-center gap-2">
+            <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium whitespace-nowrap text-primary">{formatMonthLabel(now)}</span>
+            {user?.photoURL && (
+              <img src={user.photoURL} alt="" referrerPolicy="no-referrer" className="hidden size-10 rounded-full ring-2 ring-white sm:block" />
+            )}
+          </div>
         </div>
-        {user?.photoURL && (
-          <img src={user.photoURL} alt="" referrerPolicy="no-referrer" className="size-10 shrink-0 rounded-full ring-2 ring-white" />
-        )}
       </header>
 
       <main className="px-5 pb-[calc(7rem+env(safe-area-inset-bottom,0px))]">
