@@ -1,33 +1,46 @@
-# Plan: spending
+# Plan: money
 
-Implementa `SPEC-spending.md`. Tareas en `tasks/todo.md`. (Los planes anteriores están en el historial de git.)
+Implementa `SPEC-money.md`. Tareas en `tasks/todo.md`. (Los planes anteriores están en el historial de git.)
+
+## Componentes y dependencias
+
+```
+calc.ts (puro) ──┐
+api + useAccounts + AccountPicker ─┬─→ pantalla Cuentas + ingresos ─→ detalle de cuenta + ajustes
+                                   ├─→ integrar gastos fijos y créditos
+                                   └─→ integrar ahorro y hormiga ──────────────┐
+                                                                              ├─→ Inicio + reglas + revisión + deploy
+```
 
 ## Orden
 
-1. Mover `categoryError` y `mergeCategories` a `src/lib/categories.ts` (con defaults por parámetro); gastos fijos sigue en verde.
-2. `spending/calc.ts`: agrupado por día, totales por categoría, resumen del tope (TDD).
-3. `spending/api.ts` y el registro rápido `QuickAdd` con chips de categoría (TDD).
-4. Pantalla `/gastos-hormiga`: selector Fijos | Hormiga, tarjeta del mes con tope, lista por día y resumen por categoría. Primer corte vertical con Firestore real.
-5. Detalle para editar y eliminar.
-6. Fila de hormiga en Inicio, tests de reglas, revisión a 360 px y deploy.
+1. `calc.ts`: disponible, "te queda este mes" y actividad de una cuenta (TDD).
+2. `api.ts`, `useAccounts` y `AccountPicker`: cuentas, predeterminada, ajustes e ingresos (escrituras en batch con `increment`).
+3. Pantalla **Cuentas** (reemplaza a Inversiones en la barra): totales, cuentas, ingresos del mes, alta de cuenta e ingreso, y "Repetir".
+4. Detalle de cuenta: editar, eliminar, ajustar saldo y actividad del mes.
+5. Gastos fijos y créditos: elegir cuenta al pagar y revertir al borrar un pago.
+6. Ahorro y hormiga: cuenta en aportar, retirar y registrar gasto; revertir y corregir al editar o borrar.
+7. Inicio con Disponible y Te queda este mes, tests de reglas, revisión a 360 px y deploy.
 
-Las tareas 1, 2 y 3 no dependen entre sí, salvo que 3 usa 1.
+Las tareas 5 y 6 son independientes entre sí una vez hecha la 2. Hasta la tarea 7 nada cambia para ti si no creas cuentas.
 
 ## Checkpoints
 
-- Tras 4: registras gastos desde el celular y ves el total y el tope.
-- Tras 6: deploy y prueba en tu celular.
+- Tras 3: creas tus cuentas reales y registras tu sueldo desde el celular.
+- Tras 6: pagas, gastas y aportas desde una cuenta y los saldos cuadran.
+- Tras 7: deploy y prueba completa en el celular.
 
 ## Riesgos
 
 | Riesgo | Mitigación |
 |---|---|
-| Romper gastos fijos al mover las categorías | Tarea separada y sus tests como red |
-| Orden entre gastos del mismo día sin índice compuesto | Consulta por rango de `date` y orden por `createdAt` en el cliente; test |
-| Doble registro por doble toque al guardar | Botón desactivado mientras guarda; test |
-| `serverTimestamp` pendiente al ordenar recién guardado | Leer con `serverTimestamps: 'estimate'` |
-| Fecha futura por zona horaria | Comparar strings `YYYY-MM-DD` con `useToday` |
+| Saldo descuadrado si una escritura falla a la mitad | Registro + `increment` en el mismo `writeBatch`; nunca escribir el saldo calculado |
+| Editar un gasto o ingreso y cambiar de cuenta | Revertir en la cuenta anterior y aplicar en la nueva en un batch; test |
+| Romper los flujos actuales | Sin cuentas todo funciona igual (selector oculto, sin `accountId`); los 131 tests como red |
+| Registros viejos sin `accountId` | No mueven saldos; test |
+| Cuenta eliminada con registros que la apuntan | Se dejan sin cambios; revertir un registro cuya cuenta ya no existe se omite (sin error) |
+| Muchas suscripciones en el detalle de cuenta | Solo el mes en curso; `shortcut:` documentado |
 
 ## Acciones que te pido antes de hacer
 
-Dependencias (no prevemos), índices o cambios de reglas (no previstos), cada `git push`, cada deploy.
+Dependencias (no prevemos), índices o reglas (no previstos), cada `git push`, cada deploy.

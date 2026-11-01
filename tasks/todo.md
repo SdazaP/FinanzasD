@@ -1,44 +1,62 @@
-# Tareas: spending
+# Tareas: money
 
 (Las tareas anteriores están completas; ver historial de git.)
 
-- [x] 1. Categorías compartidas
-  - Acceptance: `src/lib/categories.ts` con `categoryError(name, existing)` y `mergeCategories(custom, defaults)`; gastos fijos las usa con sus defaults; sin cambios de comportamiento.
-  - Verify: `npm test` (gastos fijos en verde).
-  - Files: `src/lib/categories.ts`, `src/lib/categories.test.ts`, `src/recurring/categories.ts`, `src/recurring/categories.test.ts`, `src/recurring/useCategories.ts`, `src/recurring/RecurringForm.tsx`
-
-- [x] 2. Cálculos de hormiga
-  - Acceptance: `groupByDay` con "Hoy" / "Ayer" / fecha y subtotal; `totalsByCategory` de mayor a menor; `capSummary` sin tope, por debajo, exacto y excedido.
-  - Verify: `npm test`
-  - Files: `src/spending/calc.ts`, `src/spending/calc.test.ts`
-
-- [x] 3. API y registro rápido
+- [ ] 1. Cálculos de dinero
   - Acceptance:
-    - `api.ts` con `watchMonthSpending` (rango del mes, orden cliente), `addSpending`, categorías propias y tope.
-    - `QuickAdd`: monto (> 0), chips de categoría con "+ Nueva", nota opcional (≤ 80), fecha (hoy por defecto, no futura).
-    - Al guardar se limpia y conserva la categoría; un solo guardado con doble toque.
+    - `availableTotal` suma saldos (incluye negativos).
+    - `leftThisMonth({ incomes, paid, spent, savedNet, pending })` aplica la fórmula.
+    - `savingsNet(movements, mes)` = aportes − retiros del mes.
+    - `accountActivity` une ingresos, pagos, gastos, ahorro y ajustes de una cuenta, con signo y ordenados por fecha.
   - Verify: `npm test`
-  - Files: `src/spending/api.ts`, `src/spending/QuickAdd.tsx`, `src/spending/QuickAdd.test.tsx`, `src/spending/useSpendingCategories.ts`
+  - Files: `src/money/calc.ts`, `src/money/calc.test.ts`
 
-- [x] 4. Pantalla de hormiga
+- [ ] 2. API, cuentas y selector
   - Acceptance:
-    - `/gastos-hormiga` con el selector Fijos | Hormiga (también en `/gastos-fijos`).
-    - Título "Gastos hormiga" y "Gastos" activo en la barra.
-    - Tarjeta del mes con total, cantidad, barra del tope y "Definir tope".
-    - Lista por día con subtotales; resumen por categoría colapsable; estado vacío.
-  - Verify: `npm test && npm run build`; registro en el panel y en tu celular.
-  - Files: `src/spending/SpendingList.tsx`, `src/spending/SpendingList.test.tsx`, `src/layout/GastosTabs.tsx`, `src/recurring/RecurringList.tsx`, `src/App.tsx`, `src/sections.tsx`, `src/layout/AppLayout.tsx`
-
-- [x] 5. Detalle
-  - Acceptance: `/gastos-hormiga/:id` edita monto, categoría, nota y fecha, y elimina con confirmación; un id inexistente vuelve a la lista.
+    - `api.ts`: `watchAccounts`, `addAccount` (la primera queda predeterminada), `updateAccount`, `deleteAccount`, `setDefaultAccount`, `adjustBalance` (ajuste + `increment` en batch), `addIncome` / `updateIncome` / `deleteIncome` (con `increment` y corrección entre cuentas), `watchMonthIncomes`.
+    - `useAccounts` devuelve cuentas y predeterminada.
+    - `AccountPicker` preselecciona la predeterminada y no se muestra sin cuentas.
   - Verify: `npm test`
-  - Files: `src/spending/SpendingDetail.tsx`, `src/spending/SpendingDetail.test.tsx`, `src/spending/api.ts`, `src/App.tsx`
+  - Files: `src/money/api.ts`, `src/money/useAccounts.ts`, `src/money/AccountPicker.tsx`, `src/money/AccountPicker.test.tsx`
 
-- [x] 6. Inicio, reglas, revisión y deploy
+- [ ] 3. Pantalla Cuentas
   - Acceptance:
-    - Fila "Gastos hormiga del mes" en Tus saldos.
-    - Tests de reglas para `spending`, `spendingCategories` y `settings`.
-    - Revisión a 360 px con 30 gastos, nota larga, sin tope y tope excedido.
+    - `/cuentas` reemplaza a Inversiones en la barra (Inversiones sigue por URL).
+    - Tarjeta con disponible total y te queda este mes; lista de cuentas con la predeterminada marcada; ingresos del mes con "Repetir".
+    - `/cuentas/nueva` y formulario de ingreso con validación (monto > 0, fecha no futura, cuenta).
+    - Estado sin cuentas que invita a crear la primera.
+  - Verify: `npm test && npm run build`; crear cuentas e ingreso en el panel y en tu celular.
+  - Files: `src/money/AccountsPage.tsx`, `src/money/AccountForm.tsx`, `src/money/IncomeForm.tsx` (+ tests), `src/sections.tsx`, `src/App.tsx`
+
+- [ ] 4. Detalle de cuenta
+  - Acceptance:
+    - `/cuentas/:id` para editar nombre y tipo, marcar como predeterminada, ajustar saldo y eliminar con confirmación.
+    - Actividad del mes de esa cuenta; un id inexistente vuelve a la lista.
+  - Verify: `npm test`
+  - Files: `src/money/AccountDetail.tsx`, `src/money/AccountDetail.test.tsx`, `src/money/api.ts`
+
+- [ ] 5. Gastos fijos y créditos con cuenta
+  - Acceptance:
+    - Pagar muestra "desde {cuenta}" con selector, y el pago guarda `accountId` y resta de la cuenta en el mismo batch.
+    - Borrar un pago con cuenta la devuelve.
+    - Sin cuentas, todo igual que antes.
+  - Verify: `npm test` (tests existentes en verde + nuevos).
+  - Files: `src/recurring/api.ts`, `src/recurring/RecurringList.tsx`, `src/credits/api.ts`, `src/credits/CreditList.tsx` (+ tests)
+
+- [ ] 6. Ahorro y hormiga con cuenta
+  - Acceptance:
+    - Aportar resta y retirar suma a la cuenta elegida.
+    - El gasto hormiga resta; editarlo corrige la cuenta anterior y la nueva; borrarlo devuelve.
+    - Borrar un movimiento de ahorro revierte la cuenta.
+    - Sin cuentas, todo igual.
+  - Verify: `npm test`
+  - Files: `src/savings/api.ts`, `src/savings/SavingList.tsx`, `src/spending/api.ts`, `src/spending/SpendingForm.tsx` (+ tests)
+
+- [ ] 7. Inicio, reglas, revisión y deploy
+  - Acceptance:
+    - Inicio muestra Disponible y Te queda este mes enlazados a Cuentas.
+    - Tests de reglas para `accounts`, `adjustments`, `incomes` y `settings/money`.
+    - Revisión a 360 px con saldo negativo, nombres largos y 5 cuentas.
     - Deploy con tu permiso.
-  - Verify: `npm run lint && npm test && npm run test:rules && npm run build`; prueba en tu celular.
+  - Verify: `npm run lint && npm test && npm run test:rules && npm run build`; prueba completa en tu celular.
   - Files: `src/dashboard/Dashboard.tsx`, `src/dashboard/Dashboard.test.tsx`, `tests/rules/firestore.test.ts`
