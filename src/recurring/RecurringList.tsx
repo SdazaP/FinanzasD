@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { useAuth } from '../auth/context'
+import GastosTabs from '../layout/GastosTabs'
 import { formatDay, monthlyTotal, status } from '../lib/dates'
 import { formatMXN } from '../lib/money'
 import { monthStatus } from '../lib/monthStatus'
@@ -31,8 +32,8 @@ export default function RecurringList() {
   const active = (items ?? []).filter((i) => i.active)
   const periodOf = usePeriodPayments(uid, 'recurring', active.map((i) => i.id), now)
 
-  if (loadError) return <p role="alert" className="text-red-700">No se pudieron cargar tus gastos. Revisa tu conexión.</p>
-  if (!items) return <p className="text-zinc-500">Cargando…</p>
+  if (loadError) return <><GastosTabs /><p role="alert" className="mt-4 text-red-700">No se pudieron cargar tus gastos. Revisa tu conexión.</p></>
+  if (!items) return <><GastosTabs /><p className="mt-4 text-zinc-500">Cargando…</p></>
 
   const paused = items.filter((i) => !i.active)
   const statusOf = (item: Recurring) => monthStatus(item.nextDue, !!periodOf(item.id)?.amount, now)
@@ -69,6 +70,7 @@ export default function RecurringList() {
 
   return (
     <div className="space-y-4">
+      <GastosTabs />
       <section className="rounded-3xl bg-primary p-6 text-white shadow-card">
         <p className="text-sm text-white/80">Total mensual</p>
         <p className="mt-1 font-display text-4xl font-semibold tracking-tight tabular-nums [overflow-wrap:anywhere]">{formatMXN(monthlyTotal(items))}</p>

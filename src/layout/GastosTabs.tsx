@@ -1,0 +1,22 @@
+import { NavLink } from 'react-router'
+
+// Selector Fijos | Hormiga dentro de la sección Gastos
+export default function GastosTabs() {
+  return (
+    <nav aria-label="Tipo de gasto" className="grid grid-cols-2 gap-1 rounded-2xl bg-zinc-200/60 p-1">
+      {[['/gastos-fijos', 'Fijos'], ['/gastos-hormiga', 'Hormiga']].map(([to, label]) => (
+        <NavLink
+          key={to}
+          to={to}
+          className={({ isActive }) =>
+            `flex min-h-11 items-center justify-center rounded-xl text-sm font-medium transition-colors duration-150 ${
+              isActive ? 'bg-white text-ink shadow-sm' : 'text-zinc-600 active:bg-white/60'
+            }`
+          }
+        >
+          {label}
+        </NavLink>
+      ))}
+    </nav>
+  )
+}

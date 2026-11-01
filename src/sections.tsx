@@ -6,7 +6,9 @@ const icon = (paths: ReactNode) => (
   </svg>
 )
 
-export const sections = [
+type Section = { path: string; label: string; title: string; empty: string; icon: ReactNode; also?: Record<string, string> }
+
+export const sections: Section[] = [
   {
     path: '/',
     label: 'Inicio',
@@ -18,6 +20,8 @@ export const sections = [
     path: '/gastos-fijos',
     label: 'Gastos',
     title: 'Gastos fijos',
+    // Otras rutas que pertenecen a esta pestaña, con su título
+    also: { '/gastos-hormiga': 'Gastos hormiga' },
     empty: 'Pronto podrás registrar tus gastos fijos y suscripciones.',
     icon: icon(<><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M8 2v4M16 2v4M3 10h18" /></>),
   },

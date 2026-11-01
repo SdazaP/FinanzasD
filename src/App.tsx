@@ -12,6 +12,7 @@ import SavingDetail from './savings/SavingDetail'
 import SavingList from './savings/SavingList'
 import SavingNew from './savings/SavingNew'
 import { sections } from './sections'
+import SpendingList from './spending/SpendingList'
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/gastos-fijos" element={<RecurringList />} />
         <Route path="/gastos-fijos/nuevo" element={<RecurringNew />} />
         <Route path="/gastos-fijos/:id" element={<RecurringDetail />} />
+        <Route path="/gastos-hormiga" element={<SpendingList />} />
         <Route path="/creditos" element={<CreditList />} />
         <Route path="/creditos/nuevo" element={<CreditNew />} />
         <Route path="/creditos/:id" element={<CreditDetail />} />

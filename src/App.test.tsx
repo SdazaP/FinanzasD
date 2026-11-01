@@ -10,6 +10,7 @@ vi.mock('./recurring/api', () => ({ watchCategories: () => () => {}, watchRecurr
 vi.mock('./lib/periodPayments', () => ({ watchMonthPayments: () => () => {}, watchPeriodPayments: () => () => {} }))
 vi.mock('./credits/api', () => ({ watchCredits: () => () => {} }))
 vi.mock('./savings/api', () => ({ watchSavings: () => () => {} }))
+vi.mock('./spending/api', () => ({ watchMonthSpending: () => () => {}, watchCap: () => () => {}, watchSpendingCategories: () => () => {} }))
 
 const renderAt = (path: string) =>
   render(
@@ -35,6 +36,13 @@ test('las subrutas mantienen activa su sección', () => {
   renderAt('/gastos-fijos/nuevo')
   expect(screen.getByRole('heading', { name: 'Gastos fijos' })).toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'Gastos' })).toHaveAttribute('aria-current', 'page')
+})
+
+test('Hormiga mantiene activa la pestaña Gastos con su propio título', () => {
+  renderAt('/gastos-hormiga')
+  expect(screen.getByRole('heading', { name: 'Gastos hormiga' })).toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'Gastos' })).toHaveAttribute('aria-current', 'page')
+  expect(screen.getByRole('link', { name: 'Hormiga' })).toHaveAttribute('aria-current', 'page')
 })
 
 test('el encabezado muestra el mes en curso y la fecha de hoy', () => {

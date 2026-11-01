@@ -2,17 +2,17 @@
 
 (Las tareas anteriores están completas; ver historial de git.)
 
-- [ ] 1. Categorías compartidas
+- [x] 1. Categorías compartidas
   - Acceptance: `src/lib/categories.ts` con `categoryError(name, existing)` y `mergeCategories(custom, defaults)`; gastos fijos las usa con sus defaults; sin cambios de comportamiento.
   - Verify: `npm test` (gastos fijos en verde).
   - Files: `src/lib/categories.ts`, `src/lib/categories.test.ts`, `src/recurring/categories.ts`, `src/recurring/categories.test.ts`, `src/recurring/useCategories.ts`, `src/recurring/RecurringForm.tsx`
 
-- [ ] 2. Cálculos de hormiga
+- [x] 2. Cálculos de hormiga
   - Acceptance: `groupByDay` con "Hoy" / "Ayer" / fecha y subtotal; `totalsByCategory` de mayor a menor; `capSummary` sin tope, por debajo, exacto y excedido.
   - Verify: `npm test`
   - Files: `src/spending/calc.ts`, `src/spending/calc.test.ts`
 
-- [ ] 3. API y registro rápido
+- [x] 3. API y registro rápido
   - Acceptance:
     - `api.ts` con `watchMonthSpending` (rango del mes, orden cliente), `addSpending`, categorías propias y tope.
     - `QuickAdd`: monto (> 0), chips de categoría con "+ Nueva", nota opcional (≤ 80), fecha (hoy por defecto, no futura).
@@ -20,7 +20,7 @@
   - Verify: `npm test`
   - Files: `src/spending/api.ts`, `src/spending/QuickAdd.tsx`, `src/spending/QuickAdd.test.tsx`, `src/spending/useSpendingCategories.ts`
 
-- [ ] 4. Pantalla de hormiga
+- [x] 4. Pantalla de hormiga
   - Acceptance:
     - `/gastos-hormiga` con el selector Fijos | Hormiga (también en `/gastos-fijos`).
     - Título "Gastos hormiga" y "Gastos" activo en la barra.
