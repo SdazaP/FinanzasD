@@ -1,1 +1,38 @@
 @import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Poppins", ui-sans-serif, system-ui, sans-serif;
+
+  --color-primary: #6c5dd3;
+  --color-secondary: #0049c6;
+  --color-accent-pink: #ffa2c0;
+  --color-accent-yellow: #ffce73;
+  --color-ink: #1b1d21;
+  --color-canvas: #f6f6fa;
+
+  --shadow-card: 0 8px 30px rgb(27 29 33 / 0.06);
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    overscroll-behavior: none;
+  }
+
+  body {
+    @apply bg-canvas font-sans text-ink antialiased;
+  }
+
+  /* iOS hace zoom al enfocar inputs de menos de 16px */
+  input, textarea, select {
+    font-size: 16px;
+  }
+
+  button, a, [role="button"] {
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+}

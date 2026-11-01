@@ -21,12 +21,15 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center gap-6 bg-zinc-50 px-4 text-zinc-900">
-      <h1 className="text-3xl font-semibold tracking-tight">Finanzas</h1>
+    <main className="flex min-h-dvh flex-col items-center justify-center gap-6 px-5">
+      <div className="text-center">
+        <h1 className="font-display text-4xl font-semibold tracking-tight">Finanzas</h1>
+        <p className="mt-2 text-zinc-500">Tus gastos, créditos, ahorro e inversiones.</p>
+      </div>
       <button
         type="button"
         onClick={signIn}
-        className="min-h-11 rounded-lg bg-zinc-900 px-6 font-medium text-white active:bg-zinc-700"
+        className="min-h-12 rounded-2xl bg-primary px-7 font-medium text-white shadow-card transition-transform duration-150 ease-out active:scale-[0.97]"
       >
         Entrar con Google
       </button>

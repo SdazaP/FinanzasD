@@ -1,8 +1,17 @@
+import { Navigate, Route, Routes } from 'react-router'
+import AppLayout from './layout/AppLayout'
+import SectionPage from './pages/SectionPage'
+import { sections } from './sections'
+
 export default function App() {
   return (
-    <main className="min-h-dvh bg-zinc-50 px-4 py-6 text-zinc-900">
-      <h1 className="text-2xl font-semibold tracking-tight">Finanzas</h1>
-      <p className="mt-1 text-zinc-600">Tus gastos, créditos, ahorro e inversiones.</p>
-    </main>
+    <Routes>
+      <Route element={<AppLayout />}>
+        {sections.map((s) => (
+          <Route key={s.path} path={s.path} element={<SectionPage section={s} />} />
+        ))}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Route>
+    </Routes>
   )
 }
