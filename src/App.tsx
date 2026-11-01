@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router'
 import CreditDetail from './credits/CreditDetail'
 import CreditList from './credits/CreditList'
 import CreditNew from './credits/CreditNew'
+import Dashboard from './dashboard/Dashboard'
 import AppLayout from './layout/AppLayout'
 import SectionPage from './pages/SectionPage'
 import RecurringDetail from './recurring/RecurringDetail'
@@ -17,10 +18,11 @@ export default function App() {
     <Routes>
       <Route element={<AppLayout />}>
         {sections
-          .filter((s) => !['/gastos-fijos', '/creditos', '/ahorro'].includes(s.path))
+          .filter((s) => !['/', '/gastos-fijos', '/creditos', '/ahorro'].includes(s.path))
           .map((s) => (
             <Route key={s.path} path={s.path} element={<SectionPage section={s} />} />
           ))}
+        <Route path="/" element={<Dashboard />} />
         <Route path="/gastos-fijos" element={<RecurringList />} />
         <Route path="/gastos-fijos/nuevo" element={<RecurringNew />} />
         <Route path="/gastos-fijos/:id" element={<RecurringDetail />} />

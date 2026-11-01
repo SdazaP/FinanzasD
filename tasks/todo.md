@@ -10,7 +10,7 @@
   - Verify: `npm test`
   - Files: `src/dashboard/calc.ts`, `src/dashboard/calc.test.ts`
 
-- [ ] 2. Pantalla de Inicio
+- [x] 2. Pantalla de Inicio
   - Acceptance:
     - `watchMonthPayments` por elemento.
     - Tarjeta de compromisos con total, pagado, pendiente, barra y la nota de tarjetas.

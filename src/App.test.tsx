@@ -6,7 +6,8 @@ import App from './App'
 import { AuthContext } from './auth/context'
 
 vi.mock('./firebase', () => ({ auth: {}, db: {} }))
-vi.mock('./recurring/api', () => ({ watchCategories: () => () => {} }))
+vi.mock('./recurring/api', () => ({ watchCategories: () => () => {}, watchRecurring: () => () => {} }))
+vi.mock('./dashboard/api', () => ({ watchMonthPayments: () => () => {} }))
 vi.mock('./credits/api', () => ({ watchCredits: () => () => {} }))
 vi.mock('./savings/api', () => ({ watchSavings: () => () => {} }))
 
