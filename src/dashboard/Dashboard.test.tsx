@@ -13,7 +13,9 @@ const mocks = vi.hoisted(() => ({
   watchCredits: vi.fn(),
   watchSavings: vi.fn(),
   watchMonthPayments: vi.fn(),
+  watchMonthSpending: vi.fn(),
 }))
+vi.mock('../spending/api', () => ({ watchMonthSpending: mocks.watchMonthSpending }))
 vi.mock('../recurring/api', () => ({ watchRecurring: mocks.watchRecurring }))
 vi.mock('../credits/api', () => ({ watchCredits: mocks.watchCredits }))
 vi.mock('../savings/api', () => ({ watchSavings: mocks.watchSavings }))
@@ -29,7 +31,8 @@ const savings: Saving[] = [
   { id: 'emer', name: 'Emergencias', balance: 500000 },
 ]
 
-const feed = (data: { recurring?: Recurring[]; credits?: Credit[]; savings?: Saving[] }) => {
+const feed = (data: { recurring?: Recurring[]; credits?: Credit[]; savings?: Saving[]; spending?: { amount: number }[] }) => {
+  mocks.watchMonthSpending.mockImplementation((_uid, _from, _to, onData) => (onData(data.spending ?? []), () => {}))
   mocks.watchRecurring.mockImplementation((_uid, onData) => (onData(data.recurring ?? []), () => {}))
   mocks.watchCredits.mockImplementation((_uid, onData) => (onData(data.credits ?? []), () => {}))
   mocks.watchSavings.mockImplementation((_uid, onData) => (onData(data.savings ?? []), () => {}))
@@ -57,8 +60,9 @@ const renderDashboard = () =>
   )
 
 test('muestra compromisos del mes, próximos pagos, saldos y metas', () => {
-  feed({ recurring, credits, savings })
+  feed({ recurring, credits, savings, spending: [{ amount: 4500 }, { amount: 25800 }] })
   renderDashboard()
+  expect(mocks.watchMonthSpending.mock.calls[0].slice(1, 3)).toEqual(['2026-11-01', '2026-11-30'])
 
   // Total = pagado (luz) + pendiente (renta + tarjeta)
   expect(screen.getByText('$11,900.00')).toBeInTheDocument()
@@ -75,6 +79,7 @@ test('muestra compromisos del mes, próximos pagos, saldos y metas', () => {
   expect(within(balances).getByRole('link', { name: /Gastos fijos al mes \$8,900\.00/ })).toHaveAttribute('href', '/gastos-fijos')
   expect(within(balances).getByRole('link', { name: /Deuda total \$3,000\.00/ })).toHaveAttribute('href', '/creditos')
   expect(within(balances).getByRole('link', { name: /Total ahorrado \$15,000\.00/ })).toHaveAttribute('href', '/ahorro')
+  expect(within(balances).getByRole('link', { name: /Gastos hormiga del mes \$303\.00/ })).toHaveAttribute('href', '/gastos-hormiga')
 
   const goals = screen.getByRole('heading', { name: 'Metas de ahorro' }).parentElement!
   expect(within(goals).getByText('Viaje')).toBeInTheDocument()

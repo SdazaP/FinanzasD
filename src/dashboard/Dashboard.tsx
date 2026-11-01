@@ -10,6 +10,9 @@ import { watchRecurring, type Recurring } from '../recurring/api'
 import { watchSavings, type Saving } from '../savings/api'
 import { goalSummary, totalSaved } from '../savings/calc'
 import { watchMonthPayments } from '../lib/periodPayments'
+import { useToday } from '../lib/useToday'
+import { watchMonthSpending } from '../spending/api'
+import type { Spending } from '../spending/calc'
 import { monthCommitments, monthRange, upcoming } from './calc'
 
 const badges = {
@@ -54,7 +57,10 @@ export default function Dashboard() {
   const [recurring, setRecurring] = useState<Recurring[]>()
   const [credits, setCredits] = useState<Credit[]>()
   const [savings, setSavings] = useState<Saving[]>()
+  const [spending, setSpending] = useState<Spending[]>()
   const [failed, setFailed] = useState<string[]>([])
+  const now = useToday()
+  const [monthStart, monthEnd] = monthRange(now)
 
   useEffect(() => {
     const fail = (what: string) => () => setFailed((f) => (f.includes(what) ? f : [...f, what]))
@@ -66,21 +72,27 @@ export default function Dashboard() {
     return () => unsubscribes.forEach((u) => u())
   }, [uid])
 
+  useEffect(
+    () => watchMonthSpending(uid, monthStart, monthEnd, setSpending, () => setFailed((f) => (f.includes('gastos hormiga') ? f : [...f, 'gastos hormiga']))),
+    [uid, monthStart, monthEnd],
+  )
+
   const paid = usePaidThisMonth(uid, recurring, credits)
 
-  const loading = [recurring, credits, savings].some((x, i) => !x && !failed.includes(['gastos fijos', 'créditos', 'ahorro'][i]))
+  const sources = ['gastos fijos', 'créditos', 'ahorro', 'gastos hormiga']
+  const loading = [recurring, credits, savings, spending].some((x, i) => !x && !failed.includes(sources[i]))
   if (loading) return <p className="text-zinc-500">Cargando…</p>
 
-  const now = today()
   const r = recurring ?? []
   const c = credits ?? []
   const s = savings ?? []
+  const ant = spending ?? []
   const month = monthCommitments(r, c, paid, now)
   const next = upcoming(r, c, now)
   const goals = s.filter((saving) => ['on-track', 'overdue'].includes(goalSummary(saving, now).status))
   const hasCardPending = c.some((credit) => credit.kind === 'card' && credit.balance > 0 && credit.nextDue <= monthRange(now)[1])
 
-  if (!failed.length && !r.length && !c.length && !s.length) {
+  if (!failed.length && !r.length && !c.length && !s.length && !ant.length) {
     return (
       <section className="rounded-3xl bg-primary p-6 text-white shadow-card">
         <p className="font-display text-lg font-medium leading-snug">Empieza registrando lo que pagas y lo que ahorras.</p>
@@ -153,6 +165,7 @@ export default function Dashboard() {
           {[
             ['/gastos-fijos', 'Gastos fijos al mes', monthlyTotal(r)],
             ['/creditos', 'Deuda total', debtTotal(c)],
+            ['/gastos-hormiga', 'Gastos hormiga del mes', ant.reduce((sum, i) => sum + i.amount, 0)],
             ['/ahorro', 'Total ahorrado', totalSaved(s)],
           ].map(([to, label, amount]) => (
             <li key={to}>

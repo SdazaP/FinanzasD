@@ -34,7 +34,7 @@
   - Verify: `npm test`
   - Files: `src/spending/SpendingDetail.tsx`, `src/spending/SpendingDetail.test.tsx`, `src/spending/api.ts`, `src/App.tsx`
 
-- [ ] 6. Inicio, reglas, revisión y deploy
+- [x] 6. Inicio, reglas, revisión y deploy
   - Acceptance:
     - Fila "Gastos hormiga del mes" en Tus saldos.
     - Tests de reglas para `spending`, `spendingCategories` y `settings`.
