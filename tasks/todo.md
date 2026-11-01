@@ -29,7 +29,7 @@
   - Verify: `npm test && npm run build`; registro en el panel y en tu celular.
   - Files: `src/spending/SpendingList.tsx`, `src/spending/SpendingList.test.tsx`, `src/layout/GastosTabs.tsx`, `src/recurring/RecurringList.tsx`, `src/App.tsx`, `src/sections.tsx`, `src/layout/AppLayout.tsx`
 
-- [ ] 5. Detalle
+- [x] 5. Detalle
   - Acceptance: `/gastos-hormiga/:id` edita monto, categoría, nota y fecha, y elimina con confirmación; un id inexistente vuelve a la lista.
   - Verify: `npm test`
   - Files: `src/spending/SpendingDetail.tsx`, `src/spending/SpendingDetail.test.tsx`, `src/spending/api.ts`, `src/App.tsx`
