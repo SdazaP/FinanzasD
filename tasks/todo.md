@@ -30,7 +30,7 @@
   - Verify: `npm run test:rules` (dueño permitido; otro usuario y anónimo denegados en lectura y escritura).
   - Files: `firestore.rules`, `firebase.json`, `.firebaserc`, `tests/rules/firestore.test.ts`, `package.json`
 
-- [ ] 7. Layout móvil y navegación
+- [x] 7. Layout móvil y navegación
   - Acceptance: React Router con 5 rutas (`/`, `/gastos-fijos`, `/creditos`, `/ahorro`, `/inversiones`); barra inferior fija con enlaces de ≥ 44 px y estado activo; páginas placeholder con su título; sin scroll horizontal a 360 px.
   - Verify: `npm test` (la barra navega entre rutas); revisión visual a 360 px.
   - Files: `src/layout/AppLayout.tsx`, `src/layout/AppLayout.test.tsx`, `src/pages/*.tsx`, `src/main.tsx`
