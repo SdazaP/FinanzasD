@@ -1,0 +1,36 @@
+import { nextDueAfter } from '../lib/dates'
+import { formatMXN } from '../lib/money'
+
+export function installments(total: number, months: number) {
+  const each = Math.round(total / months)
+  return Array.from({ length: months }, (_, i) => (i === months - 1 ? total - each * (months - 1) : each))
+}
+
+type Msi = { total: number; months: number; balance: number; nextDue: string; dayOfMonth: number }
+
+export function msiSummary({ total, months, balance, nextDue, dayOfMonth }: Msi) {
+  const plan = installments(total, months)
+  // Cuotas que faltan: las últimas del plan que alcanzan a cubrir el saldo
+  let remaining = 0
+  for (let covered = 0; covered < balance && remaining < months; remaining++) covered += plan[months - 1 - remaining]
+
+  let endDate: string | null = remaining ? nextDue : null
+  for (let i = 1; i < remaining; i++) endDate = nextDueAfter(endDate!, dayOfMonth)
+
+  return {
+    installment: plan[0],
+    paid: total - balance,
+    remaining,
+    endDate,
+    progress: total ? (total - balance) / total : 1,
+    suggested: Math.min(balance, plan[months - remaining] ?? 0),
+  }
+}
+
+export const debtTotal = (credits: { balance: number }[]) => credits.reduce((sum, c) => sum + c.balance, 0)
+
+export function paymentError(amount: number | null, balance: number) {
+  if (!amount || amount <= 0) return 'Escribe un monto mayor a $0.'
+  if (amount > balance) return `No puede ser mayor al saldo (${formatMXN(balance)}).`
+  return ''
+}
