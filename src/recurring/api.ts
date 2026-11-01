@@ -1,5 +1,6 @@
-import { addDoc, collection, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore'
+import { addDoc, collection, doc, onSnapshot, orderBy, query, serverTimestamp, writeBatch } from 'firebase/firestore'
 import { db } from '../firebase'
+import { nextDueAfter } from './dates'
 import type { RecurringInput } from './RecurringForm'
 
 export type Recurring = RecurringInput & { id: string; active: boolean }
@@ -16,3 +17,12 @@ export function watchRecurring(uid: string, onData: (items: Recurring[]) => void
 
 export const addRecurring = (uid: string, input: RecurringInput) =>
   addDoc(recurringCol(uid), { ...input, active: true, createdAt: serverTimestamp() })
+
+// Registra el pago del periodo y avanza un mes, ambos o ninguno
+export function payRecurring(uid: string, item: Recurring) {
+  const ref = doc(recurringCol(uid), item.id)
+  const batch = writeBatch(db)
+  batch.set(doc(collection(ref, 'payments')), { dueDate: item.nextDue, paidAt: serverTimestamp(), amount: item.amount })
+  batch.update(ref, { nextDue: nextDueAfter(item.nextDue, item.dayOfMonth) })
+  return batch.commit()
+}

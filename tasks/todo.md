@@ -17,7 +17,7 @@
   - Verify: `npm test && npm run build`; alta manual en el panel y en tu celular.
   - Files: `src/recurring/api.ts`, `src/recurring/RecurringList.tsx`, `src/App.tsx`, `src/layout/AppLayout.tsx`, `src/sections.tsx`
 
-- [ ] 4. Pagar, estados y total
+- [x] 4. Pagar, estados y total
   - Acceptance: botón "Pagar" con `writeBatch` (pago + `nextDue` avanzado) y deshabilitado mientras guarda; etiquetas Vencido / Pronto; tarjeta morada con el total mensual; sección "Pausados".
   - Verify: `npm test`; pagar uno vencido en el panel avanza un mes y aparece en el historial.
   - Files: `src/recurring/api.ts`, `src/recurring/RecurringList.tsx`

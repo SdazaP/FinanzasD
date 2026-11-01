@@ -23,5 +23,12 @@ export function status(nextDue: string, now = today()): DueStatus {
   return nextDue <= addDays(now, 7) ? 'soon' : 'ok'
 }
 
+const dayMonth = new Intl.DateTimeFormat('es-MX', { day: 'numeric', month: 'short' })
+
+export function formatDay(date: string) {
+  const [y, m, d] = parse(date)
+  return dayMonth.format(new Date(y, m - 1, d))
+}
+
 export const monthlyTotal = (items: { amount: number; active: boolean }[]) =>
   items.reduce((sum, item) => (item.active ? sum + item.amount : sum), 0)
