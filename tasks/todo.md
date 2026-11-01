@@ -10,7 +10,7 @@
   - Verify: `npm run lint && npm test && npm run build` pasan; `npm run dev` muestra la página.
   - Files: `package.json`, `vite.config.ts`, `src/index.css`, `src/App.tsx`, `src/App.test.tsx` (más los que genera la plantilla)
 
-- [ ] 3. Utilidades de dinero
+- [x] 3. Utilidades de dinero
   - Acceptance: `formatMXN(12350)` → `$123.50`; `toCents('1,234.5')` → `123450`; texto inválido o negativo → `null`.
   - Verify: `npm test`
   - Files: `src/lib/money.ts`, `src/lib/money.test.ts`

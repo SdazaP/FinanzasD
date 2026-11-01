@@ -74,10 +74,7 @@ const mxn = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' 
 
 export const formatMXN = (cents: number) => mxn.format(cents / 100)
 
-export function toCents(text: string): number | null {
-  const n = Number(text.replace(/[$,\s]/g, ''))
-  return Number.isFinite(n) && n >= 0 ? Math.round(n * 100) : null
-}
+// toCents(text) parsea el texto a centavos sin pasar por float (ver src/lib/money.ts)
 ```
 
 - Un componente por archivo, `PascalCase.tsx`; utilidades en `camelCase.ts`.
