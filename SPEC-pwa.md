@@ -1,6 +1,6 @@
 # Spec: pwa (app instalable y sin conexión)
 
-**Estado:** verificado contra el código y la documentación; pendiente de tu aprobación. El ícono ya está creado (`public/icon.svg`).
+**Estado:** aprobado. El ícono ya está creado (`public/icon.svg`).
 
 ## Objetivo
 
