@@ -26,6 +26,15 @@ Orden de construcción: core → recurring, credits, savings, investments (cualq
 
 Orden: month-context → paid-status, spending (cualquier orden) → money → alerts
 
+## Iteración 3: créditos por mes y tarjetas de crédito (aprobada)
+
+| Módulo | Estado | Responsabilidad | Depende de |
+|---|---|---|---|
+| `monthly-payment` | Pendiente | Un pago por mes en Créditos: MSI paga exactamente la cuota del mes (no se adelantan ni juntan meses); tarjeta, un solo pago por mes del monto que elijas | credits, paid-status |
+| `credit-cards` | Pendiente | Tarjetas de crédito como tipo de cuenta en Cuentas, con límite, deuda y disponible; las tarjetas de Créditos se mudan ahí; Créditos las paga desde una cuenta de débito; los selectores "Desde" pueden cargar a una tarjeta (sube su deuda); cada MSI se liga a una tarjeta y lo que falta cuenta como crédito usado | money, credits, monthly-payment, alerts |
+
+Orden: monthly-payment → credit-cards
+
 Specs: `SPEC-<módulo>.md` en la raíz.
 
 Fuera de alcance: importar extractos bancarios, gráficas avanzadas, gastos variables por categoría, presupuestos, notificaciones push/correo, multi-moneda, precios automáticos.

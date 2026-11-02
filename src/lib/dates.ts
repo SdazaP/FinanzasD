@@ -47,6 +47,12 @@ export function formatMonthLabel(date: string) {
   return `${name[0].toUpperCase()}${name.slice(1)} ${y}`
 }
 
+// 'noviembre': para "Pagar cuota de noviembre"
+export function formatMonthName(date: string) {
+  const [y, m] = parse(date)
+  return monthName.format(new Date(y, m - 1, 1))
+}
+
 // 'domingo, 1 de noviembre'
 export function formatLongDate(date: string) {
   const [y, m, d] = parse(date)

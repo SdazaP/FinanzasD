@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { debtTotal, installments, msiSummary, paymentError } from './calc'
+import { creditPaymentError, debtTotal, installments, msiSummary, paymentError } from './calc'
 
 test('installments reparte el total y la última absorbe el redondeo', () => {
   expect(installments(100000, 3)).toEqual([33333, 33333, 33334])
@@ -44,4 +44,24 @@ test.each([
   [1, 1000, ''],
 ])('paymentError(%j, %i) → %j', (amount, balance, expected) => {
   expect(paymentError(amount, balance)).toBe(expected)
+})
+
+describe('creditPaymentError: un pago = un mes', () => {
+  const msi = { kind: 'msi' as const, total: 100000, months: 3, balance: 100000, nextDue: '2026-11-30', dayOfMonth: 30 }
+  test('MSI exige la cuota del mes exacta', () => {
+    expect(creditPaymentError(msi, 33333)).toBe('')
+    expect(creditPaymentError(msi, 66666)).toBe('En meses sin intereses se paga la cuota del mes ($333.33).')
+    expect(creditPaymentError(msi, 100)).toBe('En meses sin intereses se paga la cuota del mes ($333.33).')
+  })
+  test('MSI: la última cuota absorbe el redondeo y un saldo menor se paga completo', () => {
+    expect(creditPaymentError({ ...msi, balance: 33334 }, 33334)).toBe('')
+    expect(creditPaymentError({ ...msi, balance: 20000 }, 20000)).toBe('')
+    expect(creditPaymentError({ ...msi, balance: 20000 }, 33333)).toBe('En meses sin intereses se paga la cuota del mes ($200.00).')
+  })
+  test('tarjeta: cualquier monto de $0.01 al saldo', () => {
+    const card = { kind: 'card' as const, balance: 500000 }
+    expect(creditPaymentError(card, 1)).toBe('')
+    expect(creditPaymentError(card, 500000)).toBe('')
+    expect(creditPaymentError(card, 500001)).toBe('No puede ser mayor al saldo ($5,000.00).')
+  })
 })

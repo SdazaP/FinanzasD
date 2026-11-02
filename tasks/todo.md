@@ -1,59 +1,29 @@
-# Tareas: alerts
+# Tareas: monthly-payment
 
 (Las tareas anteriores están completas; ver historial de git.)
 
-- [x] 1. Nueva fórmula de "te queda este mes"
+- [x] 1. Lógica y API del pago por mes
   - Acceptance:
-    - `leftThisMonth(available, pending)` = disponible − pendiente; se borra `savingsNet`.
-    - `useMonthMoney` ya no se suscribe a los movimientos de ahorro.
-    - `useMonthMoney` devuelve los ingresos del mes calendario (para Cuentas) y los de la ventana de 3 días (para avisos).
-    - Frecuencia de cobro: `settings/money.payFrequency` (`watchPayFrequency`, `setPayFrequency`).
-    - `expectedSecondHalf`: si el cobro es quincenal y solo llegó un "Sueldo" en el mes, devuelve el último "Sueldo"; si no, $0. Se suma a "te queda".
-    - Inicio y Cuentas muestran el nuevo valor; Cuentas muestra la nota "incluye tu segunda quincena esperada ($X)".
-  - Verify: `npm test`; en el panel, Inicio muestra disponible − pendiente con tus datos.
-  - Files: `src/money/calc.ts`, `src/money/calc.test.ts`, `src/money/api.ts`, `src/money/useMonthMoney.ts`, `src/money/AccountsPage.tsx`, `src/dashboard/Dashboard.tsx`
-
-- [x] 2. Lógica de avisos
-  - Acceptance:
-    - `incomeMonth` (ya en `money/calc.ts`, se reutiliza): un "Sueldo" del 28 de octubre cuenta para octubre; uno del 29 o 30 de octubre o del 2 de noviembre cuenta para noviembre; un "Extra" del 30 de octubre cuenta para octubre.
-    - El aviso de % suma la segunda quincena esperada a los ingresos cuando el cobro es quincenal.
-    - `buildAlerts` cubre los 4 avisos con sus límites (−1¢ / 0; tope al 79.9%, 80%, 100% y 120%; % por debajo, igual y por encima; sin ingresos; desactivado; sin cuentas) y los ordena rojo → amarillo.
-    - `visibleAlerts` oculta solo en el mes guardado, y un aviso que pasa a rojo reaparece.
+    - `periodLabel` da el mes en español a partir del `dueDate`, incluido diciembre → enero.
+    - La cuota exigida de un MSI es la del mes (la última absorbe el redondeo, o el saldo si es menor).
+    - `payCredit` rechaza un MSI con un monto distinto a la cuota, sin escribir nada; la tarjeta acepta de $0.01 al saldo.
   - Verify: `npm test`
-  - Files: `src/alerts/calc.ts`, `src/alerts/calc.test.ts`
+  - Files: `src/credits/calc.ts`, `src/credits/calc.test.ts`, `src/credits/api.ts`, `src/money/balanceWrites.test.ts`
 
-- [x] 3. Datos de avisos
+- [ ] 2. Pagar con el mes en la lista
   - Acceptance:
-    - `api.ts`: `watchAlertSettings`, `setExpenseRatio` (1–100 o desactivado), `hideAlert`, `showAlert`.
-    - `useAlerts(uid, now)` devuelve los avisos visibles y los ocultos.
-    - Reglas: `settings/alerts` solo para el dueño.
-  - Verify: `npm test && npm run test:rules`
-  - Files: `src/alerts/api.ts`, `src/alerts/useAlerts.ts`, `tests/rules/firestore.test.ts`
-
-- [x] 4. Campana en la barra superior
-  - Acceptance:
-    - Campana junto al mes, con nombre accesible "Avisos, N activos".
-    - Globo rojo o amarillo con el número; sin avisos, la campana va sin número.
-    - El panel recibe el foco, se cierra con el botón de cerrar, con Escape o al tocar fuera, y devuelve el foco a la campana.
-    - Cada aviso tiene ícono, la palabra "Urgente" o "Atención", un enlace a su pantalla y "Ocultar este mes".
-    - "Mostrar ocultos (N)" los lista y permite volver a mostrarlos.
-  - Verify: `npm test && npm run build`; en el panel a 360 px.
-  - Files: `src/alerts/AlertBell.tsx`, `src/alerts/AlertBell.test.tsx`, `src/layout/AppLayout.tsx`
-
-- [x] 5. Aviso del tope y preferencias
-  - Acceptance:
-    - Gastos hormiga muestra bajo la barra el mismo texto del aviso del tope (80% amarillo, 100% o más rojo).
-    - Cuentas tiene la tarjeta "Preferencias":
-      - "Cobro" Mensual | Quincenal;
-      - "Avisarme si gasto más del 50% de mis ingresos": cambiar el % (1–100, con validación) y desactivar.
-    - Cambiar cualquiera de las dos actualiza "te queda este mes" y la campana al instante.
+    - MSI: "Pagar cuota de {mes}" muestra la cuota sin campo editable, con "Desde", y paga exactamente eso.
+    - Tarjeta: "Pagar {mes}" con el monto editable, como hoy.
+    - Un crédito atrasado muestra el mes más antiguo pendiente.
+    - Gastos hormiga y el tope siguen igual (`AmountAction` compartido).
   - Verify: `npm test`
-  - Files: `src/spending/SpendingList.tsx`, `src/alerts/PreferencesCard.tsx` (+ test), `src/money/AccountsPage.tsx`
+  - Files: `src/credits/CreditList.tsx`, `src/credits/CreditList.test.tsx`, `src/lib/AmountAction.tsx`
 
-- [x] 6. Revisión y deploy
+- [ ] 3. Historial con el mes, revisión y deploy
   - Acceptance:
-    - Revisión a 360 px con globo de 2 dígitos y el panel con 4 avisos y montos grandes.
-    - Mapa de capacidades: `alerts` en "Listo".
+    - El historial de créditos y de gastos fijos muestra "Noviembre 2026" y "Pagado el 1 nov"; el de ahorro no cambia.
+    - Revisión a 360 px con "Pagar cuota de septiembre" y un nombre largo.
+    - Mapa de capacidades: `monthly-payment` en "Listo".
     - Deploy con tu permiso.
-  - Verify: `npm run lint && npm test && npm run test:rules && npm run build`; prueba en tu celular.
-  - Files: `CAPABILITY-MAP.md`
+  - Verify: `npm run lint && npm test && npm run build`; prueba en tu celular.
+  - Files: `src/lib/PaymentHistory.tsx`, `src/lib/periodPayments.ts` o las APIs de pagos, `src/credits/CreditDetail.tsx`, `src/recurring/RecurringDetail.tsx` (+ tests), `CAPABILITY-MAP.md`

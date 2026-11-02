@@ -34,3 +34,14 @@ export function paymentError(amount: number | null, balance: number) {
   if (amount > balance) return `No puede ser mayor al saldo (${formatMXN(balance)}).`
   return ''
 }
+
+type Payable = { kind: 'card'; balance: number } | (Msi & { kind: 'msi' })
+
+// Un pago = un mes: en MSI solo se acepta la cuota de ese mes (no se adelantan ni juntan meses)
+export function creditPaymentError(credit: Payable, amount: number | null) {
+  if (credit.kind === 'msi') {
+    const due = msiSummary(credit).suggested
+    return amount === due ? '' : `En meses sin intereses se paga la cuota del mes (${formatMXN(due)}).`
+  }
+  return paymentError(amount, credit.balance)
+}

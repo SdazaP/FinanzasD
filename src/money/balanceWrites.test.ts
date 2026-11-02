@@ -18,6 +18,7 @@ vi.mock('firebase/firestore', () => ({
 const { applyAccountDelta } = await import('../lib/accountBalance')
 const { payRecurring, deletePayment } = await import('../recurring/api')
 const { moveSaving, deleteMovement } = await import('../savings/api')
+const { payCredit } = await import('../credits/api')
 const { addSpending, updateSpending, deleteSpending } = await import('../spending/api')
 
 const live = ['nomina', 'efectivo']
@@ -86,4 +87,15 @@ test('gasto hormiga: registrar resta, editar entre cuentas corrige ambas y borra
   vi.clearAllMocks()
   await deleteSpending('u', cafe, live)
   expect(accountDeltas()).toEqual({ efectivo: 4500 })
+})
+
+test('pagar un MSI con otro monto que la cuota se rechaza sin escribir', async () => {
+  const audifonos = { id: 'aud', kind: 'msi' as const, name: 'Audífonos', total: 300000, months: 3, balance: 300000, nextDue: '2026-11-06', dayOfMonth: 6 }
+  await expect(payCredit('u', audifonos, 200000, 'nomina', live)).rejects.toThrow('cuota del mes ($1,000.00)')
+  expect(batch.set).not.toHaveBeenCalled()
+  expect(batch.commit).not.toHaveBeenCalled()
+
+  await payCredit('u', audifonos, 100000, 'nomina', live)
+  expect(accountDeltas()).toEqual({ nomina: -100000 })
+  expect(batch.set.mock.calls[0][1]).toMatchObject({ dueDate: '2026-11-06', amount: 100000 })
 })

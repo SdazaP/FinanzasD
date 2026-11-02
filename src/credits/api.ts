@@ -4,6 +4,7 @@ import {
 import { db } from '../firebase'
 import { applyAccountDelta } from '../lib/accountBalance'
 import { nextDueAfter } from '../lib/dates'
+import { creditPaymentError } from './calc'
 import type { Payment } from '../lib/PaymentHistory'
 import type { CreditInput } from './CreditForm'
 
@@ -62,6 +63,8 @@ export const addCredit = (uid: string, input: CreditInput) => addDoc(creditsCol(
 
 // Pago + saldo + fecha en un batch; increment evita pisar el saldo si se paga desde otra pestaña
 export function payCredit(uid: string, credit: Credit, amount: number, accountId?: string, liveAccountIds: string[] = []) {
+  const error = creditPaymentError(credit, amount)
+  if (error) return Promise.reject(new Error(error))
   const ref = creditDoc(uid, credit.id)
   const batch = writeBatch(db)
   batch.set(doc(paymentsCol(uid, credit.id)), { dueDate: credit.nextDue, paidAt: serverTimestamp(), amount, ...(accountId && { accountId }) })
