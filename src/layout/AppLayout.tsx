@@ -1,4 +1,5 @@
 import { Link, Outlet, useLocation } from 'react-router'
+import AlertBell from '../alerts/AlertBell'
 import { useAuth } from '../auth/context'
 import { formatLongDate, formatMonthLabel } from '../lib/dates'
 import { useToday } from '../lib/useToday'
@@ -26,6 +27,7 @@ export default function AppLayout() {
           <h1 className="min-w-0 truncate font-display text-2xl leading-tight font-semibold tracking-tight sm:text-[1.75rem]">{title}</h1>
           <div className="flex shrink-0 items-center gap-2">
             <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium whitespace-nowrap text-primary">{formatMonthLabel(now)}</span>
+            {user && <AlertBell uid={user.uid} now={now} />}
             {user?.photoURL && (
               <img src={user.photoURL} alt="" referrerPolicy="no-referrer" className="hidden size-10 rounded-full ring-2 ring-white sm:block" />
             )}

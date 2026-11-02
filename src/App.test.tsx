@@ -10,6 +10,7 @@ vi.mock('./recurring/api', () => ({ watchCategories: () => () => {}, watchRecurr
 vi.mock('./lib/periodPayments', () => ({ watchMonthPayments: () => () => {}, watchPeriodPayments: () => () => {} }))
 vi.mock('./credits/api', () => ({ watchCredits: () => () => {} }))
 vi.mock('./savings/api', () => ({ watchSavings: () => () => {} }))
+vi.mock('./alerts/useAlerts', () => ({ useAlerts: () => ({ visible: [], hidden: [] }) }))
 vi.mock('./spending/api', () => ({ watchMonthSpending: () => () => {}, watchCap: () => () => {}, watchSpendingCategories: () => () => {} }))
 
 const renderAt = (path: string) =>

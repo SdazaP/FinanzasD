@@ -30,7 +30,7 @@
   - Verify: `npm test && npm run test:rules`
   - Files: `src/alerts/api.ts`, `src/alerts/useAlerts.ts`, `tests/rules/firestore.test.ts`
 
-- [ ] 4. Campana en la barra superior
+- [x] 4. Campana en la barra superior
   - Acceptance:
     - Campana junto al mes, con nombre accesible "Avisos, N activos".
     - Globo rojo o amarillo con el número; sin avisos, la campana va sin número.
