@@ -35,6 +35,15 @@ Orden: month-context → paid-status, spending (cualquier orden) → money → a
 
 Orden: monthly-payment → credit-cards
 
+## Iteración 4: historial por meses y gastos planeados (propuesta, pendiente de aprobar)
+
+| Módulo | Estado | Responsabilidad | Depende de |
+|---|---|---|---|
+| `history` | Pendiente | Gastos de meses anteriores como historial (no mueven saldos) y pestaña "Historial" en Gastos con calendario del mes: gastos hormiga, pagos de gastos fijos y de créditos por día, navegación entre meses y detalle del día | spending, recurring, credits, money |
+| `planned` | Pendiente | Gastos planeados en Ahorro: cada uno es un apartado con meta y fecha que dice cuánto ahorrar al mes; aparece en el calendario en su fecha; "Gastar" lo registra como gasto desde el apartado | savings, spending, history |
+
+Orden: history → planned
+
 Specs: `SPEC-<módulo>.md` en la raíz.
 
 Fuera de alcance: importar extractos bancarios, gráficas avanzadas, gastos variables por categoría, presupuestos, notificaciones push/correo, multi-moneda, precios automáticos.
