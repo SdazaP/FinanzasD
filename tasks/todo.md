@@ -1,10 +1,9 @@
-# Tareas: pwa
+# Tareas: history
 
-Detalle y criterios en `SPEC-pwa.md`. (Las tareas anteriores están completas; ver historial de git.)
+Detalle y criterios en `SPEC-history.md`. (Las tareas anteriores están completas; ver historial de git.)
 
-- [x] 1. Ícono: favicon nuevo y PNG de 192, 512 y maskable.
-- [x] 2. Manifest y `index.html`. Verify: DevTools → Manifest sin errores.
-- [x] 3. Service worker, registro en producción y encabezado en `vercel.json`. Verify: `npm run preview` sin conexión.
-- [x] 4. Firestore sin conexión. Verify: en preview sin conexión se ven Inicio y Cuentas.
-- [x] 5. "Hay una versión nueva" e "Instalar app", con tests. Verify: `npm test`.
-- [x] 6. Deploy con tu permiso y prueba en tu Android (instalación, inicio de sesión y modo avión confirmados por ti).
+- [ ] 1. Gastos pasados sin mover saldos (`isPastMonth`, API y formulario). Verify: `npm test`.
+- [ ] 2. Cálculo del calendario: `monthGrid`, totales por día, resumen y formato corto. Verify: `npm test`.
+- [ ] 3. `useMonthHistory`: gastos hormiga y pagos de fijos y créditos del mes. Verify: `npm test`.
+- [ ] 4. Pestaña Historial: navegación, total, calendario, detalle del día y estado vacío. Verify: `npm test && npm run build`; revisión en el panel.
+- [ ] 5. Revisión a 360 px (claro y oscuro), mapa de capacidades y deploy con tu permiso.

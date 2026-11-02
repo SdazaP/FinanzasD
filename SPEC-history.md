@@ -2,7 +2,7 @@
 
 Historial de gastos por meses con calendario (ver `CAPABILITY-MAP.md`, iteración 4). Depende de `spending`, `recurring`, `credits` y `money`.
 
-**Estado:** pendiente de tu aprobación. Aún no hay código.
+**Estado:** aprobado.
 
 ## Objetivo
 

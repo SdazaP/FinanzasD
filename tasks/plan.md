@@ -1,43 +1,31 @@
-# Plan: credit-cards
+# Plan: history
 
-Implementa `SPEC-credit-cards.md`. Tareas en `tasks/todo.md`. (Los planes anteriores están en el historial de git.)
-
-## Componentes y dependencias
-
-```
-cardUsage + applyCardCharge (puro y escrituras) ─┬─→ selector "Desde" con tarjetas (gastos fijos, hormiga)
-                                                 ├─→ sección de tarjetas en Cuentas + agregar tarjeta
-                                                 ├─→ MSI ligado a tarjeta
-                                                 └─→ aviso de uso de tarjeta ─→ revisión + deploy
-```
+Implementa `SPEC-history.md`. Tareas en `tasks/todo.md`. (Los planes anteriores están en el historial de git.)
 
 ## Orden
 
-1. **Cálculo y escrituras.**
-   - `cardUsage` (deuda, MSI pendiente, usado, disponible, uso).
-   - `applyCardCharge`, junto a `applyAccountDelta`.
-   - `payRecurring`, `deletePayment`, `addSpending`, `updateSpending` y `deleteSpending` aceptan una tarjeta (`cardId`) y la revierten. Con tests de Firestore simulado, como `balanceWrites.test.ts`.
-   - Va primero porque todo lo demás usa estas piezas.
-2. **Selector "Desde" con tarjetas.**
-   - `useCards` y un grupo "Tarjetas" en `AccountPicker`, solo donde se pide (gastos fijos y gastos hormiga).
-   - El valor distingue cuenta de tarjeta (`card:{id}`).
-3. **Tarjetas en Cuentas.**
-   - `CardsSection` con disponible, barra y fecha.
-   - "Agregar tarjeta" con el límite obligatorio (el mismo formulario de crédito).
-   - Una tarjeta sin límite pide agregarlo.
-4. **MSI ligados a tarjeta.**
-   - Selector de tarjeta en el formulario de MSI.
-   - El uso de la tarjeta suma sus MSI.
-   - El detalle de la tarjeta lista sus MSI.
-5. **Aviso de uso de tarjeta** en `buildAlerts` y `useAlerts`, al 90% y por encima del límite.
-6. **Cierre:** revisión a 360 px, reglas, mapa de capacidades y deploy con tu permiso.
+1. **Gastos pasados sin mover saldos.**
+   - `isPastMonth` (TDD).
+   - `addSpending` y `updateSpending` ignoran la cuenta o tarjeta con fecha de un mes anterior.
+   - `SpendingForm` oculta "Desde" y muestra el aviso.
+   - Va primero porque es lo que protege tus saldos.
+2. **Cálculo del calendario (TDD):**
+   - `monthGrid` (semanas de domingo a sábado);
+   - totales por día y resumen del mes (sin pagos de tarjeta, con MSI);
+   - formato corto "$1.2 mil".
+3. **Datos del mes:** `useMonthHistory` reúne gastos hormiga y pagos de fijos y créditos del mes elegido, con `watchMonthSpending` y `watchMonthPaymentDocs`, que ya existen.
+4. **Pantalla Historial:**
+   - pestaña y ruta `/gastos-historial`;
+   - navegación de meses, total y desglose;
+   - calendario y detalle del día;
+   - estado vacío.
+5. **Cierre:** revisión a 360 px en claro y oscuro, mapa de capacidades y deploy con tu permiso.
 
 ## Riesgos
 
-- **Más superficie en escrituras de dinero.** Cada operación que hoy mueve una cuenta podrá mover una tarjeta. Se cubre con tests de cada combinación: cuenta → tarjeta, tarjeta → cuenta, tarjeta eliminada.
-- **El valor del selector cambia de forma** (`card:{id}`). Los formularios convierten a `accountId` o `cardId` en un solo lugar para no repetir la lógica.
-- **`useAlerts` y Cuentas cargan los créditos otra vez**: una suscripción más. Es aceptable para un solo usuario.
+- **Suscripciones:** el historial abre una suscripción por gasto fijo y por crédito en el mes elegido (como Inicio). Al cambiar de mes se cierran las anteriores. Para un solo usuario es aceptable.
+- **Calendario a 360 px:** 7 columnas de unos 44 px; el monto corto debe caber. Se revisa en la tarea 5.
 
 ## Verificación
 
-`npm run lint && npm test` en cada tarea; `npm run build` y revisión en el panel en la 3 y la 6; `npm run test:rules` en la 6.
+`npm run lint && npm test` en cada tarea; `npm run build` y revisión en el panel en la 4 y la 5.
