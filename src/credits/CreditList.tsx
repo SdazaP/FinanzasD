@@ -145,13 +145,13 @@ export default function CreditList() {
 
       <Link
         to="/creditos/nuevo"
-        className="flex min-h-12 items-center justify-center rounded-2xl bg-white font-medium text-primary shadow-card transition-transform duration-150 ease-out active:scale-[0.98]"
+        className="flex min-h-12 items-center justify-center rounded-2xl bg-surface font-medium text-primary shadow-card transition-transform duration-150 ease-out active:scale-[0.98]"
       >
         Agregar crédito
       </Link>
 
       {items.length === 0 && (
-        <p className="rounded-3xl bg-white p-6 text-zinc-600 shadow-card">
+        <p className="rounded-3xl bg-surface p-6 text-zinc-600 shadow-card">
           Aún no tienes créditos. Agrega tus tarjetas y tus compras a meses sin intereses para ver cuánto debes.
         </p>
       )}
@@ -161,7 +161,7 @@ export default function CreditList() {
           <GroupTitle>Por pagar</GroupTitle>
           <ul className="space-y-3">
             {due.map((credit) => (
-              <li key={credit.id} className="rounded-3xl bg-white p-4 shadow-card">
+              <li key={credit.id} className="rounded-3xl bg-surface p-4 shadow-card">
                 <CreditHeader credit={credit} detail={formatDay(credit.nextDue)} cardNames={cardNames} />
                 <PayRow uid={uid} credit={credit} badge={badges[status(credit.nextDue, now)]} money={money} />
               </li>
@@ -180,7 +180,7 @@ export default function CreditList() {
               const period = periodOf(credit.id)!
               const when = period.lastPaidAt ? ` el ${formatDay(period.lastPaidAt)}` : ''
               return (
-                <li key={credit.id} className="rounded-3xl bg-white p-4 shadow-card">
+                <li key={credit.id} className="rounded-3xl bg-surface p-4 shadow-card">
                   <CreditHeader credit={credit} detail={`Pagado${when}`} cardNames={cardNames} />
                   <p className="mt-3 inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
                     <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -200,7 +200,7 @@ export default function CreditList() {
           <GroupTitle>Más adelante</GroupTitle>
           <ul className="space-y-3">
             {later.map((credit) => (
-              <li key={credit.id} className="rounded-3xl bg-white p-4 shadow-card">
+              <li key={credit.id} className="rounded-3xl bg-surface p-4 shadow-card">
                 <CreditHeader credit={credit} detail={`Vence el ${formatDay(credit.nextDue)}`} cardNames={cardNames} />
               </li>
             ))}
@@ -214,7 +214,7 @@ export default function CreditList() {
           <ul className="space-y-3">
             {settled.map((credit) => (
               <li key={credit.id}>
-                <Link to={`/creditos/${credit.id}`} className="flex items-center gap-3 rounded-3xl bg-white/60 p-4 text-zinc-500 active:bg-white">
+                <Link to={`/creditos/${credit.id}`} className="flex items-center gap-3 rounded-3xl bg-surface/60 p-4 text-zinc-500 active:bg-surface">
                   <p className="min-w-0 flex-1 truncate">{credit.name}</p>
                   <p className="shrink-0 text-sm">Liquidado</p>
                 </Link>

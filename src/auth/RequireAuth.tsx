@@ -18,7 +18,7 @@ export default function RequireAuth({ children }: { children: ReactNode }) {
         <button
           type="button"
           onClick={() => signOut(auth)}
-          className="min-h-12 rounded-2xl border border-zinc-300 bg-white px-7 font-medium transition-transform duration-150 ease-out active:scale-[0.97]"
+          className="min-h-12 rounded-2xl border border-zinc-300 bg-surface px-7 font-medium transition-transform duration-150 ease-out active:scale-[0.97]"
         >
           Salir
         </button>

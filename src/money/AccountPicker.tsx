@@ -57,7 +57,7 @@ export default function AccountPicker({ accounts, value, onChange, label = 'Cuen
         id={id}
         value={value ?? ''}
         onChange={(e) => onChange(e.target.value)}
-        className="min-h-12 w-full rounded-2xl border border-zinc-200 bg-white px-4 text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+        className="min-h-12 w-full rounded-2xl border border-zinc-200 bg-surface px-4 text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
       >
         {none && <option value="">Sin cuenta (no mueve saldos)</option>}
         {accountOptions}

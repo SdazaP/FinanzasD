@@ -32,7 +32,7 @@ function MonthCard({ uid, total, count, cap }: { uid: string; total: number; cou
           <ProgressBar value={summary.progress} label="Avance del tope" onDark />
           {/* Desde el 80% el aviso (el mismo de la campana) reemplaza la línea de "te quedan" */}
           {capWarning ? (
-            <p className="flex gap-2 rounded-xl bg-white px-3 py-2 text-sm text-ink">
+            <p className="flex gap-2 rounded-xl bg-surface px-3 py-2 text-sm text-ink">
               <LevelIcon level={capWarning.level} />
               <span>
                 <span className="font-semibold">{capWarning.level === 'red' ? 'Urgente' : 'Atención'}:</span> {capWarning.text}
@@ -100,7 +100,7 @@ export default function SpendingList() {
         <>
           <MonthCard uid={uid} total={total} count={items.length} cap={cap} />
 
-          <section className="rounded-3xl bg-white p-5 shadow-card">
+          <section className="rounded-3xl bg-surface p-5 shadow-card">
             <h2 className="mb-4 font-display text-lg font-semibold">Registrar gasto</h2>
             <SpendingForm
               categories={categories}
@@ -114,10 +114,10 @@ export default function SpendingList() {
           </section>
 
           {items.length === 0 ? (
-            <p className="rounded-3xl bg-white p-6 text-zinc-600 shadow-card">Aún no registras gastos hormiga este mes.</p>
+            <p className="rounded-3xl bg-surface p-6 text-zinc-600 shadow-card">Aún no registras gastos hormiga este mes.</p>
           ) : (
             <>
-              <details className="rounded-3xl bg-white p-5 shadow-card">
+              <details className="rounded-3xl bg-surface p-5 shadow-card">
                 <summary className="cursor-pointer font-display text-lg font-semibold">Por categoría</summary>
                 <ul className="mt-3 divide-y divide-zinc-100">
                   {totalsByCategory(items).map(({ category, total: catTotal }) => (
@@ -130,7 +130,7 @@ export default function SpendingList() {
               </details>
 
               {groupByDay(items, now).map((group) => (
-                <section key={group.date} className="rounded-3xl bg-white p-5 shadow-card">
+                <section key={group.date} className="rounded-3xl bg-surface p-5 shadow-card">
                   <div className="mb-2 flex items-baseline justify-between gap-3">
                     <h2 className="font-medium first-letter:uppercase">{group.label}</h2>
                     <p className="text-sm text-zinc-500 tabular-nums">{formatMXN(group.total)}</p>

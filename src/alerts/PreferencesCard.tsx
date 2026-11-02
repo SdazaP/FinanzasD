@@ -37,7 +37,7 @@ export default function PreferencesCard({ uid, frequency }: { uid: string; frequ
   }
 
   return (
-    <section className="rounded-3xl bg-white p-5 shadow-card">
+    <section className="rounded-3xl bg-surface p-5 shadow-card">
       <h2 className="mb-4 font-display text-lg font-semibold">Preferencias</h2>
 
       <fieldset>
@@ -53,7 +53,7 @@ export default function PreferencesCard({ uid, frequency }: { uid: string; frequ
                 onChange={() => run(setPayFrequency(uid, value))}
                 className="peer sr-only"
               />
-              <span className="flex min-h-11 items-center justify-center rounded-xl text-sm font-medium text-zinc-600 transition-colors duration-150 peer-checked:bg-white peer-checked:text-ink peer-checked:shadow-sm peer-focus-visible:ring-2 peer-focus-visible:ring-primary">
+              <span className="flex min-h-11 items-center justify-center rounded-xl text-sm font-medium text-zinc-600 transition-colors duration-150 peer-checked:bg-surface peer-checked:text-ink peer-checked:shadow-sm peer-focus-visible:ring-2 peer-focus-visible:ring-primary">
                 {label}
               </span>
             </label>

@@ -24,7 +24,7 @@ const badges = {
   ok: null,
 }
 
-const card = 'rounded-3xl bg-white p-5 shadow-card'
+const card = 'rounded-3xl bg-surface p-5 shadow-card'
 
 // Separado para que useMonthMoney solo se suscriba cuando hay cuentas
 function MoneyLine({ uid, now, accounts }: { uid: string; now: string; accounts: Account[] }) {

@@ -9,7 +9,7 @@ import type { Spending } from './calc'
 import { useSpendingCategories } from './categories'
 import SpendingForm from './SpendingForm'
 
-const card = 'rounded-3xl bg-white p-5 shadow-card'
+const card = 'rounded-3xl bg-surface p-5 shadow-card'
 
 export default function SpendingDetail() {
   const uid = useAuth()!.uid

@@ -13,7 +13,7 @@ import IncomeForm from './IncomeForm'
 import { useAccounts } from './useAccounts'
 import { useMonthMoney } from './useMonthMoney'
 
-const card = 'rounded-3xl bg-white p-5 shadow-card'
+const card = 'rounded-3xl bg-surface p-5 shadow-card'
 const typeLabel = Object.fromEntries(accountTypes)
 
 const signed = (cents: number) => (cents < 0 ? 'text-red-600' : '')
@@ -72,11 +72,11 @@ export default function AccountsPage() {
           type="button"
           onClick={() => setAdding((a) => !a)}
           aria-expanded={adding}
-          className="min-h-12 rounded-2xl bg-white font-medium text-primary shadow-card transition-transform duration-150 ease-out active:scale-[0.98]"
+          className="min-h-12 rounded-2xl bg-surface font-medium text-primary shadow-card transition-transform duration-150 ease-out active:scale-[0.98]"
         >
           Registrar ingreso
         </button>
-        <Link to="/cuentas/nueva" className="flex min-h-12 items-center justify-center rounded-2xl bg-white font-medium text-primary shadow-card active:scale-[0.98]">
+        <Link to="/cuentas/nueva" className="flex min-h-12 items-center justify-center rounded-2xl bg-surface font-medium text-primary shadow-card active:scale-[0.98]">
           Agregar cuenta
         </Link>
       </div>

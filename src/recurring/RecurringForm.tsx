@@ -99,7 +99,7 @@ export default function RecurringForm({ categories, initial, onSubmit, onCreateC
           {([['fixed', 'Gasto fijo'], ['subscription', 'Suscripción']] as const).map(([value, label]) => (
             <label key={value} className="cursor-pointer">
               <input type="radio" name="type" value={value} checked={type === value} onChange={() => setType(value)} className="peer sr-only" />
-              <span className="flex min-h-11 items-center justify-center rounded-xl text-sm font-medium text-zinc-600 transition-colors duration-150 peer-checked:bg-white peer-checked:text-ink peer-checked:shadow-sm peer-focus-visible:ring-2 peer-focus-visible:ring-primary">
+              <span className="flex min-h-11 items-center justify-center rounded-xl text-sm font-medium text-zinc-600 transition-colors duration-150 peer-checked:bg-surface peer-checked:text-ink peer-checked:shadow-sm peer-focus-visible:ring-2 peer-focus-visible:ring-primary">
                 {label}
               </span>
             </label>

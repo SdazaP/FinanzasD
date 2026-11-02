@@ -11,7 +11,7 @@ import type { Account } from './calc'
 import { useAccountActivity } from './useAccountActivity'
 import { useAccounts } from './useAccounts'
 
-const card = 'rounded-3xl bg-white p-5 shadow-card'
+const card = 'rounded-3xl bg-surface p-5 shadow-card'
 
 function AdjustBalance({ uid, account }: { uid: string; account: Account }) {
   const [value, setValue] = useState('')

@@ -8,7 +8,7 @@ export default function SavingNew() {
   const navigate = useNavigate()
 
   return (
-    <section className="rounded-3xl bg-white p-5 shadow-card">
+    <section className="rounded-3xl bg-surface p-5 shadow-card">
       <h2 className="mb-5 font-display text-lg font-semibold">Nuevo apartado</h2>
       <SavingForm
         onSubmit={async (input) => {

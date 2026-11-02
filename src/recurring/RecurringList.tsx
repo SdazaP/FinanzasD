@@ -88,7 +88,7 @@ export default function RecurringList() {
 
       <Link
         to="/gastos-fijos/nuevo"
-        className="flex min-h-12 items-center justify-center rounded-2xl bg-white font-medium text-primary shadow-card transition-transform duration-150 ease-out active:scale-[0.98]"
+        className="flex min-h-12 items-center justify-center rounded-2xl bg-surface font-medium text-primary shadow-card transition-transform duration-150 ease-out active:scale-[0.98]"
       >
         Agregar gasto
       </Link>
@@ -96,7 +96,7 @@ export default function RecurringList() {
       {payError && <p role="alert" className="text-sm text-red-700">{payError}</p>}
 
       {items.length === 0 && (
-        <p className="rounded-3xl bg-white p-6 text-zinc-600 shadow-card">
+        <p className="rounded-3xl bg-surface p-6 text-zinc-600 shadow-card">
           Aún no tienes gastos fijos. Agrega tu renta, servicios o suscripciones para ver cuánto pagas al mes.
         </p>
       )}
@@ -108,7 +108,7 @@ export default function RecurringList() {
             {due.map((item) => {
               const badge = badges[status(item.nextDue, now)]
               return (
-                <li key={item.id} className="rounded-3xl bg-white p-4 shadow-card">
+                <li key={item.id} className="rounded-3xl bg-surface p-4 shadow-card">
                   {header(item, formatDay(item.nextDue))}
                   <div className="mt-2">
                     <AccountPicker
@@ -148,7 +148,7 @@ export default function RecurringList() {
             {paid.map((item) => {
               const period = periodOf(item.id)!
               return (
-                <li key={item.id} className="rounded-3xl bg-white p-4 shadow-card">
+                <li key={item.id} className="rounded-3xl bg-surface p-4 shadow-card">
                   {header(item, period.lastPaidAt ? `Pagado el ${formatDay(period.lastPaidAt)}` : 'Pagado', period.amount)}
                   <p className="mt-2 inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
                     <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -168,7 +168,7 @@ export default function RecurringList() {
           <GroupTitle>Más adelante</GroupTitle>
           <ul className="space-y-3">
             {later.map((item) => (
-              <li key={item.id} className="rounded-3xl bg-white p-4 shadow-card">
+              <li key={item.id} className="rounded-3xl bg-surface p-4 shadow-card">
                 {header(item, `Vence el ${formatDay(item.nextDue)}`)}
               </li>
             ))}
@@ -184,7 +184,7 @@ export default function RecurringList() {
               <li key={item.id}>
                 <Link
                   to={`/gastos-fijos/${item.id}`}
-                  className="flex items-center gap-3 rounded-3xl bg-white/60 p-4 text-zinc-500 active:bg-white"
+                  className="flex items-center gap-3 rounded-3xl bg-surface/60 p-4 text-zinc-500 active:bg-surface"
                 >
                   <p className="min-w-0 flex-1 truncate">{item.name}</p>
                   <p className="shrink-0 tabular-nums">{formatMXN(item.amount)}</p>

@@ -103,7 +103,7 @@ export default function CreditForm({ initial, onlyCard = false, cards = [], onSu
           {([['card', 'Tarjeta'], ['msi', 'Meses sin intereses']] as const).map(([value, label]) => (
             <label key={value} className="cursor-pointer">
               <input type="radio" name="kind" value={value} checked={kind === value} onChange={() => setKind(value)} className="peer sr-only" />
-              <span className="flex min-h-11 items-center justify-center rounded-xl px-2 text-center text-sm font-medium text-zinc-600 transition-colors duration-150 peer-checked:bg-white peer-checked:text-ink peer-checked:shadow-sm peer-focus-visible:ring-2 peer-focus-visible:ring-primary">
+              <span className="flex min-h-11 items-center justify-center rounded-xl px-2 text-center text-sm font-medium text-zinc-600 transition-colors duration-150 peer-checked:bg-surface peer-checked:text-ink peer-checked:shadow-sm peer-focus-visible:ring-2 peer-focus-visible:ring-primary">
                 {label}
               </span>
             </label>

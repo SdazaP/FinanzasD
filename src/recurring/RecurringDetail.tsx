@@ -10,7 +10,7 @@ import { useAccounts } from '../money/useAccounts'
 import RecurringForm from './RecurringForm'
 import { useCategories } from './useCategories'
 
-const card = 'rounded-3xl bg-white p-5 shadow-card'
+const card = 'rounded-3xl bg-surface p-5 shadow-card'
 
 export default function RecurringDetail() {
   const uid = useAuth()!.uid

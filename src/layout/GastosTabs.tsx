@@ -10,7 +10,7 @@ export default function GastosTabs() {
           to={to}
           className={({ isActive }) =>
             `flex min-h-11 items-center justify-center rounded-xl text-sm font-medium transition-colors duration-150 ${
-              isActive ? 'bg-white text-ink shadow-sm' : 'text-zinc-600 active:bg-white/60'
+              isActive ? 'bg-surface text-ink shadow-sm' : 'text-zinc-600 active:bg-surface/60'
             }`
           }
         >

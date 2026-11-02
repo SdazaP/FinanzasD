@@ -7,7 +7,7 @@ import { deleteMovement, deleteSaving, updateSaving, watchMovements, watchSaving
 import { useAccounts } from '../money/useAccounts'
 import SavingForm from './SavingForm'
 
-const card = 'rounded-3xl bg-white p-5 shadow-card'
+const card = 'rounded-3xl bg-surface p-5 shadow-card'
 
 const movementLabel = (m: Movement) => (m.initial ? 'Saldo inicial' : m.type === 'deposit' ? 'Aporte' : 'Retiro')
 

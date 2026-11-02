@@ -15,7 +15,7 @@ export default function PaymentHistory({
   payments, onDelete, title = 'Historial de pagos', emptyText = 'Todavía no hay pagos registrados.', byMonth,
 }: Props) {
   return (
-    <section className="rounded-3xl bg-white p-5 shadow-card">
+    <section className="rounded-3xl bg-surface p-5 shadow-card">
       <h2 className="mb-3 font-display text-lg font-semibold">{title}</h2>
       {payments.length === 0 ? (
         <p className="text-zinc-500">{emptyText}</p>

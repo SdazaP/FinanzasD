@@ -9,7 +9,7 @@ export default function CardNew() {
   const navigate = useNavigate()
 
   return (
-    <section className="rounded-3xl bg-white p-5 shadow-card">
+    <section className="rounded-3xl bg-surface p-5 shadow-card">
       <h2 className="mb-5 font-display text-lg font-semibold">Nueva tarjeta de crédito</h2>
       <CreditForm
         onlyCard

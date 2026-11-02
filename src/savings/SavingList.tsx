@@ -95,19 +95,19 @@ export default function SavingList() {
 
       <Link
         to="/ahorro/nuevo"
-        className="flex min-h-12 items-center justify-center rounded-2xl bg-white font-medium text-primary shadow-card transition-transform duration-150 ease-out active:scale-[0.98]"
+        className="flex min-h-12 items-center justify-center rounded-2xl bg-surface font-medium text-primary shadow-card transition-transform duration-150 ease-out active:scale-[0.98]"
       >
         Agregar apartado
       </Link>
 
       {items.length === 0 ? (
-        <p className="rounded-3xl bg-white p-6 text-zinc-600 shadow-card">
+        <p className="rounded-3xl bg-surface p-6 text-zinc-600 shadow-card">
           Aún no tienes apartados. Crea uno para tu fondo de emergencias o para una meta como un viaje.
         </p>
       ) : (
         <ul className="space-y-3">
           {items.map((saving) => (
-            <li key={saving.id} className="rounded-3xl bg-white p-4 shadow-card">
+            <li key={saving.id} className="rounded-3xl bg-surface p-4 shadow-card">
               <Link to={`/ahorro/${saving.id}`} className="-m-2 block rounded-2xl p-2 active:bg-zinc-50">
                 <div className="flex items-start gap-3">
                   <p className="min-w-0 flex-1 truncate font-medium">{saving.name}</p>

@@ -18,7 +18,7 @@ export default function CardsSection({ cards, credits }: { cards: Card[]; credit
   }
 
   return (
-    <section className="rounded-3xl bg-white p-5 shadow-card">
+    <section className="rounded-3xl bg-surface p-5 shadow-card">
       <div className="mb-2 flex items-center justify-between gap-3">
         <h2 className="font-display text-lg font-semibold">Tarjetas de crédito</h2>
         <Link to="/cuentas/tarjeta-nueva" className={addLink}>Agregar</Link>

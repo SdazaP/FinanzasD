@@ -10,7 +10,7 @@ export default function CreditNew() {
   const { cards } = useCards(uid)
 
   return (
-    <section className="rounded-3xl bg-white p-5 shadow-card">
+    <section className="rounded-3xl bg-surface p-5 shadow-card">
       <h2 className="mb-5 font-display text-lg font-semibold">Nuevo crédito</h2>
       <CreditForm
         cards={cards}

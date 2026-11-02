@@ -31,7 +31,7 @@ export default function AppLayout() {
           <div className="flex shrink-0 items-center gap-2">
             {user && <AlertBell uid={user.uid} now={now} />}
             {user?.photoURL && (
-              <img src={user.photoURL} alt="" referrerPolicy="no-referrer" className="hidden size-10 rounded-full ring-2 ring-white sm:block" />
+              <img src={user.photoURL} alt="" referrerPolicy="no-referrer" className="size-10 rounded-full ring-2 ring-surface" />
             )}
           </div>
         </div>
@@ -43,7 +43,7 @@ export default function AppLayout() {
 
       <nav
         aria-label="Secciones"
-        className="fixed inset-x-0 bottom-0 border-t border-zinc-200/70 bg-white/90 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur-md"
+        className="fixed inset-x-0 bottom-0 border-t border-zinc-200/70 bg-surface/90 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur-md"
       >
         <ul className="mx-auto flex max-w-xl">
           {sections.map((s) => (

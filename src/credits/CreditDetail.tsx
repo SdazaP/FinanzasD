@@ -8,7 +8,7 @@ import { formatMXN } from '../lib/money'
 import CreditForm from './CreditForm'
 import { useCards } from './useCards'
 
-const card = 'rounded-3xl bg-white p-5 shadow-card'
+const card = 'rounded-3xl bg-surface p-5 shadow-card'
 
 // MSI de una tarjeta: lo que falta de cada uno cuenta como crédito usado
 function CardMsis({ msis }: { msis: Credit[] }) {

@@ -10,7 +10,7 @@ export default function RecurringNew() {
   const categories = useCategories(uid)
 
   return (
-    <section className="rounded-3xl bg-white p-5 shadow-card">
+    <section className="rounded-3xl bg-surface p-5 shadow-card">
       <h2 className="mb-5 font-display text-lg font-semibold">Nuevo gasto</h2>
       <RecurringForm
         categories={categories}
