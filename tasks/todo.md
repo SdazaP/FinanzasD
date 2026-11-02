@@ -10,7 +10,7 @@
   - Verify: `npm test`
   - Files: `src/credits/calc.ts`, `src/credits/calc.test.ts`, `src/credits/api.ts`, `src/money/balanceWrites.test.ts`
 
-- [ ] 2. Pagar con el mes en la lista
+- [x] 2. Pagar con el mes en la lista
   - Acceptance:
     - MSI: "Pagar cuota de {mes}" muestra la cuota sin campo editable, con "Desde", y paga exactamente eso.
     - Tarjeta: "Pagar {mes}" con el monto editable, como hoy.

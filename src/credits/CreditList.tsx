@@ -4,14 +4,14 @@ import { useAuth } from '../auth/context'
 import AmountAction from '../lib/AmountAction'
 import AccountPicker from '../money/AccountPicker'
 import { useAccounts } from '../money/useAccounts'
-import { formatDay, status } from '../lib/dates'
+import { formatDay, formatMonthName, status } from '../lib/dates'
 import { formatMXN } from '../lib/money'
 import { monthStatus } from '../lib/monthStatus'
 import Bar from '../lib/ProgressBar'
 import { usePeriodPayments } from '../lib/usePeriodPayments'
 import { useToday } from '../lib/useToday'
 import { payCredit, watchCredits, type Credit } from './api'
-import { debtTotal, msiSummary, paymentError } from './calc'
+import { creditPaymentError, debtTotal, msiSummary } from './calc'
 
 const badges = {
   overdue: { text: 'Vencido', className: 'bg-red-50 text-red-700' },
@@ -50,18 +50,22 @@ function PayRow({ uid, credit, badge, money }: { uid: string; credit: Credit; ba
   const [open, setOpen] = useState(false)
   const [accountId, setAccountId] = useState<string>()
   const from = accountId ?? money.defaultId
+  // El próximo pago pendiente es el mes que se paga (en un atrasado, el más antiguo)
+  const month = formatMonthName(credit.nextDue)
+  const msi = credit.kind === 'msi'
+  const action = msi ? `Pagar cuota de ${month}` : `Pagar ${month}`
 
   if (!open) {
     return (
-      <div className="mt-3 flex items-center justify-between gap-3">
+      <div className="mt-3 flex items-center justify-between gap-2">
         {badge ? <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${badge.className}`}>{badge.text}</span> : <span />}
         <button
           type="button"
           onClick={() => setOpen(true)}
-          aria-label={`Pagar ${credit.name}`}
-          className="min-h-11 rounded-xl bg-primary/10 px-5 text-sm font-medium text-primary transition-transform duration-150 ease-out active:scale-[0.97]"
+          aria-label={`${action}, ${credit.name}`}
+          className="min-h-11 rounded-xl bg-primary/10 px-3 text-sm font-medium whitespace-nowrap text-primary transition-transform duration-150 ease-out active:scale-[0.97]"
         >
-          Pagar
+          {action}
         </button>
       </div>
     )
@@ -70,9 +74,10 @@ function PayRow({ uid, credit, badge, money }: { uid: string; credit: Credit; ba
   return (
     <AmountAction
       id={`pay-${credit.id}`}
-      label="Monto a pagar"
-      initialCents={credit.kind === 'card' ? credit.balance : msiSummary(credit).suggested}
-      validate={(cents) => paymentError(cents, credit.balance)}
+      label={msi ? `Cuota de ${month}` : `Pago de ${month}`}
+      initialCents={msi ? msiSummary(credit).suggested : credit.balance}
+      fixed={msi}
+      validate={(cents) => creditPaymentError(credit, cents)}
       onConfirm={(cents) => payCredit(uid, credit, cents, from, money.liveIds)}
       onDone={() => setOpen(false)}
     >

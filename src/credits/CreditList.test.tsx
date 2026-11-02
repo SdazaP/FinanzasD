@@ -79,39 +79,50 @@ test('muestra la deuda total, el uso de la tarjeta y el avance del MSI', () => {
   expect(within(msi).getByText(/9 de 12 pagos restantes · \$1,000\.00 al mes · termina 30 nov 2026/)).toBeInTheDocument()
 })
 
-test('pagar prellena la cuota, valida el monto y paga una sola vez con el monto editado', async () => {
+test('MSI: paga exactamente la cuota del mes, sin campo para cambiarla, una sola vez', async () => {
   let finish!: () => void
   api.payCredit.mockReturnValue(new Promise<void>((ok) => (finish = ok)))
   renderList()
 
-  fireEvent.click(screen.getByRole('button', { name: 'Pagar Laptop' }))
-  const input = screen.getByLabelText('Monto a pagar')
-  expect(input).toHaveValue('1000.00')
+  fireEvent.click(screen.getByRole('button', { name: 'Pagar cuota de marzo, Laptop' }))
+  expect(screen.getByText('Cuota de marzo')).toBeInTheDocument()
+  expect(screen.getByText('$1,000.00', { selector: 'span' })).toBeInTheDocument()
+  expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
 
-  fireEvent.change(input, { target: { value: '9500' } })
-  fireEvent.click(screen.getByRole('button', { name: 'Confirmar' }))
-  expect(screen.getByText('No puede ser mayor al saldo ($9,000.00).')).toBeInTheDocument()
-  expect(api.payCredit).not.toHaveBeenCalled()
-
-  fireEvent.change(input, { target: { value: '2,500' } })
   const confirm = screen.getByRole('button', { name: 'Confirmar' })
   fireEvent.click(confirm)
   fireEvent.click(confirm)
   expect(api.payCredit).toHaveBeenCalledTimes(1)
-  expect(api.payCredit).toHaveBeenCalledWith('owner', credits[1], 250000, undefined, [])
+  expect(api.payCredit).toHaveBeenCalledWith('owner', credits[1], 100000, undefined, [])
 
   finish()
-  await vi.waitFor(() => expect(screen.queryByLabelText('Monto a pagar')).not.toBeInTheDocument())
+  await vi.waitFor(() => expect(screen.queryByText('Cuota de marzo')).not.toBeInTheDocument())
 })
 
-test('la tarjeta prellena el saldo y los créditos en $0 van a Liquidados', () => {
+test('tarjeta: un pago del mes con monto editable que no pasa del saldo; los de $0 van a Liquidados', () => {
+  api.payCredit.mockResolvedValue(undefined)
   api.watchCredits.mockImplementation((_uid, onData) => (onData([...credits, { ...credits[1], id: 'z', name: 'Tele', balance: 0 }]), () => {}))
   renderList()
 
-  fireEvent.click(screen.getByRole('button', { name: 'Pagar BBVA Azul' }))
-  expect(screen.getByLabelText('Monto a pagar')).toHaveValue('12500.00')
+  fireEvent.click(screen.getByRole('button', { name: 'Pagar marzo, BBVA Azul' }))
+  const input = screen.getByLabelText('Pago de marzo')
+  expect(input).toHaveValue('12500.00')
+  fireEvent.change(input, { target: { value: '13000' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Confirmar' }))
+  expect(screen.getByText('No puede ser mayor al saldo ($12,500.00).')).toBeInTheDocument()
+  expect(api.payCredit).not.toHaveBeenCalled()
+
+  fireEvent.change(input, { target: { value: '2,500' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Confirmar' }))
+  expect(api.payCredit).toHaveBeenCalledWith('owner', credits[0], 250000, undefined, [])
 
   const settled = screen.getByRole('heading', { name: 'Liquidados' }).parentElement!
   expect(within(settled).getByText('Tele')).toBeInTheDocument()
-  expect(screen.queryByRole('button', { name: 'Pagar Tele' })).not.toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: /Tele$/ })).not.toBeInTheDocument()
+})
+
+test('un crédito atrasado paga primero el mes más antiguo', () => {
+  api.watchCredits.mockImplementation((_uid, onData) => (onData([{ ...credits[1], nextDue: '2026-02-28', dayOfMonth: 28 }]), () => {}))
+  renderList()
+  expect(screen.getByRole('button', { name: 'Pagar cuota de febrero, Laptop' })).toBeInTheDocument()
 })
