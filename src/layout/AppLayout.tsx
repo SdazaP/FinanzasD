@@ -1,6 +1,7 @@
 import { Link, Outlet, useLocation } from 'react-router'
 import AlertBell from '../alerts/AlertBell'
 import { useAuth } from '../auth/context'
+import OfflineNotice from '../pwa/OfflineNotice'
 import UpdateBanner from '../pwa/UpdateBanner'
 import { formatLongDate, formatMonthLabel } from '../lib/dates'
 import { useToday } from '../lib/useToday'
@@ -36,6 +37,7 @@ export default function AppLayout() {
             )}
           </div>
         </div>
+        <OfflineNotice />
       </header>
 
       <main className="px-5 pb-[calc(7rem+env(safe-area-inset-bottom,0px))]">
