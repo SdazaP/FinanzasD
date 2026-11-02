@@ -35,7 +35,7 @@ Orden: month-context → paid-status, spending (cualquier orden) → money → a
 
 Orden: monthly-payment → credit-cards
 
-## Iteración 4: historial por meses y gastos planeados (propuesta, pendiente de aprobar)
+## Iteración 4: historial por meses y gastos planeados (aprobada)
 
 | Módulo | Estado | Responsabilidad | Depende de |
 |---|---|---|---|
