@@ -126,3 +126,9 @@ test('un crédito atrasado paga primero el mes más antiguo', () => {
   renderList()
   expect(screen.getByRole('button', { name: 'Pagar cuota de febrero, Laptop' })).toBeInTheDocument()
 })
+
+test('un MSI ligado a una tarjeta muestra su nombre', () => {
+  api.watchCredits.mockImplementation((_uid, onData) => (onData([credits[0], { ...credits[1], card: undefined, cardId: 'c' }]), () => {}))
+  renderList()
+  expect(screen.getByText('BBVA Azul · MSI · 31 mar')).toBeInTheDocument()
+})

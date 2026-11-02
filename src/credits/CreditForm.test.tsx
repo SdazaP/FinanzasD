@@ -86,3 +86,30 @@ test('al editar no se puede cambiar el tipo', () => {
   expect(screen.getByLabelText('Tarjeta')).toBeDisabled()
   expect(screen.getByLabelText('Saldo pendiente')).toHaveValue('6000.00')
 })
+
+test('MSI con tarjetas: se liga a una de la lista y guarda cardId en vez del texto', async () => {
+  const onSubmit = vi.fn().mockResolvedValue(undefined)
+  render(<CreditForm cards={[{ id: 'oro', name: 'BBVA Oro' }]} onSubmit={onSubmit} />)
+  fireEvent.click(screen.getByLabelText('Meses sin intereses'))
+  fireEvent.change(screen.getByLabelText('Qué compraste'), { target: { value: 'Tele' } })
+  fireEvent.change(screen.getByLabelText('Tarjeta (opcional)'), { target: { value: 'oro' } })
+  fireEvent.change(screen.getByLabelText('Monto total'), { target: { value: '6000' } })
+  fireEvent.change(screen.getByLabelText('Meses'), { target: { value: '6' } })
+  fireEvent.change(screen.getByLabelText('Próximo pago'), { target: { value: '2026-11-15' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
+  await waitFor(() =>
+    expect(onSubmit).toHaveBeenCalledWith({
+      kind: 'msi', name: 'Tele', cardId: 'oro', total: 600000, months: 6, balance: 600000, nextDue: '2026-11-15', dayOfMonth: 15,
+    }),
+  )
+})
+
+test('un MSI de antes conserva su texto hasta que eliges una tarjeta', async () => {
+  const onSubmit = vi.fn().mockResolvedValue(undefined)
+  const viejo = { kind: 'msi' as const, name: 'Laptop', card: 'Nu', total: 1200000, months: 12, balance: 900000, nextDue: '2026-11-30', dayOfMonth: 30 }
+  render(<CreditForm initial={viejo} cards={[{ id: 'oro', name: 'BBVA Oro' }]} onSubmit={onSubmit} />)
+  expect(screen.getByLabelText('Tarjeta (opcional)')).toHaveValue('')
+  expect(screen.getByText('Antes escrita como "Nu".')).toBeInTheDocument()
+  fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
+  await waitFor(() => expect(onSubmit).toHaveBeenCalledWith(viejo))
+})

@@ -14,6 +14,8 @@ const api = vi.hoisted(() => ({
   deleteCreditPayment: vi.fn(),
 }))
 vi.mock('./api', () => api)
+const cardsMock = vi.hoisted(() => ({ value: { cards: [] as Credit[], credits: [] as Credit[], loaded: true, liveCardIds: [] as string[] } }))
+vi.mock('./useCards', () => ({ useCards: () => cardsMock.value }))
 
 const tarjeta: Credit = { id: 'c', kind: 'card', name: 'BBVA', balance: 500000, limit: 2000000, nextDue: '2026-04-10', dayOfMonth: 10 }
 
@@ -69,4 +71,15 @@ test('si el crédito no existe vuelve a la lista', () => {
   api.watchCredit.mockImplementation((_uid, _id, onData) => (onData(null), () => {}))
   renderDetail()
   expect(screen.getByText('Lista')).toBeInTheDocument()
+})
+
+test('una tarjeta lista los MSI que usan su crédito', () => {
+  const tele: Credit = { id: 't', kind: 'msi', name: 'Tele', cardId: 'c', total: 600000, months: 6, balance: 400000, nextDue: '2026-04-15', dayOfMonth: 15 }
+  const pagado: Credit = { ...tele, id: 'x', name: 'Liquidado', balance: 0 }
+  cardsMock.value = { cards: [tarjeta], credits: [tarjeta, tele, pagado], loaded: true, liveCardIds: ['c'] }
+  renderDetail()
+  const section = screen.getByRole('heading', { name: 'Meses sin intereses' }).parentElement!
+  expect(section).toHaveTextContent('TeleFaltan $4,000.00')
+  expect(section).not.toHaveTextContent('Liquidado')
+  cardsMock.value = { cards: [], credits: [], loaded: true, liveCardIds: [] }
 })

@@ -91,8 +91,9 @@ function GroupTitle({ children }: { children: string }) {
 }
 
 // Encabezado común de la tarjeta de un crédito: nombre, tipo, detalle del mes y saldo
-function CreditHeader({ credit, detail }: { credit: Credit; detail: string }) {
-  const subtitle = credit.kind === 'card' ? 'Tarjeta' : [credit.card, 'MSI'].filter(Boolean).join(' · ')
+function CreditHeader({ credit, detail, cardNames }: { credit: Credit; detail: string; cardNames: Record<string, string> }) {
+  const cardName = credit.kind === 'msi' ? (credit.cardId ? cardNames[credit.cardId] : credit.card) : undefined
+  const subtitle = credit.kind === 'card' ? 'Tarjeta' : [cardName, 'MSI'].filter(Boolean).join(' · ')
   return (
     <Link to={`/creditos/${credit.id}`} className="-m-2 block rounded-2xl p-2 active:bg-zinc-50">
       <div className="flex items-start gap-3">
@@ -125,6 +126,7 @@ export default function CreditList() {
   if (!items) return <p className="text-zinc-500">Cargando…</p>
 
   const settled = items.filter((c) => c.balance <= 0)
+  const cardNames = Object.fromEntries(items.filter((c) => c.kind === 'card').map((c) => [c.id, c.name]))
   const statusOf = (credit: Credit) => monthStatus(credit.nextDue, !!periodOf(credit.id)?.amount, now)
   const due = active.filter((c) => statusOf(c) === 'due')
   // Lo que no vence este mes espera a sus pagos del periodo para no saltar de "Más adelante" a "Pagado"
@@ -160,7 +162,7 @@ export default function CreditList() {
           <ul className="space-y-3">
             {due.map((credit) => (
               <li key={credit.id} className="rounded-3xl bg-white p-4 shadow-card">
-                <CreditHeader credit={credit} detail={formatDay(credit.nextDue)} />
+                <CreditHeader credit={credit} detail={formatDay(credit.nextDue)} cardNames={cardNames} />
                 <PayRow uid={uid} credit={credit} badge={badges[status(credit.nextDue, now)]} money={money} />
               </li>
             ))}
@@ -179,7 +181,7 @@ export default function CreditList() {
               const when = period.lastPaidAt ? ` el ${formatDay(period.lastPaidAt)}` : ''
               return (
                 <li key={credit.id} className="rounded-3xl bg-white p-4 shadow-card">
-                  <CreditHeader credit={credit} detail={`Pagado${when}`} />
+                  <CreditHeader credit={credit} detail={`Pagado${when}`} cardNames={cardNames} />
                   <p className="mt-3 inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
                     <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                       <path d="m5 12 5 5 9-10" />
@@ -199,7 +201,7 @@ export default function CreditList() {
           <ul className="space-y-3">
             {later.map((credit) => (
               <li key={credit.id} className="rounded-3xl bg-white p-4 shadow-card">
-                <CreditHeader credit={credit} detail={`Vence el ${formatDay(credit.nextDue)}`} />
+                <CreditHeader credit={credit} detail={`Vence el ${formatDay(credit.nextDue)}`} cardNames={cardNames} />
               </li>
             ))}
           </ul>

@@ -10,6 +10,7 @@ export type CreditInput = CardInput | MsiInput
 type Props = {
   initial?: CreditInput
   onlyCard?: boolean // desde Cuentas: sin elegir tipo
+  cards?: { id: string; name: string }[] // tarjetas a las que se puede ligar un MSI
   onSubmit: (input: CreditInput) => Promise<void>
 }
 
@@ -26,7 +27,7 @@ function Field({ id, label, error, hint, children }: { id: string; label: string
   )
 }
 
-export default function CreditForm({ initial, onlyCard = false, onSubmit }: Props) {
+export default function CreditForm({ initial, onlyCard = false, cards = [], onSubmit }: Props) {
   // Las tarjetas nuevas exigen límite; una de antes sin límite se puede seguir editando sin él
   const limitOptional = initial?.kind === 'card' && !initial.limit
   const [kind, setKind] = useState(initial?.kind ?? 'card')
@@ -35,6 +36,7 @@ export default function CreditForm({ initial, onlyCard = false, onSubmit }: Prop
   const [balance, setBalance] = useState(centsText(initial?.balance))
   const [limit, setLimit] = useState(initial?.kind === 'card' ? centsText(initial.limit) : '')
   const [card, setCard] = useState(initial?.kind === 'msi' ? (initial.card ?? '') : '')
+  const [cardId, setCardId] = useState(initial?.kind === 'msi' ? (initial.cardId ?? '') : '')
   const [total, setTotal] = useState(initial?.kind === 'msi' ? centsText(initial.total) : '')
   const [months, setMonths] = useState(initial?.kind === 'msi' ? String(initial.months) : '')
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -72,7 +74,9 @@ export default function CreditForm({ initial, onlyCard = false, onSubmit }: Prop
         input = {
           kind, name: cleanName, total: totalCents!, months: monthsNum, balance: pendingCents!, nextDue, dayOfMonth: Number(nextDue.slice(8)),
         }
-        if (card.trim()) input.card = card.trim()
+        // Ligado a una tarjeta, el nombre sale de ella; el texto libre solo queda en MSI sin tarjeta
+        if (cardId) input.cardId = cardId
+        else if (card.trim()) input.card = card.trim()
       }
     }
 
@@ -122,9 +126,20 @@ export default function CreditForm({ initial, onlyCard = false, onSubmit }: Prop
         </>
       ) : (
         <>
-          <Field id="card" label="Tarjeta (opcional)" error={errors.card}>
-            <input id="card" value={card} onChange={(e) => setCard(e.target.value)} autoComplete="off" className={fieldClass} {...invalid('card')} />
-          </Field>
+          {cards.length > 0 ? (
+            <Field id="cardId" label="Tarjeta (opcional)" hint={!cardId && card ? `Antes escrita como "${card}".` : undefined}>
+              <select id="cardId" value={cardId} onChange={(e) => setCardId(e.target.value)} className={fieldClass}>
+                <option value="">Sin tarjeta</option>
+                {cards.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            </Field>
+          ) : (
+            <Field id="card" label="Tarjeta (opcional)" error={errors.card}>
+              <input id="card" value={card} onChange={(e) => setCard(e.target.value)} autoComplete="off" className={fieldClass} {...invalid('card')} />
+            </Field>
+          )}
           <Field id="total" label="Monto total" error={errors.total}>
             <input id="total" value={total} onChange={(e) => setTotal(e.target.value)} inputMode="decimal" placeholder="0.00" className={fieldClass} {...invalid('total')} />
           </Field>

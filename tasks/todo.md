@@ -29,7 +29,7 @@
   - Verify: `npm test && npm run build`; revisión en el panel.
   - Files: `src/money/CardsSection.tsx` (+ test), `src/money/AccountsPage.tsx`, `src/credits/CreditForm.tsx` (+ test), `src/App.tsx`
 
-- [ ] 4. MSI ligados a tarjeta
+- [x] 4. MSI ligados a tarjeta
   - Acceptance:
     - El formulario de MSI elige tarjeta de una lista (opcional); los MSI de antes conservan su texto.
     - El uso de la tarjeta suma lo que falta de sus MSI.

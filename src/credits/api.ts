@@ -32,7 +32,9 @@ export function watchCreditPayments(uid: string, id: string, onData: (payments: 
 export const updateCredit = (uid: string, id: string, input: CreditInput) =>
   updateDoc(
     creditDoc(uid, id),
-    input.kind === 'card' ? { ...input, limit: input.limit ?? deleteField() } : { ...input, card: input.card ?? deleteField() },
+    input.kind === 'card'
+      ? { ...input, limit: input.limit ?? deleteField() }
+      : { ...input, card: input.card ?? deleteField(), cardId: input.cardId ?? deleteField() },
   )
 
 // shortcut: un batch admite 500 escrituras (~40 años de pagos mensuales), partirlo si algún día no alcanza
