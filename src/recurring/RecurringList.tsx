@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { useAuth } from '../auth/context'
 import GastosTabs from '../layout/GastosTabs'
+import AccountPicker from '../money/AccountPicker'
+import { useAccounts } from '../money/useAccounts'
 import { formatDay, monthlyTotal, status } from '../lib/dates'
 import { formatMXN } from '../lib/money'
 import { monthStatus } from '../lib/monthStatus'
@@ -26,6 +28,8 @@ export default function RecurringList() {
   const [loadError, setLoadError] = useState(false)
   const [paying, setPaying] = useState<string>()
   const [payError, setPayError] = useState('')
+  const { accounts, defaultId, liveIds } = useAccounts(uid)
+  const [chosenAccount, setChosenAccount] = useState<Record<string, string>>({}) // cuenta elegida por gasto; si no, la predeterminada
 
   useEffect(() => watchRecurring(uid, setItems, () => setLoadError(true)), [uid])
 
@@ -48,7 +52,7 @@ export default function RecurringList() {
     setPaying(item.id)
     setPayError('')
     try {
-      await payRecurring(uid, item)
+      await payRecurring(uid, item, chosenAccount[item.id] ?? defaultId, liveIds)
     } catch {
       setPayError(`No se pudo registrar el pago de ${item.name}. Intenta de nuevo.`)
     } finally {
@@ -103,7 +107,16 @@ export default function RecurringList() {
               return (
                 <li key={item.id} className="rounded-3xl bg-white p-4 shadow-card">
                   {header(item, formatDay(item.nextDue))}
-                  <div className="mt-3 flex items-center justify-between gap-3">
+                  <div className="mt-2">
+                    <AccountPicker
+                      compact
+                      label="Desde"
+                      accounts={accounts ?? []}
+                      value={chosenAccount[item.id] ?? defaultId}
+                      onChange={(accountId) => setChosenAccount((c) => ({ ...c, [item.id]: accountId }))}
+                    />
+                  </div>
+                  <div className="mt-2 flex items-center justify-between gap-3">
                     {badge ? <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${badge.className}`}>{badge.text}</span> : <span />}
                     <button
                       type="button"

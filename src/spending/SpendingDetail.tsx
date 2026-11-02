@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router'
 import { useAuth } from '../auth/context'
 import { useToday } from '../lib/useToday'
+import { useAccounts } from '../money/useAccounts'
 import { addSpendingCategory, deleteSpending, updateSpending, watchSpending } from './api'
 import type { Spending } from './calc'
 import { useSpendingCategories } from './categories'
@@ -15,6 +16,7 @@ export default function SpendingDetail() {
   const navigate = useNavigate()
   const now = useToday()
   const allCategories = useSpendingCategories(uid)
+  const money = useAccounts(uid)
   const [item, setItem] = useState<Spending | null>()
   const [error, setError] = useState('')
   const [deleting, setDeleting] = useState(false)
@@ -39,9 +41,10 @@ export default function SpendingDetail() {
           today={now}
           initial={item}
           submitLabel="Guardar"
+          accounts={money.accounts}
           onCreateCategory={(name) => addSpendingCategory(uid, name)}
           onSubmit={async (input) => {
-            await updateSpending(uid, id, input)
+            await updateSpending(uid, item, input, money.liveIds)
             navigate('/gastos-hormiga')
           }}
         />
@@ -56,7 +59,7 @@ export default function SpendingDetail() {
             setDeleting(true)
             setError('')
             try {
-              await deleteSpending(uid, id)
+              await deleteSpending(uid, item, money.liveIds)
             } catch {
               setError('No se pudo eliminar el gasto.')
               setDeleting(false)

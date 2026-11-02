@@ -3,6 +3,7 @@ import { Navigate, useNavigate, useParams } from 'react-router'
 import { useAuth } from '../auth/context'
 import PaymentHistory, { type Payment } from '../lib/PaymentHistory'
 import { deleteCredit, deleteCreditPayment, updateCredit, watchCredit, watchCreditPayments, type Credit } from './api'
+import { useAccounts } from '../money/useAccounts'
 import CreditForm from './CreditForm'
 
 const card = 'rounded-3xl bg-white p-5 shadow-card'
@@ -15,6 +16,7 @@ export default function CreditDetail() {
   const [payments, setPayments] = useState<Payment[]>([])
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  const { liveIds } = useAccounts(uid)
 
   useEffect(() => watchCredit(uid, id, setCredit, () => setError('No se pudo cargar el crédito. Revisa tu conexión.')), [uid, id])
   useEffect(() => watchCreditPayments(uid, id, setPayments, () => setError('No se pudo cargar el historial.')), [uid, id])
@@ -65,7 +67,7 @@ export default function CreditDetail() {
         </button>
       </section>
 
-      <PaymentHistory payments={payments} onDelete={(p) => run(() => deleteCreditPayment(uid, id, p.id), 'No se pudo borrar el pago.')} />
+      <PaymentHistory payments={payments} onDelete={(p) => run(() => deleteCreditPayment(uid, id, p, liveIds), 'No se pudo borrar el pago.')} />
     </div>
   )
 }

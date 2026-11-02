@@ -44,6 +44,41 @@ test('guarda una sola vez, se limpia y conserva la categoría elegida', async ()
   expect(screen.getByRole('button', { name: 'Antojos' })).toHaveAttribute('aria-pressed', 'true')
 })
 
+const accounts = [
+  { id: 'nomina', name: 'Nómina', type: 'debit' as const, balance: 100000 },
+  { id: 'efectivo', name: 'Efectivo', type: 'cash' as const, balance: 5000 },
+]
+
+test('con cuentas, el gasto sale de la predeterminada', async () => {
+  const onSubmit = vi.fn().mockResolvedValue(undefined)
+  render(
+    <SpendingForm categories={defaultSpendingCategories} today="2026-11-01" accounts={accounts} defaultAccountId="nomina" onSubmit={onSubmit} onCreateCategory={vi.fn()} />,
+  )
+  expect(screen.getByLabelText('Desde')).toHaveValue('nomina')
+  fireEvent.change(screen.getByLabelText('Monto'), { target: { value: '30' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Agregar' }))
+  await waitFor(() => expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ amount: 3000, accountId: 'nomina' })))
+})
+
+test('al editar un gasto anterior a las cuentas no le asigna ninguna', async () => {
+  const onSubmit = vi.fn().mockResolvedValue(undefined)
+  render(
+    <SpendingForm
+      categories={defaultSpendingCategories}
+      today="2026-11-01"
+      initial={{ amount: 4500, date: '2026-10-31', category: 'Café' }}
+      submitLabel="Guardar"
+      accounts={accounts}
+      defaultAccountId="nomina"
+      onSubmit={onSubmit}
+      onCreateCategory={vi.fn()}
+    />,
+  )
+  expect(screen.getByLabelText('Desde')).toHaveValue('')
+  fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
+  await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ amount: 4500, date: '2026-10-31', category: 'Café' }))
+})
+
 test('crea una categoría nueva y la selecciona', async () => {
   const { onCreateCategory, type } = setup()
   fireEvent.click(screen.getByRole('button', { name: '+ Nueva' }))

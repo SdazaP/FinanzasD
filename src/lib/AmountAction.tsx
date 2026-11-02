@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { toCents } from './money'
 import { fieldClass } from './ui'
 
@@ -9,10 +9,11 @@ type Props = {
   validate: (cents: number | null) => string
   onConfirm: (cents: number) => Promise<unknown>
   onDone: () => void // al confirmar con éxito o cancelar
+  children?: ReactNode // campos extra bajo el monto (p. ej. de qué cuenta)
 }
 
 // Campo de monto en línea con Confirmar / Cancelar (pagos, aportes, retiros)
-export default function AmountAction({ id, label, initialCents, validate, onConfirm, onDone }: Props) {
+export default function AmountAction({ id, label, initialCents, validate, onConfirm, onDone, children }: Props) {
   const [amount, setAmount] = useState(initialCents ? (initialCents / 100).toFixed(2) : '')
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
@@ -47,6 +48,7 @@ export default function AmountAction({ id, label, initialCents, validate, onConf
         className={fieldClass}
       />
       {error && <p id={`${id}-error`} className="mt-1 text-sm text-red-700">{error}</p>}
+      {children && <div className="mt-2">{children}</div>}
       <div className="mt-3 grid grid-cols-2 gap-2">
         <button type="button" onClick={onDone} className="min-h-11 rounded-xl bg-white text-sm font-medium active:scale-[0.97]">
           Cancelar

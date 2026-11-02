@@ -1,12 +1,13 @@
 import {
-  addDoc, collection, deleteDoc, doc, getDocs, onSnapshot, orderBy, query, serverTimestamp, updateDoc, writeBatch,
+  addDoc, collection, doc, getDocs, onSnapshot, orderBy, query, serverTimestamp, updateDoc, writeBatch,
 } from 'firebase/firestore'
 import { db } from '../firebase'
+import { applyAccountDelta } from '../lib/accountBalance'
 import { nextDueAfter } from '../lib/dates'
 import type { RecurringInput } from './RecurringForm'
 
 export type Recurring = RecurringInput & { id: string; active: boolean }
-export type Payment = { id: string; dueDate: string; amount: number }
+export type Payment = { id: string; dueDate: string; amount: number; accountId?: string }
 
 const recurringCol = (uid: string) => collection(db, 'users', uid, 'recurring')
 const recurringDoc = (uid: string, id: string) => doc(recurringCol(uid), id)
@@ -45,11 +46,14 @@ export const updateRecurring = (uid: string, id: string, input: RecurringInput) 
 export const setRecurringActive = (uid: string, id: string, active: boolean) => updateDoc(recurringDoc(uid, id), { active })
 
 // Registra el pago del periodo y avanza un mes, ambos o ninguno
-export function payRecurring(uid: string, item: Recurring) {
+export function payRecurring(uid: string, item: Recurring, accountId?: string, liveAccountIds: string[] = []) {
   const ref = recurringDoc(uid, item.id)
   const batch = writeBatch(db)
-  batch.set(doc(paymentsCol(uid, item.id)), { dueDate: item.nextDue, paidAt: serverTimestamp(), amount: item.amount })
+  batch.set(doc(paymentsCol(uid, item.id)), {
+    dueDate: item.nextDue, paidAt: serverTimestamp(), amount: item.amount, ...(accountId && { accountId }),
+  })
   batch.update(ref, { nextDue: nextDueAfter(item.nextDue, item.dayOfMonth) })
+  applyAccountDelta(batch, uid, accountId, -item.amount, liveAccountIds)
   return batch.commit()
 }
 
@@ -72,4 +76,10 @@ export function watchCategories(uid: string, onData: (names: string[]) => void) 
 
 export const addCategory = (uid: string, name: string) => addDoc(categoriesCol(uid), { name })
 
-export const deletePayment =(uid: string, id: string, paymentId: string) => deleteDoc(doc(paymentsCol(uid, id), paymentId))
+// Borrar un pago devuelve el dinero a su cuenta (si tenía y sigue existiendo)
+export function deletePayment(uid: string, id: string, payment: Payment, liveAccountIds: string[] = []) {
+  const batch = writeBatch(db)
+  batch.delete(doc(paymentsCol(uid, id), payment.id))
+  applyAccountDelta(batch, uid, payment.accountId, payment.amount, liveAccountIds)
+  return batch.commit()
+}

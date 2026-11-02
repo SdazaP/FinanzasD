@@ -1,7 +1,7 @@
 import { formatDay } from './dates'
 import { formatMXN } from './money'
 
-export type Payment = { id: string; dueDate: string; amount: number; label?: string }
+export type Payment = { id: string; dueDate: string; amount: number; label?: string; accountId?: string }
 
 type Props = {
   payments: Payment[]

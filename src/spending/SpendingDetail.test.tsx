@@ -53,7 +53,7 @@ test('precarga el gasto y guarda los cambios quitando la nota', async () => {
   fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
 
   expect(await screen.findByText('Lista')).toBeInTheDocument()
-  expect(api.updateSpending).toHaveBeenCalledWith('owner', 'a', { amount: 6000, date: '2026-10-31', category: 'Café' })
+  expect(api.updateSpending).toHaveBeenCalledWith('owner', cafe, { amount: 6000, date: '2026-10-31', category: 'Café' }, [])
 })
 
 test('eliminar pide confirmación', () => {
@@ -62,7 +62,7 @@ test('eliminar pide confirmación', () => {
   fireEvent.click(screen.getByRole('button', { name: 'Eliminar gasto' }))
   expect(api.deleteSpending).not.toHaveBeenCalled()
   fireEvent.click(screen.getByRole('button', { name: 'Eliminar gasto' }))
-  expect(api.deleteSpending).toHaveBeenCalledWith('owner', 'a')
+  expect(api.deleteSpending).toHaveBeenCalledWith('owner', cafe, [])
 })
 
 test('si el gasto no existe vuelve a la lista', () => {

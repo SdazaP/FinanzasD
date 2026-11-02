@@ -64,7 +64,7 @@ test('aportar guarda un depósito una sola vez', async () => {
   fireEvent.click(confirm)
 
   expect(api.moveSaving).toHaveBeenCalledTimes(1)
-  expect(api.moveSaving).toHaveBeenCalledWith('owner', savings[0], 'deposit', 200000)
+  expect(api.moveSaving).toHaveBeenCalledWith('owner', savings[0], 'deposit', 200000, undefined, [])
   finish()
   await vi.waitFor(() => expect(screen.queryByLabelText('Monto a aportar')).not.toBeInTheDocument())
 })

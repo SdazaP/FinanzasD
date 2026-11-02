@@ -98,7 +98,7 @@ test('pagar prellena la cuota, valida el monto y paga una sola vez con el monto 
   fireEvent.click(confirm)
   fireEvent.click(confirm)
   expect(api.payCredit).toHaveBeenCalledTimes(1)
-  expect(api.payCredit).toHaveBeenCalledWith('owner', credits[1], 250000)
+  expect(api.payCredit).toHaveBeenCalledWith('owner', credits[1], 250000, undefined, [])
 
   finish()
   await vi.waitFor(() => expect(screen.queryByLabelText('Monto a pagar')).not.toBeInTheDocument())

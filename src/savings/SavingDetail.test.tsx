@@ -58,7 +58,7 @@ test('muestra el historial con etiquetas y montos con signo', () => {
 test('borrar un retiro revierte el saldo', () => {
   renderDetail()
   fireEvent.click(screen.getByRole('button', { name: 'Borrar retiro del 31 oct 2026' }))
-  expect(api.deleteMovement).toHaveBeenCalledWith('owner', 'v', movements[0])
+  expect(api.deleteMovement).toHaveBeenCalledWith('owner', 'v', movements[0], [])
 })
 
 test('no deja borrar un aporte mayor al saldo', () => {

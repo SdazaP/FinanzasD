@@ -35,7 +35,7 @@
   - Verify: `npm test`
   - Files: `src/money/AccountDetail.tsx`, `src/money/AccountDetail.test.tsx`, `src/money/api.ts`
 
-- [ ] 5. Gastos fijos y créditos con cuenta
+- [x] 5. Gastos fijos y créditos con cuenta
   - Acceptance:
     - Pagar muestra "desde {cuenta}" con selector, y el pago guarda `accountId` y resta de la cuenta en el mismo batch.
     - Borrar un pago con cuenta la devuelve.
@@ -43,7 +43,7 @@
   - Verify: `npm test` (tests existentes en verde + nuevos).
   - Files: `src/recurring/api.ts`, `src/recurring/RecurringList.tsx`, `src/credits/api.ts`, `src/credits/CreditList.tsx` (+ tests)
 
-- [ ] 6. Ahorro y hormiga con cuenta
+- [x] 6. Ahorro y hormiga con cuenta
   - Acceptance:
     - Aportar resta y retirar suma a la cuenta elegida.
     - El gasto hormiga resta; editarlo corrige la cuenta anterior y la nueva; borrarlo devuelve.

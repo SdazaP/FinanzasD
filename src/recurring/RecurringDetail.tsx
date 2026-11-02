@@ -6,6 +6,7 @@ import {
   addCategory, deletePayment, deleteRecurring, setRecurringActive, updateRecurring, watchPayments, watchRecurringItem,
   type Recurring,
 } from './api'
+import { useAccounts } from '../money/useAccounts'
 import RecurringForm from './RecurringForm'
 import { useCategories } from './useCategories'
 
@@ -20,6 +21,7 @@ export default function RecurringDetail() {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const allCategories = useCategories(uid)
+  const { liveIds } = useAccounts(uid)
 
   useEffect(() => watchRecurringItem(uid, id, setItem, () => setError('No se pudo cargar el gasto. Revisa tu conexión.')), [uid, id])
   useEffect(() => watchPayments(uid, id, setPayments, () => setError('No se pudo cargar el historial.')), [uid, id])
@@ -85,7 +87,7 @@ export default function RecurringDetail() {
         </button>
       </section>
 
-      <PaymentHistory payments={payments} onDelete={(p) => run(() => deletePayment(uid, id, p.id), 'No se pudo borrar el pago.')} />
+      <PaymentHistory payments={payments} onDelete={(p) => run(() => deletePayment(uid, id, p, liveIds), 'No se pudo borrar el pago.')} />
     </div>
   )
 }

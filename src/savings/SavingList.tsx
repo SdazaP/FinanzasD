@@ -3,6 +3,8 @@ import { Link } from 'react-router'
 import { useAuth } from '../auth/context'
 import { today } from '../lib/dates'
 import AmountAction from '../lib/AmountAction'
+import AccountPicker from '../money/AccountPicker'
+import { useAccounts } from '../money/useAccounts'
 import { formatMXN } from '../lib/money'
 import ProgressBar from '../lib/ProgressBar'
 import { moveSaving, watchSavings, type MovementType, type Saving } from './api'
@@ -37,8 +39,10 @@ function Goal({ saving, now }: { saving: Saving; now: string }) {
 
 const actionButton = 'min-h-11 rounded-xl px-5 text-sm font-medium transition-transform duration-150 ease-out active:scale-[0.97]'
 
-function Movements({ uid, saving }: { uid: string; saving: Saving }) {
+function Movements({ uid, saving, money }: { uid: string; saving: Saving; money: ReturnType<typeof useAccounts> }) {
   const [open, setOpen] = useState<MovementType | null>(null)
+  const [accountId, setAccountId] = useState<string>()
+  const account = accountId ?? money.defaultId
 
   if (open) {
     return (
@@ -46,9 +50,11 @@ function Movements({ uid, saving }: { uid: string; saving: Saving }) {
         id={`${open}-${saving.id}`}
         label={open === 'deposit' ? 'Monto a aportar' : 'Monto a retirar'}
         validate={(cents) => movementError(cents, open, saving.balance)}
-        onConfirm={(cents) => moveSaving(uid, saving, open, cents)}
+        onConfirm={(cents) => moveSaving(uid, saving, open, cents, account, money.liveIds)}
         onDone={() => setOpen(null)}
-      />
+      >
+        <AccountPicker accounts={money.accounts ?? []} value={account} onChange={setAccountId} label={open === 'deposit' ? 'Desde' : 'Hacia'} />
+      </AmountAction>
     )
   }
 
@@ -70,6 +76,7 @@ export default function SavingList() {
   const uid = useAuth()!.uid
   const [items, setItems] = useState<Saving[]>()
   const [loadError, setLoadError] = useState(false)
+  const money = useAccounts(uid)
 
   useEffect(() => watchSavings(uid, setItems, () => setLoadError(true)), [uid])
 
@@ -108,7 +115,7 @@ export default function SavingList() {
                 </div>
                 <Goal saving={saving} now={now} />
               </Link>
-              <Movements uid={uid} saving={saving} />
+              <Movements uid={uid} saving={saving} money={money} />
             </li>
           ))}
         </ul>

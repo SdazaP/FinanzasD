@@ -4,6 +4,7 @@ import { useAuth } from '../auth/context'
 import { formatMXN } from '../lib/money'
 import PaymentHistory from '../lib/PaymentHistory'
 import { deleteMovement, deleteSaving, updateSaving, watchMovements, watchSaving, type Movement, type Saving } from './api'
+import { useAccounts } from '../money/useAccounts'
 import SavingForm from './SavingForm'
 
 const card = 'rounded-3xl bg-white p-5 shadow-card'
@@ -18,6 +19,7 @@ export default function SavingDetail() {
   const [movements, setMovements] = useState<Movement[]>([])
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  const { liveIds } = useAccounts(uid)
 
   useEffect(() => watchSaving(uid, id, setSaving, () => setError('No se pudo cargar el apartado. Revisa tu conexión.')), [uid, id])
   useEffect(() => watchMovements(uid, id, setMovements, () => setError('No se pudo cargar el historial.')), [uid, id])
@@ -43,7 +45,7 @@ export default function SavingDetail() {
       setError(`No se puede borrar: el saldo (${formatMXN(saving!.balance)}) quedaría negativo. Borra antes los retiros posteriores.`)
       return
     }
-    run(() => deleteMovement(uid, id, m), 'No se pudo borrar el movimiento.')
+    run(() => deleteMovement(uid, id, m, liveIds), 'No se pudo borrar el movimiento.')
   }
 
   return (

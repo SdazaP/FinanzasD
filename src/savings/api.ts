@@ -2,6 +2,7 @@ import {
   collection, deleteField, doc, getDocs, increment, onSnapshot, orderBy, query, serverTimestamp, updateDoc, where, writeBatch,
 } from 'firebase/firestore'
 import { db } from '../firebase'
+import { applyAccountDelta } from '../lib/accountBalance'
 import { today } from '../lib/dates'
 import type { NewSavingInput, SavingInput } from './SavingForm'
 
@@ -44,18 +45,23 @@ export function watchMovements(uid: string, id: string, onData: (movements: Move
 }
 
 // Movimiento + saldo en un batch; increment evita pisar el saldo si se mueve desde otra pestaña
-export function moveSaving(uid: string, saving: Saving, type: MovementType, amount: number) {
+// Aportar saca dinero de la cuenta y retirar lo regresa
+export function moveSaving(uid: string, saving: Saving, type: MovementType, amount: number, accountId?: string, liveAccountIds: string[] = []) {
+  const sign = type === 'deposit' ? 1 : -1
   const batch = writeBatch(db)
-  batch.set(doc(movementsCol(uid, saving.id)), { type, amount, date: today(), createdAt: serverTimestamp() })
-  batch.update(savingDoc(uid, saving.id), { balance: increment(type === 'deposit' ? amount : -amount) })
+  batch.set(doc(movementsCol(uid, saving.id)), { type, amount, date: today(), createdAt: serverTimestamp(), ...(accountId && { accountId }) })
+  batch.update(savingDoc(uid, saving.id), { balance: increment(sign * amount) })
+  applyAccountDelta(batch, uid, accountId, -sign * amount, liveAccountIds)
   return batch.commit()
 }
 
-// Borrar un movimiento deshace su efecto en el saldo, en el mismo batch
-export function deleteMovement(uid: string, savingId: string, movement: Movement) {
+// Borrar un movimiento deshace su efecto en el apartado y en su cuenta, en el mismo batch
+export function deleteMovement(uid: string, savingId: string, movement: Movement, liveAccountIds: string[] = []) {
+  const sign = movement.type === 'deposit' ? 1 : -1
   const batch = writeBatch(db)
   batch.delete(doc(movementsCol(uid, savingId), movement.id))
-  batch.update(savingDoc(uid, savingId), { balance: increment(movement.type === 'deposit' ? -movement.amount : movement.amount) })
+  batch.update(savingDoc(uid, savingId), { balance: increment(-sign * movement.amount) })
+  applyAccountDelta(batch, uid, movement.accountId, sign * movement.amount, liveAccountIds)
   return batch.commit()
 }
 

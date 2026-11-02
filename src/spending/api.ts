@@ -1,11 +1,12 @@
 import {
-  Timestamp, addDoc, collection, deleteDoc, deleteField, doc, onSnapshot, query, serverTimestamp, setDoc, updateDoc, where,
+  Timestamp, addDoc, collection, deleteField, doc, onSnapshot, query, serverTimestamp, setDoc, where, writeBatch,
   type DocumentSnapshot,
 } from 'firebase/firestore'
 import { db } from '../firebase'
+import { applyAccountDelta } from '../lib/accountBalance'
 import type { Spending } from './calc'
 
-export type SpendingInput = { amount: number; date: string; category: string; note?: string }
+export type SpendingInput = { amount: number; date: string; category: string; note?: string; accountId?: string }
 
 const spendingCol = (uid: string) => collection(db, 'users', uid, 'spending')
 const categoriesCol = (uid: string) => collection(db, 'users', uid, 'spendingCategories')
@@ -27,13 +28,33 @@ export function watchSpending(uid: string, id: string, onData: (item: Spending |
   return onSnapshot(doc(spendingCol(uid), id), (snap) => onData(snap.exists() ? toSpending(snap) : null), onError)
 }
 
-export const addSpending = (uid: string, input: SpendingInput) => addDoc(spendingCol(uid), { ...input, createdAt: serverTimestamp() })
+export function addSpending(uid: string, input: SpendingInput, liveAccountIds: string[] = []) {
+  const batch = writeBatch(db)
+  batch.set(doc(spendingCol(uid)), { ...input, createdAt: serverTimestamp() })
+  applyAccountDelta(batch, uid, input.accountId, -input.amount, liveAccountIds)
+  return batch.commit()
+}
 
-// La nota vacía se borra explícitamente; updateDoc conservaría la anterior
-export const updateSpending = (uid: string, id: string, input: SpendingInput) =>
-  updateDoc(doc(spendingCol(uid), id), { ...input, note: input.note ?? deleteField() })
+// Devuelve el gasto anterior a su cuenta y cobra el nuevo (puede ser otra cuenta u otro monto).
+// La nota y la cuenta vacías se borran explícitamente; updateDoc conservaría las anteriores.
+export function updateSpending(uid: string, old: Spending, input: SpendingInput, liveAccountIds: string[] = []) {
+  const batch = writeBatch(db)
+  batch.update(doc(spendingCol(uid), old.id), { ...input, note: input.note ?? deleteField(), accountId: input.accountId ?? deleteField() })
+  if (old.accountId === input.accountId) {
+    applyAccountDelta(batch, uid, input.accountId, old.amount - input.amount, liveAccountIds)
+  } else {
+    applyAccountDelta(batch, uid, old.accountId, old.amount, liveAccountIds)
+    applyAccountDelta(batch, uid, input.accountId, -input.amount, liveAccountIds)
+  }
+  return batch.commit()
+}
 
-export const deleteSpending = (uid: string, id: string) => deleteDoc(doc(spendingCol(uid), id))
+export function deleteSpending(uid: string, item: Spending, liveAccountIds: string[] = []) {
+  const batch = writeBatch(db)
+  batch.delete(doc(spendingCol(uid), item.id))
+  applyAccountDelta(batch, uid, item.accountId, item.amount, liveAccountIds)
+  return batch.commit()
+}
 
 export function watchSpendingCategories(uid: string, onData: (names: string[]) => void) {
   // Si falla la lectura, el formulario sigue con las categorías por defecto

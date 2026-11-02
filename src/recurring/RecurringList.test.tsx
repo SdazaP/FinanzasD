@@ -74,7 +74,7 @@ test('pagar desactiva el botón mientras guarda y solo paga una vez', async () =
 
   expect(button).toBeDisabled()
   expect(api.payRecurring).toHaveBeenCalledTimes(1)
-  expect(api.payRecurring).toHaveBeenCalledWith('owner', items[1])
+  expect(api.payRecurring).toHaveBeenCalledWith('owner', items[1], undefined, [])
 
   finish()
   await vi.waitFor(() => expect(button).toBeEnabled())

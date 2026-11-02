@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { useAuth } from '../auth/context'
 import AmountAction from '../lib/AmountAction'
+import AccountPicker from '../money/AccountPicker'
+import { useAccounts } from '../money/useAccounts'
 import { formatDay, status } from '../lib/dates'
 import { formatMXN } from '../lib/money'
 import { monthStatus } from '../lib/monthStatus'
@@ -42,8 +44,12 @@ function Details({ credit }: { credit: Credit }) {
   )
 }
 
-function PayRow({ uid, credit, badge }: { uid: string; credit: Credit; badge: (typeof badges)[keyof typeof badges] }) {
+type Accounts = ReturnType<typeof useAccounts>
+
+function PayRow({ uid, credit, badge, money }: { uid: string; credit: Credit; badge: (typeof badges)[keyof typeof badges]; money: Accounts }) {
   const [open, setOpen] = useState(false)
+  const [accountId, setAccountId] = useState<string>()
+  const from = accountId ?? money.defaultId
 
   if (!open) {
     return (
@@ -67,9 +73,11 @@ function PayRow({ uid, credit, badge }: { uid: string; credit: Credit; badge: (t
       label="Monto a pagar"
       initialCents={credit.kind === 'card' ? credit.balance : msiSummary(credit).suggested}
       validate={(cents) => paymentError(cents, credit.balance)}
-      onConfirm={(cents) => payCredit(uid, credit, cents)}
+      onConfirm={(cents) => payCredit(uid, credit, cents, from, money.liveIds)}
       onDone={() => setOpen(false)}
-    />
+    >
+      <AccountPicker accounts={money.accounts ?? []} value={from} onChange={setAccountId} label="Desde" />
+    </AmountAction>
   )
 }
 
@@ -101,6 +109,7 @@ export default function CreditList() {
   const now = useToday()
   const [items, setItems] = useState<Credit[]>()
   const [loadError, setLoadError] = useState(false)
+  const money = useAccounts(uid)
 
   useEffect(() => watchCredits(uid, setItems, () => setLoadError(true)), [uid])
 
@@ -147,7 +156,7 @@ export default function CreditList() {
             {due.map((credit) => (
               <li key={credit.id} className="rounded-3xl bg-white p-4 shadow-card">
                 <CreditHeader credit={credit} detail={formatDay(credit.nextDue)} />
-                <PayRow uid={uid} credit={credit} badge={badges[status(credit.nextDue, now)]} />
+                <PayRow uid={uid} credit={credit} badge={badges[status(credit.nextDue, now)]} money={money} />
               </li>
             ))}
           </ul>
