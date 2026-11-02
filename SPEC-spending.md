@@ -14,7 +14,7 @@ Registrar rápido los gastos chicos y variables del mes (café, antojos, salidas
    - El título del encabezado cambia: "Gastos fijos" o "Gastos hormiga".
 2. **Registro rápido.** Arriba de la lista hay un formulario corto, pensado para usar con una mano:
    - **monto** (obligatorio, > $0, teclado decimal);
-   - **categoría** con chips de un toque: lista fija (Comida, Café, Antojos, Salidas, Transporte, Compras, Apps y suscripciones chicas, Otros) más las propias, y una opción "+ Nueva" igual que en gastos fijos;
+   - **categoría** con chips de un toque: lista fija (Comida, Café, Antojos, Salidas, Transporte, Compras, Otros) más las propias, y una opción "+ Nueva" igual que en gastos fijos;
    - **nota** opcional (máx. 80 caracteres), p. ej. "Oxxo";
    - **fecha**: hoy por defecto, editable, nunca futura.
    - Al guardar, el formulario se limpia, conserva la categoría elegida y el gasto aparece en la lista.
@@ -106,4 +106,4 @@ Cambios en código existente:
 ## Open Questions
 
 1. **Ubicación:** ¿te parece bien que Hormiga viva dentro de Gastos con el selector Fijos | Hormiga? La alternativa sería reemplazar en la barra inferior la pestaña de Inversiones, que está pospuesta. Propuesta: el selector, porque deja Inversiones en su lugar para cuando la retomemos.
-2. **Lista fija de categorías:** Comida, Café, Antojos, Salidas, Transporte, Compras, Apps y suscripciones chicas, Otros. ¿Agregarías o quitarías alguna?
+2. **Lista fija de categorías:** Comida, Café, Antojos, Salidas, Transporte, Compras, Otros. ¿Agregarías o quitarías alguna?

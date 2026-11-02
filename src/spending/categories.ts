@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { mergeCategories } from '../lib/categories'
 import { watchSpendingCategories } from './api'
 
-export const defaultSpendingCategories = ['Comida', 'Café', 'Antojos', 'Salidas', 'Transporte', 'Compras', 'Apps y suscripciones chicas', 'Otros']
+export const defaultSpendingCategories = ['Comida', 'Café', 'Antojos', 'Salidas', 'Transporte', 'Compras', 'Otros']
 
 export function useSpendingCategories(uid: string) {
   const [custom, setCustom] = useState<string[]>([])
