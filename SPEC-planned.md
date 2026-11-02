@@ -29,7 +29,7 @@ Planear un gasto futuro, por ejemplo "Lentes, $3,000, marzo 2027", para:
    - nombre, monto y fecha ("Lentes · $3,000 · 15 mar 2027");
    - barra de avance y "Ahorra $X al mes", o "Ya tienes todo", o "La fecha ya pasó";
    - se abre en su detalle, con aportes, retiros y edición, igual que cualquier apartado.
-   - Los planeados **no** se suman en "Total ahorrado"; se muestran aparte, como "Apartado para gastos planeados $X".
+   - Lo apartado para planeados **sí** se suma en "Total ahorrado" (tu decisión), y la tarjeta agrega la línea "De eso, $X para gastos planeados".
 3. **Gastar** (en el detalle, disponible desde el día de la fecha planeada; antes, con la etiqueta "Gastar antes de tiempo"):
    - El monto empieza en el planeado y se puede ajustar al real, hasta lo que tienes apartado.
      - Si te falta, el botón dice "Te faltan $X: aporta antes de gastar" y no deja continuar.
@@ -66,7 +66,7 @@ Sin cambios de reglas ni índices.
 
 ```
 src/savings/
-  calc.ts (+ test)         → plannedSummary (avance, mensual, listo, vencido), spendError, totalSaved sin planeados
+  calc.ts (+ test)         → plannedSummary (avance, mensual, listo, vencido), spendError, plannedSaved (lo apartado para planeados)
   api.ts                   → addPlanned, spendPlanned (batch: movimiento 'spent' + increment(-monto) + spentAt)
   PlannedForm.tsx (+ test) → formulario de "Planear gasto"
   SavingList.tsx           → secciones "Gastos planeados" y "Gastados"; total aparte
@@ -81,7 +81,7 @@ App.tsx                    → /ahorro/planear
 - **Unit:**
   - `plannedSummary`: mensual con la fecha, completo, vencido y gastado;
   - `spendError`: 0, más que lo apartado, exacto y menos;
-  - `totalSaved` excluye los planeados;
+  - `totalSaved` incluye los planeados y `plannedSaved` suma solo los planeados sin gastar;
   - historial: los planeados futuros no suman, los gastados sí, y el límite para navegar meses futuros.
 - **API (Firestore simulado):** `spendPlanned` escribe el movimiento, el `increment` y `spentAt` en un batch y no toca cuentas.
 - **Componentes:**
@@ -115,5 +115,6 @@ App.tsx                    → /ahorro/planear
 
 ## Open Questions
 
-1. ~~Antes de la fecha~~ **Resuelta:** se puede gastar antes de tiempo ("Gastar antes de tiempo").
-2. **"Total ahorrado":** propongo mostrar lo de los planeados aparte, porque ese dinero ya tiene destino. ¿O prefieres que siga sumado al total?
+Ninguna. Resueltas:
+1. Se puede gastar antes de la fecha ("Gastar antes de tiempo").
+2. Lo apartado para planeados se suma al "Total ahorrado", con su parte indicada aparte.
