@@ -50,7 +50,7 @@
   - Verify: `npm test`
   - Files: `src/spending/SpendingList.tsx`, `src/alerts/PreferencesCard.tsx` (+ test), `src/money/AccountsPage.tsx`
 
-- [ ] 6. Revisión y deploy
+- [x] 6. Revisión y deploy
   - Acceptance:
     - Revisión a 360 px con globo de 2 dígitos y el panel con 4 avisos y montos grandes.
     - Mapa de capacidades: `alerts` en "Listo".
