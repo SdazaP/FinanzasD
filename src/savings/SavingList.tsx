@@ -8,7 +8,8 @@ import { useAccounts } from '../money/useAccounts'
 import { formatMXN } from '../lib/money'
 import ProgressBar from '../lib/ProgressBar'
 import { moveSaving, watchSavings, type MovementType, type Saving } from './api'
-import { goalSummary, movementError, totalSaved } from './calc'
+import { goalSummary, movementError, plannedSaved, totalSaved } from './calc'
+import { formatDay } from '../lib/dates'
 
 const monthYear = new Intl.DateTimeFormat('es-MX', { month: 'long', year: 'numeric' })
 const formatMonth = (date: string) => {
@@ -24,7 +25,7 @@ function Goal({ saving, now }: { saving: Saving; now: string }) {
       <ProgressBar value={goal.progress} label={`Avance de ${saving.name}`} />
       <p className="text-xs text-zinc-500">
         {Math.round(goal.progress * 100)}% de {formatMXN(saving.target!)}
-        {goal.status === 'reached' && <span className="font-medium text-emerald-700"> · Meta alcanzada</span>}
+        {goal.status === 'reached' && <span className="font-medium text-emerald-700"> · {saving.planned ? 'Ya tienes todo' : 'Meta alcanzada'}</span>}
         {goal.status === 'overdue' && <> · Faltan {formatMXN(goal.missing)} · <span className="font-medium text-red-700">La fecha ya pasó</span></>}
         {goal.status === 'on-track' && ` · Faltan ${formatMXN(goal.missing)}`}
       </p>
@@ -84,6 +85,27 @@ export default function SavingList() {
   if (!items) return <p className="text-zinc-500">Cargando…</p>
 
   const now = today()
+  const planned = items.filter((s) => s.planned && !s.spentAt).sort((a, b) => a.deadline!.localeCompare(b.deadline!))
+  const spent = items.filter((s) => s.planned && s.spentAt)
+  const regular = items.filter((s) => !s.planned)
+  const forPlanned = plannedSaved(items)
+
+  const row = (saving: Saving, subtitle?: string) => (
+    <li key={saving.id} className="rounded-3xl bg-surface p-4 shadow-card">
+      <Link to={`/ahorro/${saving.id}`} className="-m-2 block rounded-2xl p-2 active:bg-zinc-50">
+        <div className="flex items-start gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="truncate font-medium">{saving.name}</p>
+            {subtitle && <p className="truncate text-sm text-zinc-500">{subtitle}</p>}
+          </div>
+          <p className="shrink-0 font-display text-lg font-semibold tabular-nums">{formatMXN(saving.balance)}</p>
+        </div>
+        {!saving.spentAt && <Goal saving={saving} now={now} />}
+        {saving.spentAt && saving.balance > 0 && <p className="mt-2 text-sm text-primary">Te sobraron {formatMXN(saving.balance)}: retíralos a una cuenta</p>}
+      </Link>
+      {(!saving.spentAt || saving.balance > 0) && <Movements uid={uid} saving={saving} money={money} />}
+    </li>
+  )
 
   return (
     <div className="space-y-4">
@@ -91,34 +113,42 @@ export default function SavingList() {
         <p className="text-sm text-white/80">Total ahorrado</p>
         <p className="mt-1 font-display text-[clamp(1.5rem,8vw,2.25rem)] font-semibold tracking-tight tabular-nums [overflow-wrap:anywhere]">{formatMXN(totalSaved(items))}</p>
         <p className="mt-1 text-sm text-white/80">{items.length === 1 ? '1 apartado' : `${items.length} apartados`}</p>
+        {forPlanned > 0 && <p className="mt-1 text-sm text-white/80">De eso, <span className="font-medium text-white tabular-nums">{formatMXN(forPlanned)}</span> para gastos planeados</p>}
       </section>
 
-      <Link
-        to="/ahorro/nuevo"
-        className="flex min-h-12 items-center justify-center rounded-2xl bg-surface font-medium text-primary shadow-card transition-transform duration-150 ease-out active:scale-[0.98]"
-      >
-        Agregar apartado
-      </Link>
+      <div className="grid grid-cols-2 gap-3">
+        {[['/ahorro/nuevo', 'Agregar apartado'], ['/ahorro/planear', 'Planear gasto']].map(([to, text]) => (
+          <Link
+            key={to}
+            to={to}
+            className="flex min-h-12 items-center justify-center rounded-2xl bg-surface text-sm font-medium text-primary shadow-card transition-transform duration-150 ease-out active:scale-[0.98]"
+          >
+            {text}
+          </Link>
+        ))}
+      </div>
 
+      {planned.length > 0 && (
+        <section>
+          <h2 className="mb-2 px-1 text-sm font-medium text-zinc-500">Gastos planeados</h2>
+          <ul className="space-y-3">{planned.map((s) => row(s, `${s.category} · ${formatDay(s.deadline!, true)}`))}</ul>
+        </section>
+      )}
+
+      {regular.length > 0 && planned.length > 0 && <h2 className="-mb-2 px-1 text-sm font-medium text-zinc-500">Apartados</h2>}
       {items.length === 0 ? (
         <p className="rounded-3xl bg-surface p-6 text-zinc-600 shadow-card">
           Aún no tienes apartados. Crea uno para tu fondo de emergencias o para una meta como un viaje.
         </p>
       ) : (
-        <ul className="space-y-3">
-          {items.map((saving) => (
-            <li key={saving.id} className="rounded-3xl bg-surface p-4 shadow-card">
-              <Link to={`/ahorro/${saving.id}`} className="-m-2 block rounded-2xl p-2 active:bg-zinc-50">
-                <div className="flex items-start gap-3">
-                  <p className="min-w-0 flex-1 truncate font-medium">{saving.name}</p>
-                  <p className="shrink-0 font-display text-lg font-semibold tabular-nums">{formatMXN(saving.balance)}</p>
-                </div>
-                <Goal saving={saving} now={now} />
-              </Link>
-              <Movements uid={uid} saving={saving} money={money} />
-            </li>
-          ))}
-        </ul>
+        <ul className="space-y-3">{regular.map((s) => row(s))}</ul>
+      )}
+
+      {spent.length > 0 && (
+        <section>
+          <h2 className="mb-2 px-1 text-sm font-medium text-zinc-500">Gastados</h2>
+          <ul className="space-y-3">{spent.map((s) => row(s, `Gastado el ${formatDay(s.spentAt!, true)}`))}</ul>
+        </section>
       )}
     </div>
   )

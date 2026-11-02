@@ -81,3 +81,26 @@ test('retirar más del saldo se rechaza y sin saldo no hay botón de retirar', (
 
   expect(screen.queryByRole('button', { name: 'Retirar de Vacío' })).not.toBeInTheDocument()
 })
+
+test('gastos planeados: sección por fecha, su parte del total y los gastados aparte', () => {
+  api.watchSavings.mockImplementation((_uid, onData) => (
+    onData([
+      ...savings,
+      { id: 'tele', name: 'Tele', balance: 50000, target: 900000, deadline: '2027-06-01', planned: true, category: 'Compras' },
+      { id: 'lentes', name: 'Lentes', balance: 300000, target: 300000, deadline: '2027-03-15', planned: true, category: 'Salud' },
+      { id: 'bici', name: 'Bici', balance: 2000, target: 400000, deadline: '2026-10-01', planned: true, category: 'Compras', spentAt: '2026-10-01' },
+    ]),
+    () => {}
+  ))
+  renderList()
+  expect(screen.getByText('$3,500.00')).toBeInTheDocument() // lo de los planeados sin gastar
+  const planned = screen.getByRole('heading', { name: 'Gastos planeados' }).parentElement!
+  expect(within(planned).getAllByRole('listitem').map((li) => li.querySelector('p')!.textContent)).toEqual(['Lentes', 'Tele'])
+  expect(within(planned).getByText('Salud · 15 mar 2027')).toBeInTheDocument()
+  expect(within(card('Lentes')).getByText(/Ya tienes todo/)).toBeInTheDocument()
+
+  const spent = screen.getByRole('heading', { name: 'Gastados' }).parentElement!
+  expect(within(spent).getByText('Gastado el 1 oct 2026')).toBeInTheDocument()
+  expect(within(spent).getByText('Te sobraron $20.00: retíralos a una cuenta')).toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'Planear gasto' })).toHaveAttribute('href', '/ahorro/planear')
+})

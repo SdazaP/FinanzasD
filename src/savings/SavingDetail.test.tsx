@@ -12,6 +12,7 @@ const api = vi.hoisted(() => ({
   updateSaving: vi.fn(),
   deleteSaving: vi.fn(),
   deleteMovement: vi.fn(),
+  spendPlanned: vi.fn(),
 }))
 vi.mock('./api', () => api)
 
@@ -79,4 +80,27 @@ test('apartado inexistente vuelve a la lista', () => {
   api.watchSaving.mockImplementation((_uid, _id, onData) => (onData(null), () => {}))
   renderDetail()
   expect(screen.getByText('Lista')).toBeInTheDocument()
+})
+
+test('un gasto planeado se gasta antes de tiempo con el monto real, sin pasar de lo apartado', async () => {
+  vi.useFakeTimers({ toFake: ['Date'] })
+  vi.setSystemTime(new Date(2026, 10, 2))
+  api.spendPlanned.mockResolvedValue(undefined)
+  const lentes: Saving = { id: 'v', name: 'Lentes', balance: 250000, target: 300000, deadline: '2027-03-15', planned: true, category: 'Salud' }
+  api.watchSaving.mockImplementation((_uid, _id, onData) => (onData(lentes), () => {}))
+  api.watchMovements.mockImplementation((_uid, _id, onData) => (onData([{ id: 'g', type: 'spent', amount: 1000, date: '2026-11-01' }]), () => {}))
+  renderDetail()
+  expect(screen.getByText('Gastado')).toBeInTheDocument()
+
+  fireEvent.click(screen.getByRole('button', { name: 'Gastar antes de tiempo' }))
+  const input = screen.getByLabelText('Monto gastado')
+  expect(input).toHaveValue('3000.00')
+  fireEvent.click(screen.getByRole('button', { name: 'Confirmar' }))
+  expect(screen.getByText('Te faltan $500.00: aporta antes de gastar.')).toBeInTheDocument()
+  expect(api.spendPlanned).not.toHaveBeenCalled()
+
+  fireEvent.change(input, { target: { value: '2,400' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Confirmar' }))
+  expect(api.spendPlanned).toHaveBeenCalledWith('owner', lentes, 240000)
+  vi.useRealTimers()
 })

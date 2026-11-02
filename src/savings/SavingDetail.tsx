@@ -1,15 +1,52 @@
 import { useEffect, useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router'
 import { useAuth } from '../auth/context'
+import { formatDay } from '../lib/dates'
 import { formatMXN } from '../lib/money'
 import PaymentHistory from '../lib/PaymentHistory'
-import { deleteMovement, deleteSaving, updateSaving, watchMovements, watchSaving, type Movement, type Saving } from './api'
+import { deleteMovement, deleteSaving, spendPlanned, updateSaving, watchMovements, watchSaving, type Movement, type Saving } from './api'
 import { useAccounts } from '../money/useAccounts'
+import AmountAction from '../lib/AmountAction'
+import { useToday } from '../lib/useToday'
+import { spendError } from './calc'
 import SavingForm from './SavingForm'
 
 const card = 'rounded-3xl bg-surface p-5 shadow-card'
 
-const movementLabel = (m: Movement) => (m.initial ? 'Saldo inicial' : m.type === 'deposit' ? 'Aporte' : 'Retiro')
+// Gastar un gasto planeado con lo apartado: el monto empieza en el planeado y se ajusta al real
+function SpendPlanned({ uid, saving }: { uid: string; saving: Saving }) {
+  const now = useToday()
+  const [open, setOpen] = useState(false)
+  const early = now < saving.deadline!
+  return (
+    <section className={card}>
+      <h2 className="font-display text-lg font-semibold">Gasto planeado</h2>
+      <p className="mt-1 text-sm text-zinc-500">
+        {formatMXN(saving.target!)} para el {formatDay(saving.deadline!, true)} · tienes {formatMXN(saving.balance)} apartado
+      </p>
+      {open ? (
+        <AmountAction
+          id={`spend-${saving.id}`}
+          label="Monto gastado"
+          initialCents={saving.target}
+          validate={(cents) => spendError(cents, saving.balance)}
+          onConfirm={(cents) => spendPlanned(uid, saving, cents)}
+          onDone={() => setOpen(false)}
+        />
+      ) : (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="mt-3 min-h-12 w-full rounded-2xl bg-primary font-medium text-white transition-transform duration-150 ease-out active:scale-[0.97]"
+        >
+          {early ? 'Gastar antes de tiempo' : 'Gastar'}
+        </button>
+      )}
+    </section>
+  )
+}
+
+const movementLabel = (m: Movement) => (m.initial ? 'Saldo inicial' : { deposit: 'Aporte', withdrawal: 'Retiro', spent: 'Gastado' }[m.type])
 
 export default function SavingDetail() {
   const uid = useAuth()!.uid
@@ -66,6 +103,8 @@ export default function SavingDetail() {
           }}
         />
       </section>
+
+      {saving.planned && !saving.spentAt && <SpendPlanned uid={uid} saving={saving} />}
 
       <section className={card}>
         <button

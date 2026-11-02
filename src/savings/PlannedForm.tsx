@@ -55,14 +55,14 @@ export default function PlannedForm({ categories, today, onSubmit }: Props) {
         <input id="planned-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ej. Lentes" autoComplete="off" className={fieldClass} {...invalid('name')} />
         {error('name')}
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3">
         <div>
           <label htmlFor="planned-amount" className="mb-1.5 block text-sm font-medium">Monto</label>
           <input id="planned-amount" value={amount} onChange={(e) => setAmount(e.target.value)} inputMode="decimal" placeholder="0.00" className={fieldClass} {...invalid('amount')} />
         </div>
         <div>
           <label htmlFor="planned-date" className="mb-1.5 block text-sm font-medium">Fecha</label>
-          <input id="planned-date" type="date" value={date} min={today} onChange={(e) => setDate(e.target.value)} className={fieldClass} {...invalid('date')} />
+          <input id="planned-date" type="date" value={date} min={today} onChange={(e) => setDate(e.target.value)} className={`${fieldClass} w-40`} {...invalid('date')} />
         </div>
       </div>
       {error('amount')}
