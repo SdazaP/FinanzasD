@@ -48,12 +48,11 @@ test('precarga la tarjeta, muestra el historial y guarda el saldo actualizado', 
   expect(screen.getByText('Pagado el 9 mar')).toBeInTheDocument()
 
   fireEvent.change(screen.getByLabelText('Saldo actual'), { target: { value: '7,250.50' } })
-  fireEvent.change(screen.getByLabelText('Límite de crédito (opcional)'), { target: { value: '' } })
   fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
 
   expect(await screen.findByText('Lista')).toBeInTheDocument()
   expect(api.updateCredit).toHaveBeenCalledWith('owner', 'c', {
-    kind: 'card', name: 'BBVA', balance: 725050, nextDue: '2026-04-10', dayOfMonth: 10,
+    kind: 'card', name: 'BBVA', balance: 725050, limit: 2000000, nextDue: '2026-04-10', dayOfMonth: 10,
   })
 })
 

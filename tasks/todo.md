@@ -20,7 +20,7 @@
   - Verify: `npm test`
   - Files: `src/credits/useCards.ts`, `src/money/AccountPicker.tsx` (+ test), `src/recurring/RecurringList.tsx`, `src/spending/SpendingForm.tsx`, `src/spending/SpendingList.tsx`, `src/spending/SpendingDetail.tsx` (+ tests)
 
-- [ ] 3. Tarjetas en Cuentas
+- [x] 3. Tarjetas en Cuentas
   - Acceptance:
     - Sección "Tarjetas de crédito" con deuda, barra de uso, "Disponible $X de $Y" y fecha de pago; cada tarjeta abre su detalle.
     - Una tarjeta sin límite muestra "Agrega su límite".

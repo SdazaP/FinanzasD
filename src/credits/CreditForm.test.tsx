@@ -10,26 +10,45 @@ const setup = (initial?: CreditInput) => {
   return { onSubmit, type, submit }
 }
 
-test('tarjeta: acepta saldo 0 y límite vacío', async () => {
+test('tarjeta nueva: exige límite y acepta saldo 0', async () => {
   const { onSubmit, type, submit } = setup()
   type('Nombre de la tarjeta', 'BBVA Azul')
   type('Saldo actual', '0')
   type('Próximo pago', '2026-11-20')
   submit()
+  expect(await screen.findByText('Escribe el límite de crédito.')).toBeInTheDocument()
+  expect(onSubmit).not.toHaveBeenCalled()
+
+  type('Límite de crédito', '50,000')
+  submit()
   await waitFor(() =>
-    expect(onSubmit).toHaveBeenCalledWith({ kind: 'card', name: 'BBVA Azul', balance: 0, nextDue: '2026-11-20', dayOfMonth: 20 }),
+    expect(onSubmit).toHaveBeenCalledWith({ kind: 'card', name: 'BBVA Azul', balance: 0, limit: 5000000, nextDue: '2026-11-20', dayOfMonth: 20 }),
   )
 })
 
 test('tarjeta: rechaza saldo vacío y límite en 0', async () => {
   const { onSubmit, type, submit } = setup()
   type('Nombre de la tarjeta', 'BBVA')
-  type('Límite de crédito (opcional)', '0')
+  type('Límite de crédito', '0')
   submit()
   expect(await screen.findByText('Escribe el saldo (puede ser 0).')).toBeInTheDocument()
-  expect(screen.getByText('Escribe un límite mayor a $0 o déjalo vacío.')).toBeInTheDocument()
+  expect(screen.getByText('Escribe un límite mayor a $0.')).toBeInTheDocument()
   expect(screen.getByLabelText('Saldo actual')).toHaveFocus()
   expect(onSubmit).not.toHaveBeenCalled()
+})
+
+test('una tarjeta de antes sin límite se puede editar sin agregarlo', async () => {
+  const onSubmit = vi.fn().mockResolvedValue(undefined)
+  render(<CreditForm initial={{ kind: 'card', name: 'Vieja', balance: 1000, nextDue: '2026-11-20', dayOfMonth: 20 }} onSubmit={onSubmit} />)
+  expect(screen.getByLabelText('Límite de crédito (opcional)')).toHaveValue('')
+  fireEvent.click(screen.getByRole('button', { name: /Guardar/ }))
+  await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ kind: 'card', name: 'Vieja', balance: 1000, nextDue: '2026-11-20', dayOfMonth: 20 }))
+})
+
+test('desde Cuentas no se elige el tipo', () => {
+  render(<CreditForm onlyCard onSubmit={vi.fn()} />)
+  expect(screen.queryByRole('radio', { name: 'Meses sin intereses' })).not.toBeInTheDocument()
+  expect(screen.getByLabelText('Nombre de la tarjeta')).toBeInTheDocument()
 })
 
 test('MSI: valida meses y saldo pendiente mayor al total', async () => {

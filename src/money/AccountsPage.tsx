@@ -2,11 +2,13 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import PreferencesCard from '../alerts/PreferencesCard'
 import { useAuth } from '../auth/context'
+import { useCards } from '../credits/useCards'
 import { formatDay } from '../lib/dates'
 import { formatMXN } from '../lib/money'
 import { useToday } from '../lib/useToday'
 import { addIncome, deleteIncome, updateIncome, type Income } from './api'
 import { accountTypes, availableTotal } from './calc'
+import CardsSection from './CardsSection'
 import IncomeForm from './IncomeForm'
 import { useAccounts } from './useAccounts'
 import { useMonthMoney } from './useMonthMoney'
@@ -20,6 +22,7 @@ export default function AccountsPage() {
   const uid = useAuth()!.uid
   const now = useToday()
   const { accounts, defaultId, liveIds, error } = useAccounts(uid)
+  const { cards, credits } = useCards(uid)
   const month = useMonthMoney(uid, now, availableTotal(accounts ?? []))
   const [adding, setAdding] = useState(false)
   const [editing, setEditing] = useState<string>()
@@ -114,6 +117,8 @@ export default function AccountsPage() {
           ))}
         </ul>
       </section>
+
+      <CardsSection cards={cards} credits={credits} />
 
       <section className={card}>
         <h2 className="mb-2 font-display text-lg font-semibold">Ingresos del mes</h2>

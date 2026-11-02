@@ -13,6 +13,7 @@ import SavingList from './savings/SavingList'
 import SavingNew from './savings/SavingNew'
 import AccountDetail from './money/AccountDetail'
 import AccountNew from './money/AccountNew'
+import CardNew from './money/CardNew'
 import AccountsPage from './money/AccountsPage'
 import { investmentsSection } from './sections'
 import SpendingDetail from './spending/SpendingDetail'
@@ -36,6 +37,7 @@ export default function App() {
         <Route path="/ahorro/:id" element={<SavingDetail />} />
         <Route path="/cuentas" element={<AccountsPage />} />
         <Route path="/cuentas/nueva" element={<AccountNew />} />
+        <Route path="/cuentas/tarjeta-nueva" element={<CardNew />} />
         <Route path="/cuentas/:id" element={<AccountDetail />} />
         <Route path="/inversiones" element={<SectionPage section={investmentsSection} />} />
         <Route path="*" element={<Navigate to="/" replace />} />

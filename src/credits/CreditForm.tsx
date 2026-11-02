@@ -9,6 +9,7 @@ export type CreditInput = CardInput | MsiInput
 
 type Props = {
   initial?: CreditInput
+  onlyCard?: boolean // desde Cuentas: sin elegir tipo
   onSubmit: (input: CreditInput) => Promise<void>
 }
 
@@ -25,7 +26,9 @@ function Field({ id, label, error, hint, children }: { id: string; label: string
   )
 }
 
-export default function CreditForm({ initial, onSubmit }: Props) {
+export default function CreditForm({ initial, onlyCard = false, onSubmit }: Props) {
+  // Las tarjetas nuevas exigen límite; una de antes sin límite se puede seguir editando sin él
+  const limitOptional = initial?.kind === 'card' && !initial.limit
   const [kind, setKind] = useState(initial?.kind ?? 'card')
   const [name, setName] = useState(initial?.name ?? '')
   const [nextDue, setNextDue] = useState(initial?.nextDue ?? '')
@@ -49,7 +52,8 @@ export default function CreditForm({ initial, onSubmit }: Props) {
       const balanceCents = toCents(balance)
       const limitCents = limit.trim() ? toCents(limit) : undefined
       if (balanceCents === null || !balance.trim()) found.balance = 'Escribe el saldo (puede ser 0).'
-      if (limitCents === null || limitCents === 0) found.limit = 'Escribe un límite mayor a $0 o déjalo vacío.'
+      if (limitCents === null || limitCents === 0) found.limit = limitOptional ? 'Escribe un límite mayor a $0 o déjalo vacío.' : 'Escribe un límite mayor a $0.'
+      if (limitCents === undefined && !limitOptional) found.limit = 'Escribe el límite de crédito.'
       if (!/^\d{4}-\d{2}-\d{2}$/.test(nextDue)) found.nextDue = 'Elige la fecha del próximo pago.'
       if (!Object.keys(found).length) {
         input = { kind, name: cleanName, balance: balanceCents!, nextDue, dayOfMonth: Number(nextDue.slice(8)) }
@@ -89,7 +93,7 @@ export default function CreditForm({ initial, onSubmit }: Props) {
 
   return (
     <form onSubmit={submit} noValidate className="space-y-5">
-      <fieldset disabled={!!initial} className="disabled:opacity-60">
+      <fieldset disabled={!!initial} hidden={onlyCard} className="disabled:opacity-60">
         <legend className="mb-1.5 text-sm font-medium">Tipo</legend>
         <div className="grid grid-cols-2 gap-1 rounded-2xl bg-zinc-200/60 p-1">
           {([['card', 'Tarjeta'], ['msi', 'Meses sin intereses']] as const).map(([value, label]) => (
@@ -112,7 +116,7 @@ export default function CreditForm({ initial, onSubmit }: Props) {
           <Field id="balance" label="Saldo actual" error={errors.balance} hint="Sin tus compras a meses sin intereses pendientes: regístralas aparte para no contarlas dos veces.">
             <input id="balance" value={balance} onChange={(e) => setBalance(e.target.value)} inputMode="decimal" placeholder="0.00" className={fieldClass} {...invalid('balance')} />
           </Field>
-          <Field id="limit" label="Límite de crédito (opcional)" error={errors.limit}>
+          <Field id="limit" label={limitOptional ? 'Límite de crédito (opcional)' : 'Límite de crédito'} error={errors.limit}>
             <input id="limit" value={limit} onChange={(e) => setLimit(e.target.value)} inputMode="decimal" placeholder="0.00" className={fieldClass} {...invalid('limit')} />
           </Field>
         </>
