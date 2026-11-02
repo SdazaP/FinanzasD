@@ -19,6 +19,26 @@ export function watchMonthPayments(
   )
 }
 
+export type PaymentDoc = { id: string; amount: number; date: string; accountId?: string }
+
+// Los pagos hechos en el rango, con su cuenta y fecha de pago (para la actividad de una cuenta).
+// Se filtra por cuenta en el cliente: igualdad + rango en campos distintos pediría un índice compuesto.
+export function watchMonthPaymentDocs(
+  uid: string, col: PaymentsCollection, id: string, from: Date, to: Date, onData: (docs: PaymentDoc[]) => void,
+) {
+  return onSnapshot(
+    query(paymentsCol(uid, col, id), where('paidAt', '>=', Timestamp.fromDate(from)), where('paidAt', '<', Timestamp.fromDate(to))),
+    (snap) =>
+      onData(
+        snap.docs.map((d) => {
+          const data = d.data({ serverTimestamps: 'estimate' })
+          return { id: d.id, amount: data.amount, accountId: data.accountId, date: today((data.paidAt as Timestamp).toDate()) }
+        }),
+      ),
+    () => onData([]),
+  )
+}
+
 // Pagos cuyo periodo (dueDate) cae entre `from` y `to` ('YYYY-MM-DD'): lo que decide "Pagado este mes"
 export function watchPeriodPayments(
   uid: string, col: PaymentsCollection, id: string, from: string, to: string, onData: (data: PeriodPayments) => void,

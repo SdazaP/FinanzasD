@@ -28,7 +28,7 @@
   - Verify: `npm test && npm run build`; crear cuentas e ingreso en el panel y en tu celular.
   - Files: `src/money/AccountsPage.tsx`, `src/money/AccountForm.tsx`, `src/money/IncomeForm.tsx` (+ tests), `src/sections.tsx`, `src/App.tsx`
 
-- [ ] 4. Detalle de cuenta
+- [x] 4. Detalle de cuenta
   - Acceptance:
     - `/cuentas/:id` para editar nombre y tipo, marcar como predeterminada, ajustar saldo y eliminar con confirmación.
     - Actividad del mes de esa cuenta; un id inexistente vuelve a la lista.

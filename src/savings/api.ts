@@ -7,7 +7,7 @@ import type { NewSavingInput, SavingInput } from './SavingForm'
 
 export type Saving = SavingInput & { id: string; balance: number }
 export type MovementType = 'deposit' | 'withdrawal'
-export type Movement = { id: string; type: MovementType; amount: number; date: string; initial?: boolean }
+export type Movement = { id: string; type: MovementType; amount: number; date: string; initial?: boolean; accountId?: string }
 
 const savingsCol = (uid: string) => collection(db, 'users', uid, 'savings')
 const savingDoc = (uid: string, id: string) => doc(savingsCol(uid), id)
