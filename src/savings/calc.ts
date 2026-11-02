@@ -28,3 +28,14 @@ export function movementError(amount: number | null, type: 'deposit' | 'withdraw
   if (type === 'withdrawal' && amount > balance) return `No puedes retirar más del saldo (${formatMXN(balance)}).`
   return ''
 }
+
+// Gastar un planeado: con lo apartado, sin pasarse
+export function spendError(amount: number | null, balance: number) {
+  if (!amount || amount <= 0) return 'Escribe un monto mayor a $0.'
+  if (amount > balance) return `Te faltan ${formatMXN(amount - balance)}: aporta antes de gastar.`
+  return ''
+}
+
+// Lo apartado para gastos planeados que aún no se gastan (va incluido en el total ahorrado)
+export const plannedSaved = (items: { balance: number; planned?: true; spentAt?: string }[]) =>
+  items.reduce((sum, s) => (s.planned && !s.spentAt ? sum + s.balance : sum), 0)

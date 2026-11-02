@@ -17,7 +17,7 @@ vi.mock('firebase/firestore', () => ({
 
 const { applyAccountDelta } = await import('../lib/accountBalance')
 const { payRecurring, deletePayment } = await import('../recurring/api')
-const { moveSaving, deleteMovement } = await import('../savings/api')
+const { moveSaving, deleteMovement, spendPlanned } = await import('../savings/api')
 const { payCredit } = await import('../credits/api')
 const { addSpending, updateSpending, deleteSpending } = await import('../spending/api')
 
@@ -172,5 +172,21 @@ test('un gasto de un mes anterior es historial: no mueve la cuenta y se guarda s
   await updateSpending('u', cafe, { amount: 4500, date: '2026-10-31', category: 'Café', accountId: 'nomina' }, live)
   expect(accountDeltas()).toEqual({ nomina: 4500 })
   expect(batch.update.mock.calls[0][1]).toMatchObject({ accountId: 'DELETE' })
+  vi.useRealTimers()
+})
+
+test('gastar un planeado baja el apartado y no toca cuentas; borrar el "Gastado" lo regresa', async () => {
+  vi.useFakeTimers({ toFake: ['Date'] })
+  vi.setSystemTime(new Date(2026, 10, 2))
+  const lentes = { id: 'lentes', name: 'Lentes', balance: 300000, target: 300000, deadline: '2027-03-15', planned: true as const }
+  await spendPlanned('u', lentes, 280000)
+  expect(accountDeltas()).toEqual({})
+  expect(batch.set.mock.calls[0][1]).toMatchObject({ type: 'spent', amount: 280000, date: '2026-11-02' })
+  expect(batch.update.mock.calls[0][1]).toEqual({ balance: { increment: -280000 }, spentAt: '2026-11-02' })
+
+  vi.clearAllMocks()
+  await deleteMovement('u', 'lentes', { id: 'g', type: 'spent', amount: 280000, date: '2026-11-02' }, live)
+  expect(accountDeltas()).toEqual({})
+  expect(batch.update.mock.calls[0][1]).toEqual({ balance: { increment: 280000 }, spentAt: 'DELETE' })
   vi.useRealTimers()
 })

@@ -9,7 +9,8 @@ import type { NewSavingInput, SavingInput } from './SavingForm'
 
 export type Saving = SavingInput & { id: string; balance: number }
 export type MovementType = 'deposit' | 'withdrawal'
-export type Movement = { id: string; type: MovementType; amount: number; date: string; initial?: boolean; accountId?: string }
+// 'spent' = se gastó un gasto planeado: baja el apartado y no toca cuentas (el dinero salió al aportar)
+export type Movement = { id: string; type: MovementType | 'spent'; amount: number; date: string; initial?: boolean; accountId?: string }
 
 const savingsCol = (uid: string) => collection(db, 'users', uid, 'savings')
 const savingDoc = (uid: string, id: string) => doc(savingsCol(uid), id)
@@ -61,8 +62,18 @@ export function deleteMovement(uid: string, savingId: string, movement: Movement
   const sign = movement.type === 'deposit' ? 1 : -1
   const batch = writeBatch(db)
   batch.delete(doc(movementsCol(uid, savingId), movement.id))
-  batch.update(savingDoc(uid, savingId), { balance: increment(-sign * movement.amount) })
+  // Borrar un "Gastado" devuelve el dinero al apartado y lo vuelve a dejar pendiente de gastar
+  batch.update(savingDoc(uid, savingId), { balance: increment(-sign * movement.amount), ...(movement.type === 'spent' && { spentAt: deleteField() }) })
   applyAccountDelta(batch, uid, movement.accountId, sign * movement.amount, liveAccountIds)
+  return saved(batch.commit())
+}
+
+// Gastar un gasto planeado con lo apartado, en un batch: movimiento, saldo y fecha en que se gastó
+export function spendPlanned(uid: string, saving: Saving, amount: number) {
+  const date = today()
+  const batch = writeBatch(db)
+  batch.set(doc(movementsCol(uid, saving.id)), { type: 'spent', amount, date, createdAt: serverTimestamp() })
+  batch.update(savingDoc(uid, saving.id), { balance: increment(-amount), spentAt: date })
   return saved(batch.commit())
 }
 

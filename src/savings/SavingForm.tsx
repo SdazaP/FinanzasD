@@ -2,7 +2,8 @@ import { useState, type FormEvent, type ReactNode } from 'react'
 import { toCents } from '../lib/money'
 import { fieldClass, primaryButtonClass } from '../lib/ui'
 
-export type SavingInput = { name: string; target?: number; deadline?: string }
+// planned: gasto planeado (target = monto, deadline = fecha); spentAt: el día que se gastó
+export type SavingInput = { name: string; target?: number; deadline?: string; planned?: true; category?: string; spentAt?: string }
 export type NewSavingInput = SavingInput & { balance: number }
 
 type Props =

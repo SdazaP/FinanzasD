@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { goalSummary, monthsLeft, movementError, totalSaved } from './calc'
+import { goalSummary, monthsLeft, movementError, plannedSaved, spendError, totalSaved } from './calc'
 
 test.each([
   ['2026-10-31', '2026-12-15', 3],
@@ -48,4 +48,16 @@ test.each([
   [1000, 'withdrawal', 1000, ''],
 ] as const)('movementError(%j, %s, %i) → %j', (amount, type, balance, expected) => {
   expect(movementError(amount, type, balance)).toBe(expected)
+})
+
+test('spendError: con lo apartado, sin pasarse', () => {
+  expect(spendError(null, 1000)).toBe('Escribe un monto mayor a $0.')
+  expect(spendError(0, 1000)).toBe('Escribe un monto mayor a $0.')
+  expect(spendError(1000, 1000)).toBe('')
+  expect(spendError(500, 1000)).toBe('')
+  expect(spendError(1500, 1000)).toBe('Te faltan $5.00: aporta antes de gastar.')
+})
+
+test('plannedSaved suma solo los planeados sin gastar', () => {
+  expect(plannedSaved([{ balance: 100 }, { balance: 200, planned: true }, { balance: 300, planned: true, spentAt: '2026-11-01' }])).toBe(200)
 })
