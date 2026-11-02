@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { categoryError } from '../lib/categories'
+import { isPastMonth } from '../lib/dates'
 import { toCents } from '../lib/money'
 import { fieldClass, primaryButtonClass } from '../lib/ui'
 import { toSource } from '../lib/accountBalance'
@@ -32,6 +33,7 @@ export default function SpendingForm({
   const [category, setCategory] = useState(initial?.category ?? categories[0])
   const [note, setNote] = useState(initial?.note ?? '')
   const [date, setDate] = useState(initial?.date ?? today)
+  const past = isPastMonth(date, today)
   const [newCategory, setNewCategory] = useState<string | null>(null) // null = no se está creando
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [saving, setSaving] = useState(false)
@@ -67,7 +69,7 @@ export default function SpendingForm({
 
     const input: SpendingInput = { amount: cents!, date, category }
     if (note.trim()) input.note = note.trim()
-    Object.assign(input, toSource(accountId))
+    if (!past) Object.assign(input, toSource(accountId))
     setSaving(true)
     try {
       await onSubmit(input)
@@ -168,7 +170,11 @@ export default function SpendingForm({
       {error('note')}
       {error('date')}
 
-      <AccountPicker accounts={accounts} value={accountId} onChange={(id) => setChosenAccount(id || undefined)} label="Desde" allowNone={!!initial} cards={cards} />
+      {past ? (
+        <p className="rounded-2xl bg-zinc-100 px-4 py-3 text-sm text-zinc-600">Es de un mes anterior: queda en tu historial y no mueve tus saldos.</p>
+      ) : (
+        <AccountPicker accounts={accounts} value={accountId} onChange={(id) => setChosenAccount(id || undefined)} label="Desde" allowNone={!!initial} cards={cards} />
+      )}
       {error('form')}
 
       <button type="submit" disabled={saving} className={primaryButtonClass}>

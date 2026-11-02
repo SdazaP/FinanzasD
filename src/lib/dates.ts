@@ -22,6 +22,9 @@ export function monthRange(date: string): [string, string] {
   return [format(new Date(y, m - 1, 1)), format(new Date(y, m, 0))]
 }
 
+// Fecha de un mes anterior al de `today`: es historial (no mueve saldos)
+export const isPastMonth = (date: string, today: string) => date < monthRange(today)[0]
+
 export type DueStatus = 'overdue' | 'soon' | 'ok'
 
 export function status(nextDue: string, now = today()): DueStatus {

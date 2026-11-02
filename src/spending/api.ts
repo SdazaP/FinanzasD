@@ -5,6 +5,7 @@ import {
 import { db } from '../firebase'
 import { saved } from '../lib/saved'
 import { applyMoneyChange, applyMoneyDelta } from '../lib/accountBalance'
+import { isPastMonth, today } from '../lib/dates'
 import type { Spending } from './calc'
 
 export type SpendingInput = { amount: number; date: string; category: string; note?: string; accountId?: string; cardId?: string }
@@ -29,7 +30,15 @@ export function watchSpending(uid: string, id: string, onData: (item: Spending |
   return onSnapshot(doc(spendingCol(uid), id), (snap) => onData(snap.exists() ? toSpending(snap) : null), onError)
 }
 
-export function addSpending(uid: string, input: SpendingInput, liveAccountIds: string[] = []) {
+// Un gasto de un mes anterior es historial: se guarda sin cuenta ni tarjeta y no mueve saldos
+function asHistory(input: SpendingInput): SpendingInput {
+  if (!isPastMonth(input.date, today())) return input
+  const { accountId: _a, cardId: _c, ...rest } = input
+  return rest
+}
+
+export function addSpending(uid: string, data: SpendingInput, liveAccountIds: string[] = []) {
+  const input = asHistory(data)
   const batch = writeBatch(db)
   batch.set(doc(spendingCol(uid)), { ...input, createdAt: serverTimestamp() })
   applyMoneyDelta(batch, uid, input, -input.amount, liveAccountIds)
@@ -38,7 +47,8 @@ export function addSpending(uid: string, input: SpendingInput, liveAccountIds: s
 
 // Devuelve el gasto anterior a su cuenta o tarjeta y cobra el nuevo (puede ser otro origen u otro monto).
 // La nota, la cuenta y la tarjeta vacías se borran explícitamente; updateDoc conservaría las anteriores.
-export function updateSpending(uid: string, old: Spending, input: SpendingInput, liveAccountIds: string[] = []) {
+export function updateSpending(uid: string, old: Spending, data: SpendingInput, liveAccountIds: string[] = []) {
+  const input = asHistory(data)
   const batch = writeBatch(db)
   batch.update(doc(spendingCol(uid), old.id), {
     ...input, note: input.note ?? deleteField(), accountId: input.accountId ?? deleteField(), cardId: input.cardId ?? deleteField(),

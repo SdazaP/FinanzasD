@@ -66,7 +66,7 @@ test('al editar un gasto anterior a las cuentas no le asigna ninguna', async () 
     <SpendingForm
       categories={defaultSpendingCategories}
       today="2026-11-01"
-      initial={{ amount: 4500, date: '2026-10-31', category: 'Café' }}
+      initial={{ amount: 4500, date: '2026-11-01', category: 'Café' }}
       submitLabel="Guardar"
       accounts={accounts}
       defaultAccountId="nomina"
@@ -76,7 +76,7 @@ test('al editar un gasto anterior a las cuentas no le asigna ninguna', async () 
   )
   expect(screen.getByLabelText('Desde')).toHaveValue('')
   fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
-  await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ amount: 4500, date: '2026-10-31', category: 'Café' }))
+  await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ amount: 4500, date: '2026-11-01', category: 'Café' }))
 })
 
 test('crea una categoría nueva y la selecciona', async () => {
@@ -115,4 +115,17 @@ test('cargar a una tarjeta guarda cardId y no accountId; al editar la preselecci
     />,
   )
   expect(screen.getByLabelText('Desde')).toHaveValue('card:oro')
+})
+
+test('con fecha de un mes anterior oculta "Desde", avisa y guarda sin cuenta', async () => {
+  const onSubmit = vi.fn().mockResolvedValue(undefined)
+  render(
+    <SpendingForm categories={defaultSpendingCategories} today="2026-11-02" accounts={accounts} defaultAccountId="nomina" onSubmit={onSubmit} onCreateCategory={vi.fn()} />,
+  )
+  fireEvent.change(screen.getByLabelText('Fecha'), { target: { value: '2026-10-20' } })
+  expect(screen.queryByLabelText('Desde')).not.toBeInTheDocument()
+  expect(screen.getByText('Es de un mes anterior: queda en tu historial y no mueve tus saldos.')).toBeInTheDocument()
+  fireEvent.change(screen.getByLabelText('Monto'), { target: { value: '120' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Agregar' }))
+  await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ amount: 12000, date: '2026-10-20', category: 'Comida' }))
 })

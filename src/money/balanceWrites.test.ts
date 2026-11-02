@@ -158,3 +158,19 @@ test('sin conexión, registrar un gasto termina aunque el servidor no haya confi
   expect(accountDeltas()).toEqual({ nomina: -4500 })
   vi.restoreAllMocks()
 })
+
+test('un gasto de un mes anterior es historial: no mueve la cuenta y se guarda sin ella', async () => {
+  vi.useFakeTimers({ toFake: ['Date'] })
+  vi.setSystemTime(new Date(2026, 10, 2))
+  await addSpending('u', { amount: 4500, date: '2026-10-15', category: 'Café', accountId: 'nomina' }, live)
+  expect(accountDeltas()).toEqual({})
+  expect(batch.set.mock.calls[0][1]).not.toHaveProperty('accountId')
+
+  // Pasar uno de noviembre a octubre lo devuelve a su cuenta
+  vi.clearAllMocks()
+  const cafe = { id: 'c', amount: 4500, date: '2026-11-01', category: 'Café', accountId: 'nomina', createdAt: 0 }
+  await updateSpending('u', cafe, { amount: 4500, date: '2026-10-31', category: 'Café', accountId: 'nomina' }, live)
+  expect(accountDeltas()).toEqual({ nomina: 4500 })
+  expect(batch.update.mock.calls[0][1]).toMatchObject({ accountId: 'DELETE' })
+  vi.useRealTimers()
+})

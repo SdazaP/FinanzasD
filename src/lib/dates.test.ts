@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { addDays, formatLongDate, formatMonthLabel, formatMonthName, monthlyTotal, nextDueAfter, status, today } from './dates'
+import { addDays, formatLongDate, formatMonthLabel, formatMonthName, isPastMonth, monthlyTotal, nextDueAfter, status, today } from './dates'
 
 test.each([
   ['2026-11-01', 'Noviembre 2026', 'domingo, 1 de noviembre'],
@@ -51,4 +51,11 @@ test('monthlyTotal suma solo los activos', () => {
 
 test('today usa la fecha local en formato YYYY-MM-DD', () => {
   expect(today(new Date(2026, 0, 5, 23, 59))).toBe('2026-01-05')
+})
+
+test('isPastMonth: solo meses anteriores, también al cambiar de año', () => {
+  expect(isPastMonth('2026-10-31', '2026-11-01')).toBe(true)
+  expect(isPastMonth('2026-11-01', '2026-11-30')).toBe(false)
+  expect(isPastMonth('2026-12-31', '2027-01-01')).toBe(true)
+  expect(isPastMonth('2027-01-15', '2027-01-02')).toBe(false)
 })
