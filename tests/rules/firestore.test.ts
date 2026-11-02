@@ -16,6 +16,10 @@ const paths = [
   `users/${OWNER}/spending/cafe`,
   `users/${OWNER}/spendingCategories/gimnasio`,
   `users/${OWNER}/settings/spending`,
+  `users/${OWNER}/accounts/bbva`,
+  `users/${OWNER}/accounts/bbva/adjustments/a1`,
+  `users/${OWNER}/incomes/i1`,
+  `users/${OWNER}/settings/money`,
 ]
 
 let env: RulesTestEnvironment

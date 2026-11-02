@@ -52,7 +52,7 @@
   - Verify: `npm test`
   - Files: `src/savings/api.ts`, `src/savings/SavingList.tsx`, `src/spending/api.ts`, `src/spending/SpendingForm.tsx` (+ tests)
 
-- [ ] 7. Inicio, reglas, revisión y deploy
+- [x] 7. Inicio, reglas, revisión y deploy
   - Acceptance:
     - Inicio muestra Disponible y Te queda este mes enlazados a Cuentas.
     - Tests de reglas para `accounts`, `adjustments`, `incomes` y `settings/money`.

@@ -11,6 +11,9 @@ import { watchSavings, type Saving } from '../savings/api'
 import { goalSummary, totalSaved } from '../savings/calc'
 import { usePaidThisMonth } from '../lib/usePaidThisMonth'
 import { useToday } from '../lib/useToday'
+import { availableTotal, type Account } from '../money/calc'
+import { useAccounts } from '../money/useAccounts'
+import { useMonthMoney } from '../money/useMonthMoney'
 import { watchMonthSpending } from '../spending/api'
 import type { Spending } from '../spending/calc'
 import { monthCommitments, monthRange, upcoming } from './calc'
@@ -22,6 +25,40 @@ const badges = {
 }
 
 const card = 'rounded-3xl bg-white p-5 shadow-card'
+
+// Separado para que useMonthMoney solo se suscriba cuando hay cuentas
+function MoneyLine({ uid, now, accounts }: { uid: string; now: string; accounts: Account[] }) {
+  const month = useMonthMoney(uid, now)
+  const total = availableTotal(accounts)
+  return (
+    <Link to="/cuentas" className={`${card} flex items-center gap-4 active:bg-zinc-50`}>
+      <div className="min-w-0 flex-1">
+        <p className="text-sm text-zinc-500">Disponible</p>
+        <p className={`font-display text-2xl font-semibold tabular-nums [overflow-wrap:anywhere] ${total < 0 ? 'text-red-600' : ''}`}>{formatMXN(total)}</p>
+      </div>
+      <div className="min-w-0 flex-1 text-right">
+        <p className="text-sm text-zinc-500">Te queda este mes</p>
+        <p className={`font-display text-lg font-semibold tabular-nums [overflow-wrap:anywhere] ${month.ready && month.left < 0 ? 'text-red-600' : ''}`}>
+          {month.ready ? formatMXN(month.left) : '…'}
+        </p>
+      </div>
+    </Link>
+  )
+}
+
+function Money({ uid, now }: { uid: string; now: string }) {
+  const { accounts } = useAccounts(uid)
+  if (!accounts) return null
+  if (!accounts.length) {
+    return (
+      <Link to="/cuentas/nueva" className={`${card} block active:bg-zinc-50`}>
+        <p className="font-medium text-primary">Crea tu primera cuenta</p>
+        <p className="text-sm text-zinc-500">Para saber cuánto tienes disponible y cuánto te queda en el mes.</p>
+      </Link>
+    )
+  }
+  return <MoneyLine uid={uid} now={now} accounts={accounts} />
+}
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -74,16 +111,19 @@ export default function Dashboard() {
 
   if (!failed.length && !r.length && !c.length && !s.length && !ant.length) {
     return (
-      <section className="rounded-3xl bg-primary p-6 text-white shadow-card">
-        <p className="font-display text-lg font-medium leading-snug">Empieza registrando lo que pagas y lo que ahorras.</p>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {[['/gastos-fijos/nuevo', 'Agregar gasto'], ['/creditos/nuevo', 'Agregar crédito'], ['/ahorro/nuevo', 'Agregar apartado']].map(([to, text]) => (
-            <Link key={to} to={to} className="flex min-h-11 items-center rounded-xl bg-white/15 px-4 text-sm font-medium active:bg-white/25">
-              {text}
-            </Link>
-          ))}
-        </div>
-      </section>
+      <div className="space-y-4">
+        <Money uid={uid} now={now} />
+        <section className="rounded-3xl bg-primary p-6 text-white shadow-card">
+          <p className="font-display text-lg font-medium leading-snug">Empieza registrando lo que pagas y lo que ahorras.</p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {[['/gastos-fijos/nuevo', 'Agregar gasto'], ['/creditos/nuevo', 'Agregar crédito'], ['/ahorro/nuevo', 'Agregar apartado']].map(([to, text]) => (
+              <Link key={to} to={to} className="flex min-h-11 items-center rounded-xl bg-white/15 px-4 text-sm font-medium active:bg-white/25">
+                {text}
+              </Link>
+            ))}
+          </div>
+        </section>
+      </div>
     )
   }
 
@@ -93,9 +133,11 @@ export default function Dashboard() {
         <p role="alert" className="text-sm text-red-700">No se pudieron cargar: {failed.join(', ')}. Revisa tu conexión.</p>
       )}
 
+      <Money uid={uid} now={now} />
+
       <section className="rounded-3xl bg-primary p-6 text-white shadow-card">
         <p className="text-sm text-white/80">Este mes</p>
-        <p className="mt-1 font-display text-4xl font-semibold tracking-tight tabular-nums [overflow-wrap:anywhere]">{formatMXN(month.total)}</p>
+        <p className="mt-1 font-display text-[clamp(1.5rem,8vw,2.25rem)] font-semibold tracking-tight tabular-nums [overflow-wrap:anywhere]">{formatMXN(month.total)}</p>
         <div className="mt-4">
           <ProgressBar value={month.total ? month.paid / month.total : 0} label="Pagado este mes" onDark />
         </div>

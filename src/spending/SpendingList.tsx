@@ -20,7 +20,7 @@ function MonthCard({ uid, total, count, cap }: { uid: string; total: number; cou
   return (
     <section className="rounded-3xl bg-primary p-6 text-white shadow-card">
       <p className="text-sm text-white/80">Gastado este mes</p>
-      <p className="mt-1 font-display text-4xl font-semibold tracking-tight tabular-nums [overflow-wrap:anywhere]">{formatMXN(total)}</p>
+      <p className="mt-1 font-display text-[clamp(1.5rem,8vw,2.25rem)] font-semibold tracking-tight tabular-nums [overflow-wrap:anywhere]">{formatMXN(total)}</p>
       <p className="mt-1 text-sm text-white/80">{count === 1 ? '1 gasto' : `${count} gastos`}</p>
 
       {summary && (

@@ -89,7 +89,7 @@ export default function SavingList() {
     <div className="space-y-4">
       <section className="rounded-3xl bg-primary p-6 text-white shadow-card">
         <p className="text-sm text-white/80">Total ahorrado</p>
-        <p className="mt-1 font-display text-4xl font-semibold tracking-tight tabular-nums [overflow-wrap:anywhere]">{formatMXN(totalSaved(items))}</p>
+        <p className="mt-1 font-display text-[clamp(1.5rem,8vw,2.25rem)] font-semibold tracking-tight tabular-nums [overflow-wrap:anywhere]">{formatMXN(totalSaved(items))}</p>
         <p className="mt-1 text-sm text-white/80">{items.length === 1 ? '1 apartado' : `${items.length} apartados`}</p>
       </section>
 

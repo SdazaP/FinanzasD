@@ -81,7 +81,7 @@ export default function AccountDetail() {
 
       <section className="rounded-3xl bg-primary p-6 text-white shadow-card">
         <p className="truncate text-sm text-white/80">{account.name}{isDefault && ' · Predeterminada'}</p>
-        <p className="mt-1 font-display text-4xl font-semibold tracking-tight tabular-nums [overflow-wrap:anywhere]">{formatMXN(account.balance)}</p>
+        <p className="mt-1 font-display text-[clamp(1.5rem,8vw,2.25rem)] font-semibold tracking-tight tabular-nums [overflow-wrap:anywhere]">{formatMXN(account.balance)}</p>
         {!isDefault && (
           <button
             type="button"

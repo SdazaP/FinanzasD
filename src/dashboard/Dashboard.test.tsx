@@ -14,7 +14,10 @@ const mocks = vi.hoisted(() => ({
   watchSavings: vi.fn(),
   watchMonthPayments: vi.fn(),
   watchMonthSpending: vi.fn(),
+  useAccounts: vi.fn(),
 }))
+vi.mock('../money/useAccounts', () => ({ useAccounts: mocks.useAccounts }))
+vi.mock('../money/useMonthMoney', () => ({ useMonthMoney: () => ({ ready: true, left: -50000 }) }))
 vi.mock('../spending/api', () => ({ watchMonthSpending: mocks.watchMonthSpending }))
 vi.mock('../recurring/api', () => ({ watchRecurring: mocks.watchRecurring }))
 vi.mock('../credits/api', () => ({ watchCredits: mocks.watchCredits }))
@@ -43,6 +46,7 @@ beforeEach(() => {
   vi.setSystemTime(new Date(2026, 10, 2))
   // La luz ya se pagó este mes ($400)
   mocks.watchMonthPayments.mockImplementation((_uid, _col, id, _from, _to, onData) => (onData(id === 'luz' ? 40000 : 0), () => {}))
+  mocks.useAccounts.mockReturnValue({ accounts: [] })
 })
 
 afterEach(() => {
@@ -88,9 +92,24 @@ test('muestra compromisos del mes, próximos pagos, saldos y metas', () => {
   expect(within(goals).getByText('Ahorra $10,000.00 al mes')).toBeInTheDocument()
 })
 
+test('con cuentas muestra disponible y lo que queda del mes, enlazado a Cuentas', () => {
+  feed({ recurring })
+  mocks.useAccounts.mockReturnValue({
+    accounts: [
+      { id: 'a', name: 'Nómina', type: 'debit', balance: 120000 },
+      { id: 'b', name: 'Tarjeta', type: 'other', balance: -20000 },
+    ],
+  })
+  renderDashboard()
+  const link = screen.getByRole('link', { name: /Disponible \$1,000\.00 Te queda este mes -\$500\.00/ })
+  expect(link).toHaveAttribute('href', '/cuentas')
+  expect(within(link).getByText('-$500.00')).toHaveClass('text-red-600')
+})
+
 test('sin datos invita a empezar', () => {
   feed({})
   renderDashboard()
+  expect(screen.getByRole('link', { name: /Crea tu primera cuenta/ })).toHaveAttribute('href', '/cuentas/nueva')
   expect(screen.getByRole('link', { name: 'Agregar gasto' })).toHaveAttribute('href', '/gastos-fijos/nuevo')
   expect(screen.queryByRole('heading', { name: 'Próximos pagos' })).not.toBeInTheDocument()
 })

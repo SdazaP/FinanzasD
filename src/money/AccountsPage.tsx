@@ -53,7 +53,7 @@ export default function AccountsPage() {
     <div className="space-y-4">
       <section className="rounded-3xl bg-primary p-6 text-white shadow-card">
         <p className="text-sm text-white/80">Disponible</p>
-        <p className="mt-1 font-display text-4xl font-semibold tracking-tight tabular-nums [overflow-wrap:anywhere]">{formatMXN(availableTotal(accounts))}</p>
+        <p className="mt-1 font-display text-[clamp(1.5rem,8vw,2.25rem)] font-semibold tracking-tight tabular-nums [overflow-wrap:anywhere]">{formatMXN(availableTotal(accounts))}</p>
         <p className="mt-2 text-sm">
           <span className="text-white/80">Te queda este mes </span>
           <span className="font-medium tabular-nums">{month.ready ? formatMXN(month.left) : '…'}</span>
