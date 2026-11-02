@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import { useAuth } from '../auth/context'
 import GastosTabs from '../layout/GastosTabs'
 import AccountPicker from '../money/AccountPicker'
+import { useCards } from '../credits/useCards'
 import { useAccounts } from '../money/useAccounts'
 import { formatDay, monthlyTotal, status } from '../lib/dates'
 import { formatMXN } from '../lib/money'
@@ -28,7 +29,9 @@ export default function RecurringList() {
   const [loadError, setLoadError] = useState(false)
   const [paying, setPaying] = useState<string>()
   const [payError, setPayError] = useState('')
-  const { accounts, defaultId, liveIds } = useAccounts(uid)
+  const { accounts, defaultId, liveIds: accountIds } = useAccounts(uid)
+  const { cards, liveCardIds } = useCards(uid)
+  const liveIds = [...accountIds, ...liveCardIds]
   const [chosenAccount, setChosenAccount] = useState<Record<string, string>>({}) // cuenta elegida por gasto; si no, la predeterminada
 
   useEffect(() => watchRecurring(uid, setItems, () => setLoadError(true)), [uid])
@@ -112,6 +115,7 @@ export default function RecurringList() {
                       compact
                       label="Desde"
                       accounts={accounts ?? []}
+                      cards={cards}
                       value={chosenAccount[item.id] ?? defaultId}
                       onChange={(accountId) => setChosenAccount((c) => ({ ...c, [item.id]: accountId }))}
                     />

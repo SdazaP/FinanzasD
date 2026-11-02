@@ -9,6 +9,7 @@ import { monthRange } from '../lib/dates'
 import { formatMXN } from '../lib/money'
 import ProgressBar from '../lib/ProgressBar'
 import { useToday } from '../lib/useToday'
+import { useCards } from '../credits/useCards'
 import { useAccounts } from '../money/useAccounts'
 import { addSpending, addSpendingCategory, setCap, watchCap, watchMonthSpending } from './api'
 import { capSummary, groupByDay, totalsByCategory, type Spending } from './calc'
@@ -81,6 +82,7 @@ export default function SpendingList() {
   const [loadError, setLoadError] = useState(false)
   const categories = useSpendingCategories(uid)
   const money = useAccounts(uid)
+  const { cards, liveCardIds } = useCards(uid)
 
   useEffect(() => watchMonthSpending(uid, from, to, setItems, () => setLoadError(true)), [uid, from, to])
   useEffect(() => watchCap(uid, setCapValue), [uid])
@@ -105,7 +107,8 @@ export default function SpendingList() {
               today={now}
               accounts={money.accounts}
               defaultAccountId={money.defaultId}
-              onSubmit={(input) => addSpending(uid, input, money.liveIds)}
+              cards={cards}
+              onSubmit={(input) => addSpending(uid, input, [...money.liveIds, ...liveCardIds])}
               onCreateCategory={(name) => addSpendingCategory(uid, name)}
             />
           </section>

@@ -89,3 +89,30 @@ test('crea una categoría nueva y la selecciona', async () => {
   fireEvent.click(screen.getByRole('button', { name: 'Crear' }))
   await waitFor(() => expect(onCreateCategory).toHaveBeenCalledWith('Gimnasio'))
 })
+
+test('cargar a una tarjeta guarda cardId y no accountId; al editar la preselecciona', async () => {
+  const onSubmit = vi.fn().mockResolvedValue(undefined)
+  const cards = [{ id: 'oro', name: 'Oro' }]
+  const { unmount } = render(
+    <SpendingForm categories={defaultSpendingCategories} today="2026-11-01" accounts={accounts} defaultAccountId="nomina" cards={cards} onSubmit={onSubmit} onCreateCategory={vi.fn()} />,
+  )
+  fireEvent.change(screen.getByLabelText('Desde'), { target: { value: 'card:oro' } })
+  fireEvent.change(screen.getByLabelText('Monto'), { target: { value: '30' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Agregar' }))
+  await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ amount: 3000, date: '2026-11-01', category: 'Comida', cardId: 'oro' }))
+  unmount()
+
+  render(
+    <SpendingForm
+      categories={defaultSpendingCategories}
+      today="2026-11-01"
+      initial={{ amount: 3000, date: '2026-11-01', category: 'Comida', cardId: 'oro' }}
+      submitLabel="Guardar"
+      accounts={accounts}
+      cards={cards}
+      onSubmit={vi.fn()}
+      onCreateCategory={vi.fn()}
+    />,
+  )
+  expect(screen.getByLabelText('Desde')).toHaveValue('card:oro')
+})

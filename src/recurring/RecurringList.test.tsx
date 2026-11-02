@@ -9,6 +9,8 @@ import RecurringList from './RecurringList'
 const api = vi.hoisted(() => ({ watchRecurring: vi.fn(), payRecurring: vi.fn(), watchPeriodPayments: vi.fn() }))
 vi.mock('./api', () => ({ watchRecurring: api.watchRecurring, payRecurring: api.payRecurring }))
 vi.mock('../lib/periodPayments', () => ({ watchPeriodPayments: api.watchPeriodPayments }))
+const cardsMock = vi.hoisted(() => ({ value: { cards: [] as { id: string; name: string }[], credits: [], loaded: true, liveCardIds: [] as string[] } }))
+vi.mock('../credits/useCards', () => ({ useCards: () => cardsMock.value }))
 
 // Pagos del periodo de marzo por gasto (los que no aparecen no tienen pagos)
 const periodPayments: Record<string, { amount: number; lastPaidAt: string | null }> = {}
@@ -112,4 +114,15 @@ test('avisa si el pago falla', async () => {
   renderList()
   fireEvent.click(screen.getByRole('button', { name: 'Pagar Renta' }))
   expect(await screen.findByRole('alert')).toHaveTextContent('No se pudo registrar el pago de Renta')
+})
+
+test('un gasto fijo se puede cargar a una tarjeta', () => {
+  cardsMock.value = { cards: [{ id: 'oro', name: 'Oro' }], credits: [], loaded: true, liveCardIds: ['oro'] }
+  api.payRecurring.mockResolvedValue(undefined)
+  renderList()
+  const row = screen.getByRole('button', { name: 'Pagar Netflix' }).closest('li')!
+  fireEvent.change(within(row).getByRole('combobox'), { target: { value: 'card:oro' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Pagar Netflix' }))
+  expect(api.payRecurring).toHaveBeenCalledWith('owner', items[1], 'card:oro', ['oro'])
+  cardsMock.value = { cards: [], credits: [], loaded: true, liveCardIds: [] }
 })

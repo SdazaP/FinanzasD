@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { categoryError } from '../lib/categories'
 import { toCents } from '../lib/money'
 import { fieldClass, primaryButtonClass } from '../lib/ui'
+import { toSource } from '../lib/accountBalance'
 import AccountPicker from '../money/AccountPicker'
 import type { Account } from '../money/calc'
 import type { SpendingInput } from './api'
@@ -13,6 +14,7 @@ type Props = {
   submitLabel?: string
   accounts?: Account[]
   defaultAccountId?: string
+  cards?: { id: string; name: string }[]
   onSubmit: (input: SpendingInput) => Promise<unknown>
   onCreateCategory: (name: string) => Promise<unknown>
 }
@@ -21,10 +23,10 @@ const chip = 'min-h-10 rounded-full px-3.5 text-sm font-medium transition-colors
 
 // Registro rápido (sin `initial`: se limpia al guardar y conserva la categoría) y edición (con `initial`)
 export default function SpendingForm({
-  categories, today, initial, submitLabel = 'Agregar', accounts = [], defaultAccountId, onSubmit, onCreateCategory,
+  categories, today, initial, submitLabel = 'Agregar', accounts = [], defaultAccountId, cards, onSubmit, onCreateCategory,
 }: Props) {
   // Al editar un gasto anterior a las cuentas no se le asigna una por defecto: seguiría sin mover saldos
-  const [chosenAccount, setChosenAccount] = useState<string | undefined>(initial?.accountId)
+  const [chosenAccount, setChosenAccount] = useState<string | undefined>(initial?.cardId ? `card:${initial.cardId}` : initial?.accountId)
   const accountId = initial ? chosenAccount : (chosenAccount ?? defaultAccountId)
   const [amount, setAmount] = useState(initial ? (initial.amount / 100).toFixed(2) : '')
   const [category, setCategory] = useState(initial?.category ?? categories[0])
@@ -65,7 +67,7 @@ export default function SpendingForm({
 
     const input: SpendingInput = { amount: cents!, date, category }
     if (note.trim()) input.note = note.trim()
-    if (accountId) input.accountId = accountId
+    Object.assign(input, toSource(accountId))
     setSaving(true)
     try {
       await onSubmit(input)
@@ -166,7 +168,7 @@ export default function SpendingForm({
       {error('note')}
       {error('date')}
 
-      <AccountPicker accounts={accounts} value={accountId} onChange={(id) => setChosenAccount(id || undefined)} label="Desde" allowNone={!!initial} />
+      <AccountPicker accounts={accounts} value={accountId} onChange={(id) => setChosenAccount(id || undefined)} label="Desde" allowNone={!!initial} cards={cards} />
       {error('form')}
 
       <button type="submit" disabled={saving} className={primaryButtonClass}>

@@ -11,7 +11,7 @@
   - Verify: `npm test`
   - Files: `src/credits/calc.ts` (+ test), `src/lib/accountBalance.ts`, `src/recurring/api.ts`, `src/spending/api.ts`, `src/money/balanceWrites.test.ts`
 
-- [ ] 2. Selector "Desde" con tarjetas
+- [x] 2. Selector "Desde" con tarjetas
   - Acceptance:
     - `useCards` devuelve las tarjetas y sus ids vivos.
     - `AccountPicker` con `cards` muestra el grupo "Tarjetas" ("BBVA Oro (crédito)").
