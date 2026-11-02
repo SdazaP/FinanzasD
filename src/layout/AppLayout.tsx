@@ -18,15 +18,17 @@ export default function AppLayout() {
   return (
     <div className="mx-auto min-h-dvh max-w-xl">
       <header className="px-5 pt-[calc(1.5rem+env(safe-area-inset-top,0px))] pb-5">
-        {/* La fecha va en su propia línea a todo el ancho; el saludo solo cabe en pantallas anchas */}
-        <p className="truncate text-sm text-zinc-500 first-letter:uppercase">
-          <span className="hidden sm:inline">{firstName ? `Hola, ${firstName}` : 'Hola'} · </span>
-          <time dateTime={now}>{formatLongDate(now)}</time>
-        </p>
+        {/* Fecha y mes arriba; así el título solo comparte línea con la campana. El saludo solo cabe en pantallas anchas */}
         <div className="flex items-center justify-between gap-3">
+          <p className="min-w-0 truncate text-[13px] text-zinc-500 first-letter:uppercase sm:text-sm">
+            <span className="hidden sm:inline">{firstName ? `Hola, ${firstName}` : 'Hola'} · </span>
+            <time dateTime={now}>{formatLongDate(now)}</time>
+          </p>
+          <span className="shrink-0 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium whitespace-nowrap text-primary">{formatMonthLabel(now)}</span>
+        </div>
+        <div className="mt-1 flex items-center justify-between gap-3">
           <h1 className="min-w-0 truncate font-display text-2xl leading-tight font-semibold tracking-tight sm:text-[1.75rem]">{title}</h1>
           <div className="flex shrink-0 items-center gap-2">
-            <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium whitespace-nowrap text-primary">{formatMonthLabel(now)}</span>
             {user && <AlertBell uid={user.uid} now={now} />}
             {user?.photoURL && (
               <img src={user.photoURL} alt="" referrerPolicy="no-referrer" className="hidden size-10 rounded-full ring-2 ring-white sm:block" />

@@ -16,6 +16,7 @@ const mocks = vi.hoisted(() => ({
 }))
 vi.mock('./useAccounts', () => ({ useAccounts: mocks.useAccounts }))
 vi.mock('./useMonthMoney', () => ({ useMonthMoney: mocks.useMonthMoney }))
+vi.mock('../alerts/api', () => ({ DEFAULT_RATIO: 50, watchAlertSettings: (_u: string, onData: (s: object) => void) => (onData({ ratioPct: 50, hidden: {} }), () => {}) }))
 vi.mock('./api', () => ({ addIncome: mocks.addIncome, updateIncome: mocks.updateIncome, deleteIncome: mocks.deleteIncome }))
 
 const accounts: Account[] = [
@@ -28,7 +29,7 @@ beforeEach(() => {
   vi.useFakeTimers({ toFake: ['Date'] })
   vi.setSystemTime(new Date(2026, 10, 1, 12, 0))
   mocks.useAccounts.mockReturnValue({ accounts, defaultId: 'nomina', liveIds: ['nomina', 'efectivo'], error: false })
-  mocks.useMonthMoney.mockReturnValue({ ready: true, failed: false, incomes: [sueldo], left: 650000, expected: 0 })
+  mocks.useMonthMoney.mockReturnValue({ ready: true, failed: false, incomes: [sueldo], left: 650000, expected: 0, frequency: 'monthly' })
   mocks.addIncome.mockResolvedValue(undefined)
 })
 
@@ -72,4 +73,10 @@ test('calcula lo que queda con el disponible y avisa si incluye la quincena espe
   renderPage()
   expect(mocks.useMonthMoney).toHaveBeenCalledWith('owner', '2026-11-01', 1480000)
   expect(screen.getByText('Incluye tu segunda quincena esperada ($9,000.00)')).toBeInTheDocument()
+})
+
+test('muestra las preferencias de cobro y del aviso de gastos', () => {
+  renderPage()
+  expect(screen.getByRole('heading', { name: 'Preferencias' })).toBeInTheDocument()
+  expect(screen.getByRole('radio', { name: 'Mensual' })).toBeChecked()
 })

@@ -27,9 +27,9 @@ test('totalsByCategory suma y ordena de mayor a menor', () => {
 describe('capSummary', () => {
   test.each([
     [5000, undefined, null],
-    [5000, 20000, { progress: 0.25, remaining: 15000, over: 0 }],
-    [20000, 20000, { progress: 1, remaining: 0, over: 0 }],
-    [26000, 20000, { progress: 1, remaining: 0, over: 6000 }],
+    [5000, 20000, { progress: 0.25, remaining: 15000 }],
+    [20000, 20000, { progress: 1, remaining: 0 }],
+    [26000, 20000, { progress: 1, remaining: 0 }],
   ])('total %i con tope %s', (total, cap, expected) => {
     expect(capSummary(total, cap)).toEqual(expected)
   })

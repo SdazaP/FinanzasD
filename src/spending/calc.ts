@@ -35,5 +35,5 @@ export function totalsByCategory(items: Spending[]) {
 
 export function capSummary(total: number, cap?: number) {
   if (!cap) return null
-  return { progress: Math.min(total / cap, 1), remaining: Math.max(cap - total, 0), over: Math.max(total - cap, 0) }
+  return { progress: Math.min(total / cap, 1), remaining: Math.max(cap - total, 0) }
 }

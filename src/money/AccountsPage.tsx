@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
+import PreferencesCard from '../alerts/PreferencesCard'
 import { useAuth } from '../auth/context'
 import { formatDay } from '../lib/dates'
 import { formatMXN } from '../lib/money'
@@ -173,6 +174,8 @@ export default function AccountsPage() {
           </ul>
         )}
       </section>
+
+      <PreferencesCard uid={uid} frequency={month.frequency} />
     </div>
   )
 }

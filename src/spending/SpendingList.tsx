@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
+import { LevelIcon } from '../alerts/AlertBell'
+import { capAlert } from '../alerts/calc'
 import { useAuth } from '../auth/context'
 import GastosTabs from '../layout/GastosTabs'
 import AmountAction from '../lib/AmountAction'
@@ -16,6 +18,7 @@ import SpendingForm from './SpendingForm'
 function MonthCard({ uid, total, count, cap }: { uid: string; total: number; count: number; cap?: number }) {
   const [editing, setEditing] = useState(false)
   const summary = capSummary(total, cap)
+  const capWarning = capAlert(total, cap)
 
   return (
     <section className="rounded-3xl bg-primary p-6 text-white shadow-card">
@@ -26,13 +29,19 @@ function MonthCard({ uid, total, count, cap }: { uid: string; total: number; cou
       {summary && (
         <div className="mt-4 space-y-1.5">
           <ProgressBar value={summary.progress} label="Avance del tope" onDark />
-          <p className="text-sm">
-            {summary.over ? (
-              <span className="font-medium">Te pasaste por {formatMXN(summary.over)}</span>
-            ) : (
-              <>Te quedan <span className="font-medium tabular-nums">{formatMXN(summary.remaining)}</span> de {formatMXN(cap!)}</>
-            )}
-          </p>
+          {/* Desde el 80% el aviso (el mismo de la campana) reemplaza la línea de "te quedan" */}
+          {capWarning ? (
+            <p className="flex gap-2 rounded-xl bg-white px-3 py-2 text-sm text-ink">
+              <LevelIcon level={capWarning.level} />
+              <span>
+                <span className="font-semibold">{capWarning.level === 'red' ? 'Urgente' : 'Atención'}:</span> {capWarning.text}
+              </span>
+            </p>
+          ) : (
+            <p className="text-sm">
+              Te quedan <span className="font-medium tabular-nums">{formatMXN(summary.remaining)}</span> de {formatMXN(cap!)}
+            </p>
+          )}
         </div>
       )}
 

@@ -40,7 +40,7 @@
   - Verify: `npm test && npm run build`; en el panel a 360 px.
   - Files: `src/alerts/AlertBell.tsx`, `src/alerts/AlertBell.test.tsx`, `src/layout/AppLayout.tsx`
 
-- [ ] 5. Aviso del tope y preferencias
+- [x] 5. Aviso del tope y preferencias
   - Acceptance:
     - Gastos hormiga muestra bajo la barra el mismo texto del aviso del tope (80% amarillo, 100% o más rojo).
     - Cuentas tiene la tarjeta "Preferencias":

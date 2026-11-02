@@ -52,7 +52,8 @@ test('consulta el mes en curso y muestra total, tope excedido y grupos por día'
 
   expect(screen.getByText('$245.00')).toBeInTheDocument()
   expect(screen.getByText('3 gastos')).toBeInTheDocument()
-  expect(screen.getByText('Te pasaste por $45.00')).toBeInTheDocument()
+  expect(screen.getByText('Te pasaste del tope de gastos hormiga por $45.00')).toBeInTheDocument()
+  expect(screen.getByText('Urgente:')).toBeInTheDocument()
 
   const hoy = screen.getByRole('heading', { name: 'Hoy' }).closest('section')!
   expect(within(hoy).getByText('$165.00')).toBeInTheDocument()
