@@ -13,6 +13,8 @@ vi.mock('../money/useAccounts', () => ({ useAccounts: mocks.useAccounts }))
 vi.mock('../money/useMonthMoney', () => ({ useMonthMoney: mocks.useMonthMoney }))
 vi.mock('../spending/api', () => ({ watchMonthSpending: mocks.watchMonthSpending, watchCap: mocks.watchCap }))
 vi.mock('./api', () => ({ watchAlertSettings: mocks.watchAlertSettings }))
+const cardsMock = vi.hoisted(() => ({ value: { cards: [] as object[], credits: [] as object[], loaded: true, liveCardIds: [] as string[] } }))
+vi.mock('../credits/useCards', () => ({ useCards: () => cardsMock.value }))
 
 beforeEach(() => {
   mocks.useAccounts.mockReturnValue({ accounts: [{ id: 'a', name: 'BBVA', type: 'debit', balance: 1000000 }] })
@@ -41,4 +43,12 @@ test('mientras carga no muestra avisos', () => {
   mocks.useMonthMoney.mockReturnValue({ ready: false })
   const { result } = renderHook(() => useAlerts('owner', '2026-11-01'))
   expect(result.current.visible).toEqual([])
+})
+
+test('una tarjeta cerca de su límite (contando sus MSI) avisa', () => {
+  const oro = { id: 'oro', kind: 'card', name: 'Oro', balance: 600000, limit: 1000000 }
+  cardsMock.value = { cards: [oro], credits: [oro, { kind: 'msi', cardId: 'oro', balance: 350000 }], loaded: true, liveCardIds: ['oro'] }
+  const { result } = renderHook(() => useAlerts('owner', '2026-11-01'))
+  expect(result.current.visible.map((a) => a.text)).toContain('Oro: usas el 95% de tu límite')
+  cardsMock.value = { cards: [], credits: [], loaded: true, liveCardIds: [] }
 })

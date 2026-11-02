@@ -53,3 +53,18 @@ test('ocultar vale solo para ese mes y nivel', () => {
   const worse = buildAlerts({ ...base, spent: 110000, cap: 100000 })
   expect(visibleAlerts(worse, { 'cap-yellow': '2026-11' }, '2026-11').visible.map((a) => a.key)).toEqual(['cap-red'])
 })
+
+test('tarjetas: desde el 90% de su límite amarillo, por encima del límite rojo, una clave por tarjeta', () => {
+  const card = (used: number, limit?: number) => ({ id: 'oro', name: 'BBVA Oro', used, limit })
+  const one = (c: ReturnType<typeof card>) => buildAlerts({ ...base, cards: [c] })
+  expect(one(card(8999, 10000))).toEqual([])
+  expect(one(card(9000, 10000))).toEqual([
+    { key: 'card-oro-yellow', level: 'yellow', text: 'BBVA Oro: usas el 90% de tu límite', href: '/cuentas' },
+  ])
+  expect(one(card(10000, 10000))[0]).toMatchObject({ key: 'card-oro-yellow', text: 'BBVA Oro: usas el 100% de tu límite' })
+  expect(one(card(10101, 10000))[0]).toMatchObject({ key: 'card-oro-red', level: 'red', text: 'BBVA Oro: te pasaste de tu límite por $1.01' })
+  expect(one(card(999999))).toEqual([]) // sin límite no hay aviso
+  expect(keys({ cards: [card(9500, 10000), { id: 'nu', name: 'Nu', used: 20000, limit: 10000 }], left: -1 })).toEqual([
+    'left-red', 'card-nu-red', 'card-oro-yellow',
+  ])
+})

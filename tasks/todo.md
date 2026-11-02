@@ -37,7 +37,7 @@
   - Verify: `npm test`
   - Files: `src/credits/CreditForm.tsx`, `src/credits/CreditList.tsx`, `src/credits/CreditDetail.tsx`, `src/money/CardsSection.tsx` (+ tests)
 
-- [ ] 5. Aviso de uso de tarjeta
+- [x] 5. Aviso de uso de tarjeta
   - Acceptance:
     - Desde el 90% del límite, aviso amarillo "{tarjeta}: usas el N% de tu límite"; por encima del límite, rojo. Lleva a Cuentas.
     - Al 89% no hay aviso; uno por tarjeta, con su propia clave para ocultarlo.

@@ -13,6 +13,7 @@ export type AlertInput = {
   incomes: number // ingresos que cuentan para el mes (incluye la quincena esperada)
   expenses: number // pagado + pendiente + gastos hormiga
   ratioPct: number | null // null = aviso desactivado
+  cards?: { id: string; name: string; used: number; limit?: number }[] // crédito usado = deuda + MSI pendientes
 }
 
 const alert = (type: string, level: AlertLevel, text: string, href: string): Alert => ({ key: `${type}-${level}`, level, text, href })
@@ -25,6 +26,15 @@ export function capAlert(spent: number, cap?: number) {
   }
   const text = spent === cap ? 'Llegaste a tu tope de gastos hormiga' : `Te pasaste del tope de gastos hormiga por ${formatMXN(spent - cap)}`
   return alert('cap', 'red', text, '/gastos-hormiga')
+}
+
+// Tarjeta al 90% de su límite: amarillo; por encima del límite: rojo. Una clave por tarjeta para ocultarlas por separado.
+export function cardAlert(card: { id: string; name: string; used: number; limit?: number }) {
+  if (!card.limit || card.used * 100 < card.limit * 90) return null
+  if (card.used > card.limit) {
+    return alert(`card-${card.id}`, 'red', `${card.name}: te pasaste de tu límite por ${formatMXN(card.used - card.limit)}`, '/cuentas')
+  }
+  return alert(`card-${card.id}`, 'yellow', `${card.name}: usas el ${Math.floor((card.used * 100) / card.limit)}% de tu límite`, '/cuentas')
 }
 
 export function buildAlerts(m: AlertInput) {
@@ -42,6 +52,7 @@ export function buildAlerts(m: AlertInput) {
           '/cuentas',
         )
       : null,
+    ...(m.cards ?? []).map(cardAlert),
   ]
   const present = alerts.filter((a) => a !== null)
   return [...present.filter((a) => a.level === 'red'), ...present.filter((a) => a.level === 'yellow')]
