@@ -115,5 +115,5 @@ App.tsx                    → /ahorro/planear
 
 ## Open Questions
 
-1. **Antes de la fecha:** propongo permitir "Gastar antes de tiempo", por si compras antes. ¿Te parece, o solo desde la fecha?
+1. ~~Antes de la fecha~~ **Resuelta:** se puede gastar antes de tiempo ("Gastar antes de tiempo").
 2. **"Total ahorrado":** propongo mostrar lo de los planeados aparte, porque ese dinero ya tiene destino. ¿O prefieres que siga sumado al total?
