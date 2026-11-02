@@ -13,7 +13,7 @@
   - Verify: `npm test`; en el panel, Inicio muestra disponible − pendiente con tus datos.
   - Files: `src/money/calc.ts`, `src/money/calc.test.ts`, `src/money/api.ts`, `src/money/useMonthMoney.ts`, `src/money/AccountsPage.tsx`, `src/dashboard/Dashboard.tsx`
 
-- [ ] 2. Lógica de avisos
+- [x] 2. Lógica de avisos
   - Acceptance:
     - `incomeMonth` (ya en `money/calc.ts`, se reutiliza): un "Sueldo" del 28 de octubre cuenta para octubre; uno del 29 o 30 de octubre o del 2 de noviembre cuenta para noviembre; un "Extra" del 30 de octubre cuenta para octubre.
     - El aviso de % suma la segunda quincena esperada a los ingresos cuando el cobro es quincenal.
