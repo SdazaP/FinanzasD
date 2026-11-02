@@ -22,7 +22,7 @@
   - Verify: `npm test`
   - Files: `src/alerts/calc.ts`, `src/alerts/calc.test.ts`
 
-- [ ] 3. Datos de avisos
+- [x] 3. Datos de avisos
   - Acceptance:
     - `api.ts`: `watchAlertSettings`, `setExpenseRatio` (1–100 o desactivado), `hideAlert`, `showAlert`.
     - `useAlerts(uid, now)` devuelve los avisos visibles y los ocultos.

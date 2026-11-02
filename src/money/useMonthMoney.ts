@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { watchCredits, type Credit } from '../credits/api'
 import { monthCommitments } from '../dashboard/calc'
 import { addDays, monthRange } from '../lib/dates'
+import { usePaidThisMonth } from '../lib/usePaidThisMonth'
 import { watchRecurring, type Recurring } from '../recurring/api'
 import { watchMonthIncomes, watchPayFrequency, type Income } from './api'
 import { expectedSecondHalf, incomeMonth, leftThisMonth, type PayFrequency } from './calc'
@@ -25,6 +26,9 @@ export function useMonthMoney(uid: string, now: string, available: number) {
   }, [uid])
   useEffect(() => watchMonthIncomes(uid, windowFrom, to, setFetched, () => setFailed(true)), [uid, windowFrom, to])
 
+  // Para el aviso de % del ingreso
+  const paid = usePaidThisMonth(uid, (recurring ?? []).map((r) => r.id), (credits ?? []).map((c) => c.id), now)
+
   const ready = !!(recurring && credits && fetched)
   const all = fetched ?? []
   const pending = monthCommitments(recurring ?? [], credits ?? [], 0, now).pending
@@ -37,6 +41,7 @@ export function useMonthMoney(uid: string, now: string, available: number) {
     // Lista de Cuentas: mes calendario; avisos: el mes al que cuenta cada ingreso
     incomes: all.filter((i) => i.date >= from),
     monthIncomes: all.filter((i) => incomeMonth(i) === month),
+    paid,
     pending,
     expected,
     left: leftThisMonth(available, pending, expected),

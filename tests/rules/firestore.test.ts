@@ -20,6 +20,7 @@ const paths = [
   `users/${OWNER}/accounts/bbva/adjustments/a1`,
   `users/${OWNER}/incomes/i1`,
   `users/${OWNER}/settings/money`,
+  `users/${OWNER}/settings/alerts`,
 ]
 
 let env: RulesTestEnvironment
