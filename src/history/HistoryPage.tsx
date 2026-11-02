@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { useAuth } from '../auth/context'
-import GastosTabs from '../layout/GastosTabs'
 import { addDays, formatLongDate, formatMonthLabel, formatMonthName, monthRange } from '../lib/dates'
 import { formatMXN } from '../lib/money'
 import { useToday } from '../lib/useToday'
@@ -40,8 +39,6 @@ export default function HistoryPage() {
 
   return (
     <div className="space-y-4">
-      <GastosTabs />
-
       <section className={card}>
         <div className="flex items-center justify-between gap-2">
           <button type="button" onClick={() => go(-1)} aria-label="Mes anterior" className="grid size-11 place-items-center rounded-xl text-primary active:bg-primary/10">

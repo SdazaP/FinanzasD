@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import type { User } from 'firebase/auth'
 import { MemoryRouter } from 'react-router'
 import { expect, test, vi } from 'vitest'
@@ -44,6 +44,22 @@ test('Hormiga mantiene activa la pestaña Gastos con su propio título', () => {
   expect(screen.getByRole('heading', { name: 'Gastos hormiga' })).toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'Gastos' })).toHaveAttribute('aria-current', 'page')
   expect(screen.getByRole('link', { name: 'Hormiga' })).toHaveAttribute('aria-current', 'page')
+})
+
+test('el ícono de historial solo aparece en Gastos y lleva a su página', () => {
+  renderAt('/gastos-hormiga')
+  expect(screen.getByRole('link', { name: 'Historial de gastos' })).toHaveAttribute('href', '/gastos-historial')
+  expect(screen.queryByRole('link', { name: 'Historial' })).not.toBeInTheDocument() // ya no es pestaña
+  cleanup()
+
+  renderAt('/creditos')
+  expect(screen.queryByRole('link', { name: 'Historial de gastos' })).not.toBeInTheDocument()
+  cleanup()
+
+  renderAt('/gastos-historial')
+  expect(screen.getByRole('heading', { name: 'Historial', level: 1 })).toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'Historial de gastos' })).toHaveAttribute('aria-current', 'page')
+  expect(screen.getByRole('link', { name: 'Gastos' })).toHaveAttribute('aria-current', 'page')
 })
 
 test('el encabezado muestra el mes en curso y la fecha de hoy', () => {

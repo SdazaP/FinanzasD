@@ -72,7 +72,7 @@ export default function AlertBell({ uid, now }: { uid: string; now: string }) {
         aria-label={`Avisos, ${count} activos`}
         aria-expanded={open}
         aria-controls={panelId}
-        className="relative flex size-10 items-center justify-center rounded-full bg-surface text-ink shadow-card transition-transform duration-150 ease-out active:scale-95"
+        className="relative flex size-9 items-center justify-center rounded-full bg-surface text-ink shadow-card transition-transform duration-150 ease-out active:scale-95"
       >
         <svg viewBox="0 0 24 24" className={svg} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0" />

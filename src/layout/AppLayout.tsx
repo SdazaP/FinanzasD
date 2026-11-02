@@ -29,11 +29,25 @@ export default function AppLayout() {
           <span className="shrink-0 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium whitespace-nowrap text-primary">{formatMonthLabel(now)}</span>
         </div>
         <div className="mt-1 flex items-center justify-between gap-3">
-          <h1 className="min-w-0 truncate font-display text-2xl leading-tight font-semibold tracking-tight sm:text-[1.75rem]">{title}</h1>
-          <div className="flex shrink-0 items-center gap-2">
+          <h1 className="min-w-0 truncate font-display text-[22px] leading-tight font-semibold tracking-tight sm:text-[1.75rem]">{title}</h1>
+          <div className="flex shrink-0 items-center gap-1.5">
+            {/* Historial solo en la sección Gastos */}
+            {section.path === '/gastos-fijos' && (
+              <Link
+                to="/gastos-historial"
+                aria-label="Historial de gastos"
+                aria-current={pathname.startsWith('/gastos-historial') ? 'page' : undefined}
+                className="flex size-9 items-center justify-center rounded-full bg-surface text-ink shadow-card transition-transform duration-150 ease-out active:scale-95 aria-[current=page]:bg-primary aria-[current=page]:text-white"
+              >
+                <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect x="3" y="4.5" width="18" height="16.5" rx="2.5" />
+                  <path d="M8 2.5v4M16 2.5v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01" />
+                </svg>
+              </Link>
+            )}
             {user && <AlertBell uid={user.uid} now={now} />}
             {user?.photoURL && (
-              <img src={user.photoURL} alt="" referrerPolicy="no-referrer" className="size-10 rounded-full ring-2 ring-surface" />
+              <img src={user.photoURL} alt="" referrerPolicy="no-referrer" className="size-9 rounded-full ring-2 ring-surface" />
             )}
           </div>
         </div>

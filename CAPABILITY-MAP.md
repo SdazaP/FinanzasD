@@ -39,7 +39,7 @@ Orden: monthly-payment → credit-cards
 
 | Módulo | Estado | Responsabilidad | Depende de |
 |---|---|---|---|
-| `history` | Listo | Gastos de meses anteriores como historial (no mueven saldos) y pestaña "Historial" en Gastos con calendario del mes: gastos hormiga, pagos de gastos fijos y de créditos por día, navegación entre meses y detalle del día | spending, recurring, credits, money |
+| `history` | Listo | Gastos de meses anteriores como historial (no mueven saldos) y página "Historial" (ícono en el encabezado de Gastos) con calendario del mes: gastos hormiga, pagos de gastos fijos y de créditos por día, navegación entre meses y detalle del día | spending, recurring, credits, money |
 | `planned` | Pendiente | Gastos planeados en Ahorro: cada uno es un apartado con meta y fecha que dice cuánto ahorrar al mes; aparece en el calendario en su fecha; "Gastar" lo registra como gasto desde el apartado | savings, spending, history |
 
 Orden: history → planned

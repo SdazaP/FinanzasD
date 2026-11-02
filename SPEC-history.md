@@ -13,7 +13,7 @@ Historial de gastos por meses con calendario (ver `CAPABILITY-MAP.md`, iteració
 
 1. **Todos los gastos van al calendario:** gastos hormiga (por su fecha), pagos de gastos fijos y pagos de créditos (por el día en que se pagaron).
 2. **Gasto pasado automático por mes:** un gasto hormiga con fecha de un mes anterior al actual se guarda como historial y no mueve ninguna cuenta ni tarjeta. Los del mes actual siguen como hoy.
-3. **Pestaña "Historial" en Gastos**, junto a Fijos | Hormiga.
+3. **Ícono de historial en el encabezado** (calendario), junto a la campana y tu foto; solo se ve en la sección Gastos. (Primero fue una pestaña junto a Fijos | Hormiga; se cambió a petición tuya.)
 
 ## Criterios de aceptación
 
@@ -25,7 +25,7 @@ Historial de gastos por meses con calendario (ver `CAPABILITY-MAP.md`, iteració
      - si cambias un gasto del mes actual a una fecha de un mes anterior, se devuelve a su cuenta o tarjeta;
      - si cambias uno del historial al mes actual, puedes elegir "Desde" como en un gasto nuevo.
    - Sigue sin aceptar fechas futuras (los gastos futuros serán del módulo `planned`).
-2. **Pestaña Historial** (`/gastos-historial`):
+2. **Página Historial** (`/gastos-historial`, desde el ícono del encabezado):
    - **Encabezado:** "‹ Noviembre 2026 ›".
      - Las flechas cambian de mes.
      - No se avanza más allá del mes actual (los meses futuros llegarán con `planned`).
@@ -74,7 +74,7 @@ src/history/
 Cambios:
   spending/SpendingForm.tsx → oculta "Desde" en meses anteriores, con el aviso
   spending/api.ts           → add/updateSpending no mueven saldos con fecha de un mes anterior
-  layout/GastosTabs.tsx     → tercera pestaña "Historial"
+  layout/AppLayout.tsx      → ícono de historial en el encabezado, solo en Gastos (marcado al estar en la página)
   sections.tsx, App.tsx     → ruta /gastos-historial
 ```
 
@@ -125,7 +125,7 @@ const source = isPastMonth(input.date, today()) ? {} : input
 ## Success Criteria
 
 1. Registro un gasto hormiga de octubre con mi cuenta elegida: aparece en el historial de octubre y mi saldo de BBVA no cambia.
-2. En la pestaña Historial veo noviembre con el total del mes y cada día con su monto; toco un día y veo qué pagué.
+2. En la página Historial veo noviembre con el total del mes y cada día con su monto; toco un día y veo qué pagué.
 3. Navego a octubre y veo los gastos que registré.
 4. Lint, tests y build pasan.
 
