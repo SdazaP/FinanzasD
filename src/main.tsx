@@ -5,6 +5,9 @@ import './index.css'
 import App from './App.tsx'
 import AuthProvider from './auth/AuthProvider'
 import RequireAuth from './auth/RequireAuth'
+import { registerServiceWorker } from './pwa/registerServiceWorker'
+
+registerServiceWorker()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
