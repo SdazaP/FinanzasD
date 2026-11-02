@@ -1,9 +1,9 @@
-# Tareas: history
+# Tareas: planned
 
-Detalle y criterios en `SPEC-history.md`. (Las tareas anteriores están completas; ver historial de git.)
+Detalle y criterios en `SPEC-planned.md`. (Las tareas anteriores están completas; ver historial de git.)
 
-- [x] 1. Gastos pasados sin mover saldos (`isPastMonth`, API y formulario). Verify: `npm test`.
-- [x] 2. Cálculo del calendario: `monthGrid`, totales por día, resumen y formato corto. Verify: `npm test`.
-- [x] 3. `useMonthHistory`: gastos hormiga y pagos de fijos y créditos del mes. Verify: `npm test`.
-- [x] 4. Pestaña Historial: navegación, total, calendario, detalle del día y estado vacío. Verify: `npm test && npm run build`; revisión en el panel.
-- [x] 5. Revisión a 360 px (claro y oscuro), mapa de capacidades y deploy.
+- [ ] 1. Cálculo y API: `plannedSummary`, `spendError`, `plannedSaved`, `addPlanned`, `spendPlanned` y borrar un "Gastado". Verify: `npm test`.
+- [ ] 2. "Planear gasto": formulario y ruta. Verify: `npm test`.
+- [ ] 3. Ahorro: secciones, total con su parte de planeados y "Gastar" en el detalle. Verify: `npm test && npm run build`; panel.
+- [ ] 4. Calendario: meses futuros, planeados punteados y gastados en el total. Verify: `npm test`; panel.
+- [ ] 5. Revisión a 360 px, tests de reglas, mapa de capacidades y deploy con tu permiso.

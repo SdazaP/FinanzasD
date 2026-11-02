@@ -2,7 +2,7 @@
 
 Gastos planeados en Ahorro (ver `CAPABILITY-MAP.md`, iteración 4). Depende de `savings`, `spending` y `history`.
 
-**Estado:** pendiente de tu aprobación. Aún no hay código.
+**Estado:** aprobado.
 
 ## Objetivo
 
