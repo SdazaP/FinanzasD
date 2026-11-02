@@ -13,7 +13,8 @@ export function useMonthHistory(uid: string, date: string) {
   const [from, to] = monthRange(date)
   const [recurring, setRecurring] = useState<Recurring[]>()
   const [credits, setCredits] = useState<Credit[]>()
-  const [spending, setSpending] = useState<Spending[]>()
+  // Guardados con su mes: al navegar no se muestran los del mes anterior mientras llegan los nuevos
+  const [loaded, setLoaded] = useState<{ from: string; items: Spending[] }>()
   const [payments, setPayments] = useState<Record<string, PaymentDoc[]>>({})
 
   useEffect(() => {
@@ -21,10 +22,11 @@ export function useMonthHistory(uid: string, date: string) {
     return () => unsubscribes.forEach((u) => u())
   }, [uid])
 
-  useEffect(() => {
-    setSpending(undefined)
-    return watchMonthSpending(uid, from, to, setSpending, () => setSpending([]))
-  }, [uid, from, to])
+  useEffect(
+    () => watchMonthSpending(uid, from, to, (items) => setLoaded({ from, items }), () => setLoaded({ from, items: [] })),
+    [uid, from, to],
+  )
+  const spending = loaded?.from === from ? loaded.items : undefined
 
   // Claves 'recurring/{id}' y 'credits/{id}'; el mes va en la clave guardada para no mezclar meses al navegar
   const keys = [...(recurring ?? []).map((r) => `recurring/${r.id}`), ...(credits ?? []).map((c) => `credits/${c.id}`)].join(',')
