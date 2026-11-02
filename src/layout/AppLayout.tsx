@@ -1,6 +1,7 @@
 import { Link, Outlet, useLocation } from 'react-router'
 import AlertBell from '../alerts/AlertBell'
 import { useAuth } from '../auth/context'
+import UpdateBanner from '../pwa/UpdateBanner'
 import { formatLongDate, formatMonthLabel } from '../lib/dates'
 import { useToday } from '../lib/useToday'
 import { sections } from '../sections'
@@ -40,6 +41,8 @@ export default function AppLayout() {
       <main className="px-5 pb-[calc(7rem+env(safe-area-inset-bottom,0px))]">
         <Outlet />
       </main>
+
+      <UpdateBanner />
 
       <nav
         aria-label="Secciones"

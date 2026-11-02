@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { fieldClass } from '../lib/ui'
 import { setPayFrequency } from '../money/api'
 import type { PayFrequency } from '../money/calc'
+import InstallButton from '../pwa/InstallButton'
 import { DEFAULT_RATIO, setExpenseRatio, watchAlertSettings } from './api'
 
 const frequencies: [PayFrequency, string][] = [['monthly', 'Mensual'], ['biweekly', 'Quincenal']]
@@ -113,6 +114,8 @@ export default function PreferencesCard({ uid, frequency }: { uid: string; frequ
           </>
         )}
       </div>
+
+      <InstallButton />
     </section>
   )
 }

@@ -5,7 +5,7 @@ import './index.css'
 import App from './App.tsx'
 import AuthProvider from './auth/AuthProvider'
 import RequireAuth from './auth/RequireAuth'
-import { registerServiceWorker } from './pwa/registerServiceWorker'
+import { registerServiceWorker } from './pwa/pwa'
 
 registerServiceWorker()
 
