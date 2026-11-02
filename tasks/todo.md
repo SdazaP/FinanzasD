@@ -44,7 +44,7 @@
   - Verify: `npm test`
   - Files: `src/alerts/calc.ts`, `src/alerts/useAlerts.ts` (+ tests)
 
-- [ ] 6. Revisión y deploy
+- [x] 6. Revisión y deploy
   - Acceptance:
     - Revisión a 360 px con 3 tarjetas, una sobre el límite, nombres largos y montos de 7 cifras.
     - Mapa de capacidades: `credit-cards` en "Listo".
