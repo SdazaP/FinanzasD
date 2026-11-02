@@ -1,56 +1,44 @@
 import { useEffect, useState } from 'react'
 import { watchCredits, type Credit } from '../credits/api'
 import { monthCommitments } from '../dashboard/calc'
-import { monthRange } from '../lib/dates'
-import { usePaidThisMonth } from '../lib/usePaidThisMonth'
+import { addDays, monthRange } from '../lib/dates'
 import { watchRecurring, type Recurring } from '../recurring/api'
-import { watchMonthMovements, watchSavings, type Movement } from '../savings/api'
-import { watchMonthSpending } from '../spending/api'
-import type { Spending } from '../spending/calc'
-import { watchMonthIncomes, type Income } from './api'
-import { leftThisMonth, savingsNet } from './calc'
+import { watchMonthIncomes, watchPayFrequency, type Income } from './api'
+import { expectedSecondHalf, incomeMonth, leftThisMonth, type PayFrequency } from './calc'
 
-// Reúne los términos de "te queda este mes". shortcut: una suscripción por apartado para el ahorro neto;
-// si llegan a decenas, guardar el neto del mes en el propio apartado.
-export function useMonthMoney(uid: string, now: string) {
+// "Te queda este mes" = disponible − pendiente (+ segunda quincena esperada si el cobro es quincenal)
+export function useMonthMoney(uid: string, now: string, available: number) {
   const [from, to] = monthRange(now)
+  const month = from.slice(0, 7)
+  // Desde 3 días antes: un sueldo adelantado del mes anterior cuenta para este
+  const windowFrom = addDays(from, -3)
   const [recurring, setRecurring] = useState<Recurring[]>()
   const [credits, setCredits] = useState<Credit[]>()
-  const [savingIds, setSavingIds] = useState<string[]>()
-  const [spending, setSpending] = useState<Spending[]>()
-  const [incomes, setIncomes] = useState<Income[]>()
-  const [movements, setMovements] = useState<Record<string, Movement[]>>({})
+  const [fetched, setFetched] = useState<Income[]>()
+  const [frequency, setFrequency] = useState<PayFrequency>('monthly')
   const [failed, setFailed] = useState(false)
 
   useEffect(() => {
     const fail = () => setFailed(true)
-    const unsubscribes = [
-      watchRecurring(uid, setRecurring, fail),
-      watchCredits(uid, setCredits, fail),
-      watchSavings(uid, (s) => setSavingIds(s.map((x) => x.id)), fail),
-    ]
+    const unsubscribes = [watchRecurring(uid, setRecurring, fail), watchCredits(uid, setCredits, fail), watchPayFrequency(uid, setFrequency)]
     return () => unsubscribes.forEach((u) => u())
   }, [uid])
-  useEffect(() => watchMonthSpending(uid, from, to, setSpending, () => setFailed(true)), [uid, from, to])
-  useEffect(() => watchMonthIncomes(uid, from, to, setIncomes, () => setFailed(true)), [uid, from, to])
+  useEffect(() => watchMonthIncomes(uid, windowFrom, to, setFetched, () => setFailed(true)), [uid, windowFrom, to])
 
-  const savingList = (savingIds ?? []).join(',')
-  useEffect(() => {
-    if (!savingList) return
-    const unsubscribes = savingList
-      .split(',')
-      .map((id) => watchMonthMovements(uid, id, from, to, (m) => setMovements((prev) => ({ ...prev, [`${from}/${id}`]: m }))))
-    return () => unsubscribes.forEach((u) => u())
-  }, [uid, savingList, from, to])
-
-  const paid = usePaidThisMonth(uid, (recurring ?? []).map((r) => r.id), (credits ?? []).map((c) => c.id), now)
-
-  const ready = !!(recurring && credits && savingIds && spending && incomes)
-  const incomesTotal = (incomes ?? []).reduce((sum, i) => sum + i.amount, 0)
-  const spent = (spending ?? []).reduce((sum, s) => sum + s.amount, 0)
-  const savedNet = savingsNet((savingIds ?? []).flatMap((id) => movements[`${from}/${id}`] ?? []), from, to)
+  const ready = !!(recurring && credits && fetched)
+  const all = fetched ?? []
   const pending = monthCommitments(recurring ?? [], credits ?? [], 0, now).pending
-  const terms = { incomes: incomesTotal, paid, spent, savedNet, pending }
+  const expected = expectedSecondHalf(all, month, frequency)
 
-  return { ready, failed, incomes: incomes ?? [], terms, left: leftThisMonth(terms) }
+  return {
+    ready,
+    failed,
+    frequency,
+    // Lista de Cuentas: mes calendario; avisos: el mes al que cuenta cada ingreso
+    incomes: all.filter((i) => i.date >= from),
+    monthIncomes: all.filter((i) => incomeMonth(i) === month),
+    pending,
+    expected,
+    left: leftThisMonth(available, pending, expected),
+  }
 }

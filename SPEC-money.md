@@ -11,15 +11,14 @@ Saber cuánto dinero tengo de verdad (en total y por cuenta) y cuánto me queda 
 - **Cuenta:** dónde está mi dinero (débito, efectivo, otra). Tiene un saldo que yo fijo al crearla y que luego cambia solo con movimientos.
 - **Ingreso:** dinero que entra a una cuenta (sueldo, extra, reembolso).
 - **Disponible total:** suma de los saldos de todas las cuentas.
-- **Te queda este mes** (fórmula aprobada):
+- **Te queda este mes:**
 
   ```
-  ingresos del mes
-  − pagado este mes      (gastos fijos y créditos, por fecha de pago)
-  − gastado este mes     (gastos hormiga)
-  − ahorrado este mes    (aportes − retiros de ahorro)
-  − pendiente del mes    (lo que vence hasta fin de mes, igual que en Inicio)
+  disponible total − pendiente del mes (lo que vence hasta fin de mes, igual que en Inicio)
+  + segunda quincena esperada (solo si el cobro es quincenal y aún no llega el segundo "Sueldo" del mes)
   ```
+
+  Cambio definido en `SPEC-alerts.md`. Antes era `ingresos − pagado − gastado − ahorrado − pendiente`, pero salía negativo cuando el sueldo llegaba unos días antes de que empezara el mes. Lo pagado, gastado y apartado desde una cuenta ya está descontado del disponible.
 
 ## Criterios de aceptación
 

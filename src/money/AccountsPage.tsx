@@ -19,7 +19,7 @@ export default function AccountsPage() {
   const uid = useAuth()!.uid
   const now = useToday()
   const { accounts, defaultId, liveIds, error } = useAccounts(uid)
-  const month = useMonthMoney(uid, now)
+  const month = useMonthMoney(uid, now, availableTotal(accounts ?? []))
   const [adding, setAdding] = useState(false)
   const [editing, setEditing] = useState<string>()
   const [actionError, setActionError] = useState('')
@@ -58,6 +58,9 @@ export default function AccountsPage() {
           <span className="text-white/80">Te queda este mes </span>
           <span className="font-medium tabular-nums">{month.ready ? formatMXN(month.left) : '…'}</span>
         </p>
+        {month.ready && month.expected > 0 && (
+          <p className="mt-1 text-xs text-white/70">Incluye tu segunda quincena esperada ({formatMXN(month.expected)})</p>
+        )}
       </section>
 
       <div className="grid grid-cols-2 gap-3">

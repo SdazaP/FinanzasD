@@ -4,7 +4,7 @@ import {
 import { db } from '../firebase'
 import { applyAccountDelta } from '../lib/accountBalance'
 import { today } from '../lib/dates'
-import type { Account, AccountType } from './calc'
+import type { Account, AccountType, PayFrequency } from './calc'
 
 export type IncomeConcept = 'Sueldo' | 'Extra' | 'Reembolso' | 'Otro'
 export type IncomeInput = { concept: IncomeConcept; amount: number; date: string; accountId: string; note?: string }
@@ -25,6 +25,12 @@ export function watchAccounts(uid: string, onData: (accounts: Account[]) => void
 export function watchDefaultAccount(uid: string, onData: (id: string | undefined) => void) {
   return onSnapshot(settingsDoc(uid), (snap) => onData(snap.data()?.defaultAccountId as string | undefined), () => onData(undefined))
 }
+
+export function watchPayFrequency(uid: string, onData: (f: PayFrequency) => void) {
+  return onSnapshot(settingsDoc(uid), (snap) => onData(snap.data()?.payFrequency === 'biweekly' ? 'biweekly' : 'monthly'), () => onData('monthly'))
+}
+
+export const setPayFrequency = (uid: string, payFrequency: PayFrequency) => setDoc(settingsDoc(uid), { payFrequency }, { merge: true })
 
 // La primera cuenta queda como predeterminada
 export function addAccount(uid: string, input: { name: string; type: AccountType; balance: number }, makeDefault: boolean) {

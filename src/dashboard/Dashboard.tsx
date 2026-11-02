@@ -28,8 +28,8 @@ const card = 'rounded-3xl bg-white p-5 shadow-card'
 
 // Separado para que useMonthMoney solo se suscriba cuando hay cuentas
 function MoneyLine({ uid, now, accounts }: { uid: string; now: string; accounts: Account[] }) {
-  const month = useMonthMoney(uid, now)
   const total = availableTotal(accounts)
+  const month = useMonthMoney(uid, now, total)
   return (
     <Link to="/cuentas" className={`${card} flex items-center gap-4 active:bg-zinc-50`}>
       <div className="min-w-0 flex-1">

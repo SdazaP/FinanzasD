@@ -28,7 +28,7 @@ beforeEach(() => {
   vi.useFakeTimers({ toFake: ['Date'] })
   vi.setSystemTime(new Date(2026, 10, 1, 12, 0))
   mocks.useAccounts.mockReturnValue({ accounts, defaultId: 'nomina', liveIds: ['nomina', 'efectivo'], error: false })
-  mocks.useMonthMoney.mockReturnValue({ ready: true, failed: false, incomes: [sueldo], left: 650000 })
+  mocks.useMonthMoney.mockReturnValue({ ready: true, failed: false, incomes: [sueldo], left: 650000, expected: 0 })
   mocks.addIncome.mockResolvedValue(undefined)
 })
 
@@ -65,4 +65,11 @@ test('sin cuentas invita a crear la primera', () => {
   mocks.useAccounts.mockReturnValue({ accounts: [], defaultId: undefined, liveIds: [], error: false })
   renderPage()
   expect(screen.getByRole('link', { name: 'Crear mi primera cuenta' })).toHaveAttribute('href', '/cuentas/nueva')
+})
+
+test('calcula lo que queda con el disponible y avisa si incluye la quincena esperada', () => {
+  mocks.useMonthMoney.mockReturnValue({ ready: true, failed: false, incomes: [sueldo], left: 650000, expected: 900000 })
+  renderPage()
+  expect(mocks.useMonthMoney).toHaveBeenCalledWith('owner', '2026-11-01', 1480000)
+  expect(screen.getByText('Incluye tu segunda quincena esperada ($9,000.00)')).toBeInTheDocument()
 })
