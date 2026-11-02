@@ -3,6 +3,7 @@ import CreditDetail from './credits/CreditDetail'
 import CreditList from './credits/CreditList'
 import CreditNew from './credits/CreditNew'
 import Dashboard from './dashboard/Dashboard'
+import HistoryPage from './history/HistoryPage'
 import AppLayout from './layout/AppLayout'
 import SectionPage from './pages/SectionPage'
 import RecurringDetail from './recurring/RecurringDetail'
@@ -28,6 +29,7 @@ export default function App() {
         <Route path="/gastos-fijos/nuevo" element={<RecurringNew />} />
         <Route path="/gastos-fijos/:id" element={<RecurringDetail />} />
         <Route path="/gastos-hormiga" element={<SpendingList />} />
+        <Route path="/gastos-historial" element={<HistoryPage />} />
         <Route path="/gastos-hormiga/:id" element={<SpendingDetail />} />
         <Route path="/creditos" element={<CreditList />} />
         <Route path="/creditos/nuevo" element={<CreditNew />} />

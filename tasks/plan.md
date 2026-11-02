@@ -12,7 +12,7 @@ Implementa `SPEC-history.md`. Tareas en `tasks/todo.md`. (Los planes anteriores 
 2. **Cálculo del calendario (TDD):**
    - `monthGrid` (semanas de domingo a sábado);
    - totales por día y resumen del mes (sin pagos de tarjeta, con MSI);
-   - formato corto "$1.2 mil".
+   - formato corto "$1.2k".
 3. **Datos del mes:** `useMonthHistory` reúne gastos hormiga y pagos de fijos y créditos del mes elegido, con `watchMonthSpending` y `watchMonthPaymentDocs`, que ya existen.
 4. **Pantalla Historial:**
    - pestaña y ruta `/gastos-historial`;

@@ -21,7 +21,7 @@ export const sections: Section[] = [
     label: 'Gastos',
     title: 'Gastos fijos',
     // Otras rutas que pertenecen a esta pestaña, con su título
-    also: { '/gastos-hormiga': 'Gastos hormiga' },
+    also: { '/gastos-hormiga': 'Gastos hormiga', '/gastos-historial': 'Historial' },
     empty: 'Pronto podrás registrar tus gastos fijos y suscripciones.',
     icon: icon(<><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M8 2v4M16 2v4M3 10h18" /></>),
   },

@@ -32,7 +32,7 @@ Historial de gastos por meses con calendario (ver `CAPABILITY-MAP.md`, iteració
    - **Total del mes:** "Gastaste $X en noviembre", y debajo el desglose: hormiga · fijos · créditos.
    - **Calendario:**
      - semana de domingo a sábado ("D L M M J V S");
-     - cada día muestra su número y, si hubo gastos, el total en corto ("$258", "$1.2 mil");
+     - cada día muestra su número y, si hubo gastos, el total en corto ("$258", "$1.2k");
      - el fondo se intensifica según el monto del día;
      - hoy queda marcado.
    - **Detalle del día:**
@@ -93,7 +93,7 @@ const source = isPastMonth(input.date, today()) ? {} : input
   - `monthGrid` para un mes que empieza en domingo, uno que empieza en sábado, febrero bisiesto y diciembre;
   - totales por día con varios tipos;
   - el pago de tarjeta se excluye del total y los MSI se incluyen;
-  - formato corto ($0.50, $258, $1,234 → "$1.2 mil", $12,345.67 → "$12.3 mil");
+  - formato corto ($0.50, $258, $1,234 → "$1.2k", $12,345.67 → "$12k");
   - `isPastMonth` en el cambio de mes y de año.
 - **API (`balanceWrites.test.ts`):**
   - un gasto de octubre con cuenta, registrado en noviembre, no mueve la cuenta;

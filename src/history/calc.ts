@@ -33,12 +33,14 @@ export function monthSummary(entries: HistoryEntry[]) {
   return { total: spending + fixed + credits, spending, fixed, credits }
 }
 
-// Monto corto para la celda del calendario: "$0.50", "$258", "$1.2 mil", "$1.5 M"
+// Monto corto que cabe en una celda de 38 px a 360 px: "$0.50", "$258", "$1.2k", "$12k", "$1.5M"
 export function compactMXN(cents: number) {
   const pesos = cents / 100
   if (pesos < 1) return `$${pesos.toFixed(2)}`
   if (Math.round(pesos) < 1000) return `$${Math.round(pesos)}`
-  const short = (n: number) => n.toFixed(1).replace(/\.0$/, '')
-  return pesos < 999_950 ? `$${short(pesos / 1000)} mil` : `$${short(pesos / 1_000_000)} M`
+  const k = pesos / 1000
+  if (k < 9.95) return `$${k.toFixed(1).replace(/\.0$/, '')}k`
+  if (Math.round(k) < 1000) return `$${Math.round(k)}k`
+  return `$${(pesos / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`
 }
 
