@@ -7,6 +7,8 @@ import type { Alert } from './calc'
 const mocks = vi.hoisted(() => ({ useAlerts: vi.fn(), hideAlert: vi.fn(), showAlert: vi.fn() }))
 vi.mock('./useAlerts', () => ({ useAlerts: mocks.useAlerts }))
 vi.mock('./api', () => ({ hideAlert: mocks.hideAlert, showAlert: mocks.showAlert }))
+const upload = vi.hoisted(() => ({ failed: false, dismiss: vi.fn() }))
+vi.mock('../lib/saved', () => ({ useUploadFailed: () => upload.failed, dismissUploadFailed: upload.dismiss }))
 
 const left: Alert = { key: 'left-red', level: 'red', text: 'Te faltan $500.00 para cubrir lo que te queda por pagar este mes', href: '/gastos-fijos' }
 const cap: Alert = { key: 'cap-yellow', level: 'yellow', text: 'Llevas el 85% de tu tope de gastos hormiga; te quedan $150.00', href: '/gastos-hormiga' }
@@ -79,4 +81,17 @@ test('ocultar este mes y volver a mostrar', () => {
   fireEvent.click(screen.getByRole('button', { name: 'Mostrar ocultos (1)' }))
   fireEvent.click(screen.getByRole('button', { name: 'Mostrar' }))
   expect(mocks.showAlert).toHaveBeenCalledWith('owner', 'ratio-yellow')
+})
+
+test('un cambio sin conexión que no se pudo subir cuenta como aviso urgente y se descarta', () => {
+  upload.failed = true
+  mocks.useAlerts.mockReturnValue({ visible: [cap], hidden: [] })
+  renderBell()
+  expect(bell()).toHaveAccessibleName('Avisos, 2 activos')
+  expect(within(bell()).getByText('2')).toHaveClass('bg-red-600')
+  fireEvent.click(bell())
+  expect(screen.getByText(/No se pudo subir un cambio que hiciste sin conexión/)).toBeInTheDocument()
+  fireEvent.click(screen.getByRole('button', { name: 'Entendido' }))
+  expect(upload.dismiss).toHaveBeenCalled()
+  upload.failed = false
 })

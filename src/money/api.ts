@@ -2,6 +2,7 @@ import {
   collection, deleteField, doc, onSnapshot, orderBy, query, serverTimestamp, setDoc, updateDoc, where, writeBatch,
 } from 'firebase/firestore'
 import { db } from '../firebase'
+import { saved } from '../lib/saved'
 import { applyAccountDelta } from '../lib/accountBalance'
 import { today } from '../lib/dates'
 import type { Account, AccountType, PayFrequency } from './calc'
@@ -30,7 +31,7 @@ export function watchPayFrequency(uid: string, onData: (f: PayFrequency) => void
   return onSnapshot(settingsDoc(uid), (snap) => onData(snap.data()?.payFrequency === 'biweekly' ? 'biweekly' : 'monthly'), () => onData('monthly'))
 }
 
-export const setPayFrequency = (uid: string, payFrequency: PayFrequency) => setDoc(settingsDoc(uid), { payFrequency }, { merge: true })
+export const setPayFrequency = (uid: string, payFrequency: PayFrequency) => saved(setDoc(settingsDoc(uid), { payFrequency }, { merge: true }))
 
 // La primera cuenta queda como predeterminada
 export function addAccount(uid: string, input: { name: string; type: AccountType; balance: number }, makeDefault: boolean) {
@@ -38,19 +39,19 @@ export function addAccount(uid: string, input: { name: string; type: AccountType
   const batch = writeBatch(db)
   batch.set(ref, { ...input, createdAt: serverTimestamp() })
   if (makeDefault) batch.set(settingsDoc(uid), { defaultAccountId: ref.id }, { merge: true })
-  return batch.commit().then(() => ref.id)
+  return saved(batch.commit()).then(() => ref.id)
 }
 
-export const updateAccount = (uid: string, id: string, input: { name: string; type: AccountType }) => updateDoc(doc(accountsCol(uid), id), input)
+export const updateAccount = (uid: string, id: string, input: { name: string; type: AccountType }) => saved(updateDoc(doc(accountsCol(uid), id), input))
 
-export const setDefaultAccount = (uid: string, id: string) => setDoc(settingsDoc(uid), { defaultAccountId: id }, { merge: true })
+export const setDefaultAccount = (uid: string, id: string) => saved(setDoc(settingsDoc(uid), { defaultAccountId: id }, { merge: true }))
 
 // Los pagos y gastos que salieron de ella se conservan; solo dejan de mover saldo
 export function deleteAccount(uid: string, id: string, wasDefault: boolean) {
   const batch = writeBatch(db)
   batch.delete(doc(accountsCol(uid), id))
   if (wasDefault) batch.set(settingsDoc(uid), { defaultAccountId: deleteField() }, { merge: true })
-  return batch.commit()
+  return saved(batch.commit())
 }
 
 // Guarda la diferencia como ajuste para no perder el historial
@@ -60,7 +61,7 @@ export function adjustBalance(uid: string, account: Account, newBalance: number)
   const batch = writeBatch(db)
   batch.set(doc(collection(doc(accountsCol(uid), account.id), 'adjustments')), { amount: diff, date: today(), createdAt: serverTimestamp() })
   applyAccountDelta(batch, uid, account.id, diff, [account.id])
-  return batch.commit()
+  return saved(batch.commit())
 }
 
 export function watchMonthIncomes(uid: string, from: string, to: string, onData: (incomes: Income[]) => void, onError: (e: Error) => void) {
@@ -75,7 +76,7 @@ export function addIncome(uid: string, input: IncomeInput, liveAccountIds: strin
   const batch = writeBatch(db)
   batch.set(doc(incomesCol(uid)), { ...input, createdAt: serverTimestamp() })
   applyAccountDelta(batch, uid, input.accountId, input.amount, liveAccountIds)
-  return batch.commit()
+  return saved(batch.commit())
 }
 
 // Revierte el ingreso anterior en su cuenta y aplica el nuevo (puede ser otra cuenta)
@@ -88,14 +89,14 @@ export function updateIncome(uid: string, old: Income, input: IncomeInput, liveA
     applyAccountDelta(batch, uid, old.accountId, -old.amount, liveAccountIds)
     applyAccountDelta(batch, uid, input.accountId, input.amount, liveAccountIds)
   }
-  return batch.commit()
+  return saved(batch.commit())
 }
 
 export function deleteIncome(uid: string, income: Income, liveAccountIds: string[]) {
   const batch = writeBatch(db)
   batch.delete(doc(incomesCol(uid), income.id))
   applyAccountDelta(batch, uid, income.accountId, -income.amount, liveAccountIds)
-  return batch.commit()
+  return saved(batch.commit())
 }
 
 export const watchAdjustments = (uid: string, accountId: string, from: string, to: string, onData: (items: { id: string; amount: number; date: string }[]) => void) =>

@@ -1,5 +1,6 @@
 import { deleteField, doc, onSnapshot, setDoc } from 'firebase/firestore'
 import { db } from '../firebase'
+import { saved } from '../lib/saved'
 
 export type AlertSettings = { ratioPct: number | null; hidden: Record<string, string> }
 
@@ -18,8 +19,8 @@ export function watchAlertSettings(uid: string, onData: (s: AlertSettings) => vo
 
 // null desactiva el aviso de gastos sobre el ingreso
 export const setExpenseRatio = (uid: string, pct: number | null) =>
-  setDoc(settingsDoc(uid), pct === null ? { expenseRatioOff: true } : { expenseRatioPct: pct, expenseRatioOff: deleteField() }, { merge: true })
+  saved(setDoc(settingsDoc(uid), pct === null ? { expenseRatioOff: true } : { expenseRatioPct: pct, expenseRatioOff: deleteField() }, { merge: true }))
 
-export const hideAlert = (uid: string, key: string, month: string) => setDoc(settingsDoc(uid), { hidden: { [key]: month } }, { merge: true })
+export const hideAlert = (uid: string, key: string, month: string) => saved(setDoc(settingsDoc(uid), { hidden: { [key]: month } }, { merge: true }))
 
-export const showAlert = (uid: string, key: string) => setDoc(settingsDoc(uid), { hidden: { [key]: deleteField() } }, { merge: true })
+export const showAlert = (uid: string, key: string) => saved(setDoc(settingsDoc(uid), { hidden: { [key]: deleteField() } }, { merge: true }))

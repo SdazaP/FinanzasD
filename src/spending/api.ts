@@ -3,6 +3,7 @@ import {
   type DocumentSnapshot,
 } from 'firebase/firestore'
 import { db } from '../firebase'
+import { saved } from '../lib/saved'
 import { applyMoneyChange, applyMoneyDelta } from '../lib/accountBalance'
 import type { Spending } from './calc'
 
@@ -32,7 +33,7 @@ export function addSpending(uid: string, input: SpendingInput, liveAccountIds: s
   const batch = writeBatch(db)
   batch.set(doc(spendingCol(uid)), { ...input, createdAt: serverTimestamp() })
   applyMoneyDelta(batch, uid, input, -input.amount, liveAccountIds)
-  return batch.commit()
+  return saved(batch.commit())
 }
 
 // Devuelve el gasto anterior a su cuenta o tarjeta y cobra el nuevo (puede ser otro origen u otro monto).
@@ -43,14 +44,14 @@ export function updateSpending(uid: string, old: Spending, input: SpendingInput,
     ...input, note: input.note ?? deleteField(), accountId: input.accountId ?? deleteField(), cardId: input.cardId ?? deleteField(),
   })
   applyMoneyChange(batch, uid, old, input, liveAccountIds)
-  return batch.commit()
+  return saved(batch.commit())
 }
 
 export function deleteSpending(uid: string, item: Spending, liveAccountIds: string[] = []) {
   const batch = writeBatch(db)
   batch.delete(doc(spendingCol(uid), item.id))
   applyMoneyDelta(batch, uid, item, item.amount, liveAccountIds)
-  return batch.commit()
+  return saved(batch.commit())
 }
 
 export function watchSpendingCategories(uid: string, onData: (names: string[]) => void) {
@@ -58,10 +59,10 @@ export function watchSpendingCategories(uid: string, onData: (names: string[]) =
   return onSnapshot(categoriesCol(uid), (snap) => onData(snap.docs.map((d) => d.data().name as string)), () => onData([]))
 }
 
-export const addSpendingCategory = (uid: string, name: string) => addDoc(categoriesCol(uid), { name })
+export const addSpendingCategory = (uid: string, name: string) => saved(addDoc(categoriesCol(uid), { name }))
 
 export function watchCap(uid: string, onData: (cap: number | undefined) => void) {
   return onSnapshot(capDoc(uid), (snap) => onData(snap.data()?.monthlyCap as number | undefined), () => onData(undefined))
 }
 
-export const setCap = (uid: string, cap: number | null) => setDoc(capDoc(uid), { monthlyCap: cap ?? deleteField() }, { merge: true })
+export const setCap = (uid: string, cap: number | null) => saved(setDoc(capDoc(uid), { monthlyCap: cap ?? deleteField() }, { merge: true }))

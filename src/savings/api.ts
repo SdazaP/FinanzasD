@@ -2,6 +2,7 @@ import {
   collection, deleteField, doc, getDocs, increment, onSnapshot, orderBy, query, serverTimestamp, updateDoc, where, writeBatch,
 } from 'firebase/firestore'
 import { db } from '../firebase'
+import { saved } from '../lib/saved'
 import { applyAccountDelta } from '../lib/accountBalance'
 import { today } from '../lib/dates'
 import type { NewSavingInput, SavingInput } from './SavingForm'
@@ -52,7 +53,7 @@ export function moveSaving(uid: string, saving: Saving, type: MovementType, amou
   batch.set(doc(movementsCol(uid, saving.id)), { type, amount, date: today(), createdAt: serverTimestamp(), ...(accountId && { accountId }) })
   batch.update(savingDoc(uid, saving.id), { balance: increment(sign * amount) })
   applyAccountDelta(batch, uid, accountId, -sign * amount, liveAccountIds)
-  return batch.commit()
+  return saved(batch.commit())
 }
 
 // Borrar un movimiento deshace su efecto en el apartado y en su cuenta, en el mismo batch
@@ -62,7 +63,7 @@ export function deleteMovement(uid: string, savingId: string, movement: Movement
   batch.delete(doc(movementsCol(uid, savingId), movement.id))
   batch.update(savingDoc(uid, savingId), { balance: increment(-sign * movement.amount) })
   applyAccountDelta(batch, uid, movement.accountId, sign * movement.amount, liveAccountIds)
-  return batch.commit()
+  return saved(batch.commit())
 }
 
 // El saldo inicial queda también como primer movimiento, para que el historial sume el saldo
@@ -75,12 +76,12 @@ export function addSaving(uid: string, input: NewSavingInput) {
       type: 'deposit', amount: input.balance, date: today(), initial: true, createdAt: serverTimestamp(),
     })
   }
-  return batch.commit()
+  return saved(batch.commit())
 }
 
 // Los opcionales vacíos se borran explícitamente; updateDoc conservaría el valor anterior
 export const updateSaving = (uid: string, id: string, input: SavingInput) =>
-  updateDoc(savingDoc(uid, id), { name: input.name, target: input.target ?? deleteField(), deadline: input.deadline ?? deleteField() })
+  saved(updateDoc(savingDoc(uid, id), { name: input.name, target: input.target ?? deleteField(), deadline: input.deadline ?? deleteField() }))
 
 // shortcut: un batch admite 500 escrituras; partirlo si un apartado llega a ~500 movimientos
 export async function deleteSaving(uid: string, id: string) {
@@ -88,5 +89,5 @@ export async function deleteSaving(uid: string, id: string) {
   const batch = writeBatch(db)
   movements.forEach((m) => batch.delete(m.ref))
   batch.delete(savingDoc(uid, id))
-  return batch.commit()
+  return saved(batch.commit())
 }

@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { hideAlert, showAlert } from './api'
 import type { Alert } from './calc'
+import { dismissUploadFailed, useUploadFailed } from '../lib/saved'
 import { useAlerts } from './useAlerts'
 
 const svg = 'size-5 shrink-0'
@@ -27,8 +28,10 @@ export default function AlertBell({ uid, now }: { uid: string; now: string }) {
   const panel = useRef<HTMLDivElement>(null)
   const panelId = useId()
   const month = now.slice(0, 7)
-  const count = visible.length
-  const level = visible.some((a) => a.level === 'red') ? 'red' : 'yellow'
+  // Un cambio hecho sin conexión que el servidor rechazó también cuenta como aviso urgente
+  const uploadFailed = useUploadFailed()
+  const count = visible.length + (uploadFailed ? 1 : 0)
+  const level = uploadFailed || visible.some((a) => a.level === 'red') ? 'red' : 'yellow'
 
   function close() {
     setOpen(false)
@@ -98,6 +101,23 @@ export default function AlertBell({ uid, now }: { uid: string; now: string }) {
           </div>
 
           {error && <p role="alert" className="mb-2 text-sm text-red-700">{error}</p>}
+
+          {uploadFailed && (
+            <div className="flex gap-3 border-b border-zinc-100 py-3">
+              <LevelIcon level="red" />
+              <div className="min-w-0 flex-1 text-sm">
+                <p>
+                  <span className="block font-semibold text-red-600">
+                    Urgente<span className="sr-only">:</span>
+                  </span>{' '}
+                  No se pudo subir un cambio que hiciste sin conexión. Revisa tus registros.
+                </p>
+                <button type="button" onClick={dismissUploadFailed} className="mt-1 -ml-2 min-h-11 rounded-xl px-2 font-medium text-primary active:bg-primary/10">
+                  Entendido
+                </button>
+              </div>
+            </div>
+          )}
 
           {count === 0 ? (
             <p className="py-2 text-zinc-500">No tienes avisos.</p>

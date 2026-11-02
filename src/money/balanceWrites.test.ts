@@ -150,3 +150,11 @@ test('editar un gasto entre tarjeta y cuenta corrige ambos y no guarda las dos',
   await addSpending('u', { amount: 100, date: '2026-11-01', category: 'Café', cardId: 'borrada' }, liveAll)
   expect(cardDeltas()).toEqual({})
 })
+
+test('sin conexión, registrar un gasto termina aunque el servidor no haya confirmado', async () => {
+  vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false)
+  batch.commit.mockReturnValueOnce(new Promise(() => {})) // el servidor nunca responde
+  await expect(addSpending('u', { amount: 4500, date: '2026-11-01', category: 'Café', accountId: 'nomina' }, live)).resolves.toBeUndefined()
+  expect(accountDeltas()).toEqual({ nomina: -4500 })
+  vi.restoreAllMocks()
+})
