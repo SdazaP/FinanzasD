@@ -3,10 +3,10 @@ import {
   type DocumentSnapshot,
 } from 'firebase/firestore'
 import { db } from '../firebase'
-import { applyAccountDelta } from '../lib/accountBalance'
+import { applyMoneyChange, applyMoneyDelta } from '../lib/accountBalance'
 import type { Spending } from './calc'
 
-export type SpendingInput = { amount: number; date: string; category: string; note?: string; accountId?: string }
+export type SpendingInput = { amount: number; date: string; category: string; note?: string; accountId?: string; cardId?: string }
 
 const spendingCol = (uid: string) => collection(db, 'users', uid, 'spending')
 const categoriesCol = (uid: string) => collection(db, 'users', uid, 'spendingCategories')
@@ -31,28 +31,25 @@ export function watchSpending(uid: string, id: string, onData: (item: Spending |
 export function addSpending(uid: string, input: SpendingInput, liveAccountIds: string[] = []) {
   const batch = writeBatch(db)
   batch.set(doc(spendingCol(uid)), { ...input, createdAt: serverTimestamp() })
-  applyAccountDelta(batch, uid, input.accountId, -input.amount, liveAccountIds)
+  applyMoneyDelta(batch, uid, input, -input.amount, liveAccountIds)
   return batch.commit()
 }
 
-// Devuelve el gasto anterior a su cuenta y cobra el nuevo (puede ser otra cuenta u otro monto).
-// La nota y la cuenta vacías se borran explícitamente; updateDoc conservaría las anteriores.
+// Devuelve el gasto anterior a su cuenta o tarjeta y cobra el nuevo (puede ser otro origen u otro monto).
+// La nota, la cuenta y la tarjeta vacías se borran explícitamente; updateDoc conservaría las anteriores.
 export function updateSpending(uid: string, old: Spending, input: SpendingInput, liveAccountIds: string[] = []) {
   const batch = writeBatch(db)
-  batch.update(doc(spendingCol(uid), old.id), { ...input, note: input.note ?? deleteField(), accountId: input.accountId ?? deleteField() })
-  if (old.accountId === input.accountId) {
-    applyAccountDelta(batch, uid, input.accountId, old.amount - input.amount, liveAccountIds)
-  } else {
-    applyAccountDelta(batch, uid, old.accountId, old.amount, liveAccountIds)
-    applyAccountDelta(batch, uid, input.accountId, -input.amount, liveAccountIds)
-  }
+  batch.update(doc(spendingCol(uid), old.id), {
+    ...input, note: input.note ?? deleteField(), accountId: input.accountId ?? deleteField(), cardId: input.cardId ?? deleteField(),
+  })
+  applyMoneyChange(batch, uid, old, input, liveAccountIds)
   return batch.commit()
 }
 
 export function deleteSpending(uid: string, item: Spending, liveAccountIds: string[] = []) {
   const batch = writeBatch(db)
   batch.delete(doc(spendingCol(uid), item.id))
-  applyAccountDelta(batch, uid, item.accountId, item.amount, liveAccountIds)
+  applyMoneyDelta(batch, uid, item, item.amount, liveAccountIds)
   return batch.commit()
 }
 

@@ -1,6 +1,6 @@
 import { addDays } from '../lib/dates'
 
-export type Spending = { id: string; amount: number; date: string; category: string; note?: string; accountId?: string; createdAt: number }
+export type Spending = { id: string; amount: number; date: string; category: string; note?: string; accountId?: string; cardId?: string; createdAt: number }
 
 const dayLabel = new Intl.DateTimeFormat('es-MX', { weekday: 'long', day: 'numeric', month: 'short' })
 

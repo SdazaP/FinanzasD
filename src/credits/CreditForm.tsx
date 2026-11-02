@@ -4,7 +4,7 @@ import { fieldClass, primaryButtonClass } from '../lib/ui'
 
 type Common = { name: string; nextDue: string; dayOfMonth: number; balance: number }
 export type CardInput = Common & { kind: 'card'; limit?: number }
-export type MsiInput = Common & { kind: 'msi'; card?: string; total: number; months: number }
+export type MsiInput = Common & { kind: 'msi'; card?: string; cardId?: string; total: number; months: number }
 export type CreditInput = CardInput | MsiInput
 
 type Props = {

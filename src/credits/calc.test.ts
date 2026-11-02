@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { creditPaymentError, debtTotal, installments, msiSummary, paymentError } from './calc'
+import { cardUsage, creditPaymentError, debtTotal, installments, msiSummary, paymentError } from './calc'
 
 test('installments reparte el total y la última absorbe el redondeo', () => {
   expect(installments(100000, 3)).toEqual([33333, 33333, 33334])
@@ -63,5 +63,26 @@ describe('creditPaymentError: un pago = un mes', () => {
     expect(creditPaymentError(card, 1)).toBe('')
     expect(creditPaymentError(card, 500000)).toBe('')
     expect(creditPaymentError(card, 500001)).toBe('No puede ser mayor al saldo ($5,000.00).')
+  })
+})
+
+describe('cardUsage: deuda + lo que falta de sus MSI contra el límite', () => {
+  const oro = { id: 'oro', kind: 'card' as const, balance: 300000, limit: 1000000 }
+  const msis = [
+    { kind: 'msi' as const, cardId: 'oro', balance: 200000 },
+    { kind: 'msi' as const, cardId: 'otra', balance: 999999 },
+    { kind: 'msi' as const, balance: 50000 },
+  ]
+  test('con MSI', () => {
+    expect(cardUsage(oro, msis)).toEqual({ debt: 300000, msiPending: 200000, used: 500000, available: 500000, ratio: 0.5 })
+  })
+  test('sin MSI y con deuda $0', () => {
+    expect(cardUsage({ ...oro, balance: 0 }, [])).toEqual({ debt: 0, msiPending: 0, used: 0, available: 1000000, ratio: 0 })
+  })
+  test('sobre el límite: disponible negativo', () => {
+    expect(cardUsage({ ...oro, balance: 900000 }, msis)).toMatchObject({ used: 1100000, available: -100000, ratio: 1.1 })
+  })
+  test('sin límite no hay disponible ni uso', () => {
+    expect(cardUsage({ ...oro, limit: undefined }, msis)).toMatchObject({ used: 500000, available: null, ratio: null })
   })
 })

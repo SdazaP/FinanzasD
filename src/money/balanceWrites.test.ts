@@ -22,6 +22,13 @@ const { payCredit } = await import('../credits/api')
 const { addSpending, updateSpending, deleteSpending } = await import('../spending/api')
 
 const live = ['nomina', 'efectivo']
+// Cambios de deuda de tarjetas registrados en el batch: { tarjeta: delta }
+const cardDeltas = () =>
+  Object.fromEntries(
+    batch.update.mock.calls
+      .filter(([path]) => String(path).includes('/credits/'))
+      .map(([path, data]) => [String(path).split('/').pop(), (data as { balance: { increment: number } }).balance.increment]),
+  )
 // Cambios de saldo de cuentas registrados en el batch: { cuenta: delta }
 const accountDeltas = () =>
   Object.fromEntries(
@@ -98,4 +105,48 @@ test('pagar un MSI con otro monto que la cuota se rechaza sin escribir', async (
   await payCredit('u', audifonos, 100000, 'nomina', live)
   expect(accountDeltas()).toEqual({ nomina: -100000 })
   expect(batch.set.mock.calls[0][1]).toMatchObject({ dueDate: '2026-11-06', amount: 100000 })
+})
+
+test('cargar a una tarjeta sube su deuda y no toca cuentas; borrar revierte', async () => {
+  const liveAll = [...live, 'oro']
+  const luz = { id: 'luz', name: 'Luz', type: 'fixed' as const, category: 'Servicios', amount: 40000, nextDue: '2026-11-05', dayOfMonth: 5, active: true }
+  await payRecurring('u', luz, 'card:oro', liveAll)
+  expect(cardDeltas()).toEqual({ oro: 40000 })
+  expect(accountDeltas()).toEqual({})
+  expect(batch.set.mock.calls[0][1]).toMatchObject({ cardId: 'oro' })
+  expect(batch.set.mock.calls[0][1]).not.toHaveProperty('accountId')
+
+  vi.clearAllMocks()
+  await deletePayment('u', 'luz', { id: 'p1', dueDate: '2026-11-05', amount: 40000, cardId: 'oro' }, liveAll)
+  expect(cardDeltas()).toEqual({ oro: -40000 })
+
+  vi.clearAllMocks()
+  await addSpending('u', { amount: 4500, date: '2026-11-01', category: 'Café', cardId: 'oro' }, liveAll)
+  expect(cardDeltas()).toEqual({ oro: 4500 })
+  expect(accountDeltas()).toEqual({})
+
+  vi.clearAllMocks()
+  const cafe = { id: 'c', amount: 4500, date: '2026-11-01', category: 'Café', cardId: 'oro', createdAt: 0 }
+  await deleteSpending('u', cafe, liveAll)
+  expect(cardDeltas()).toEqual({ oro: -4500 })
+})
+
+test('editar un gasto entre tarjeta y cuenta corrige ambos y no guarda las dos', async () => {
+  const liveAll = [...live, 'oro']
+  const cafe = { id: 'c', amount: 4500, date: '2026-11-01', category: 'Café', cardId: 'oro', createdAt: 0 }
+  await updateSpending('u', cafe, { amount: 6000, date: '2026-11-01', category: 'Café', accountId: 'nomina' }, liveAll)
+  expect(cardDeltas()).toEqual({ oro: -4500 })
+  expect(accountDeltas()).toEqual({ nomina: -6000 })
+  expect(batch.update.mock.calls[0][1]).toMatchObject({ accountId: 'nomina', cardId: 'DELETE' })
+
+  vi.clearAllMocks()
+  const enCuenta = { ...cafe, cardId: undefined, accountId: 'nomina', amount: 6000 }
+  await updateSpending('u', enCuenta, { amount: 6000, date: '2026-11-01', category: 'Café', cardId: 'oro' }, liveAll)
+  expect(accountDeltas()).toEqual({ nomina: 6000 })
+  expect(cardDeltas()).toEqual({ oro: 6000 })
+  expect(batch.update.mock.calls[0][1]).toMatchObject({ cardId: 'oro', accountId: 'DELETE' })
+
+  vi.clearAllMocks()
+  await addSpending('u', { amount: 100, date: '2026-11-01', category: 'Café', cardId: 'borrada' }, liveAll)
+  expect(cardDeltas()).toEqual({})
 })

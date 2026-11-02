@@ -45,3 +45,16 @@ export function creditPaymentError(credit: Payable, amount: number | null) {
   }
   return paymentError(amount, credit.balance)
 }
+
+// Crédito usado = deuda de contado + lo que falta de sus MSI (la deuda no incluye las mensualidades)
+export function cardUsage(card: { id: string; balance: number; limit?: number }, credits: { kind: string; cardId?: string; balance: number }[]) {
+  const msiPending = credits.filter((c) => c.kind === 'msi' && c.cardId === card.id).reduce((sum, c) => sum + c.balance, 0)
+  const used = card.balance + msiPending
+  return {
+    debt: card.balance,
+    msiPending,
+    used,
+    available: card.limit ? card.limit - used : null,
+    ratio: card.limit ? used / card.limit : null,
+  }
+}

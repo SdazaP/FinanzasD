@@ -2,13 +2,13 @@ import {
   addDoc, collection, doc, getDocs, onSnapshot, orderBy, query, serverTimestamp, updateDoc, writeBatch,
 } from 'firebase/firestore'
 import { db } from '../firebase'
-import { applyAccountDelta } from '../lib/accountBalance'
+import { applyMoneyDelta, toSource } from '../lib/accountBalance'
 import { nextDueAfter } from '../lib/dates'
 import { toPayment } from '../lib/periodPayments'
 import type { RecurringInput } from './RecurringForm'
 
 export type Recurring = RecurringInput & { id: string; active: boolean }
-export type Payment = { id: string; dueDate: string; amount: number; accountId?: string; paidAt?: string }
+export type Payment = { id: string; dueDate: string; amount: number; accountId?: string; cardId?: string; paidAt?: string }
 
 const recurringCol = (uid: string) => collection(db, 'users', uid, 'recurring')
 const recurringDoc = (uid: string, id: string) => doc(recurringCol(uid), id)
@@ -47,14 +47,14 @@ export const updateRecurring = (uid: string, id: string, input: RecurringInput) 
 export const setRecurringActive = (uid: string, id: string, active: boolean) => updateDoc(recurringDoc(uid, id), { active })
 
 // Registra el pago del periodo y avanza un mes, ambos o ninguno
-export function payRecurring(uid: string, item: Recurring, accountId?: string, liveAccountIds: string[] = []) {
+// from: id de cuenta o 'card:{id}' para cargarlo a una tarjeta
+export function payRecurring(uid: string, item: Recurring, from?: string, liveIds: string[] = []) {
   const ref = recurringDoc(uid, item.id)
+  const source = toSource(from)
   const batch = writeBatch(db)
-  batch.set(doc(paymentsCol(uid, item.id)), {
-    dueDate: item.nextDue, paidAt: serverTimestamp(), amount: item.amount, ...(accountId && { accountId }),
-  })
+  batch.set(doc(paymentsCol(uid, item.id)), { dueDate: item.nextDue, paidAt: serverTimestamp(), amount: item.amount, ...source })
   batch.update(ref, { nextDue: nextDueAfter(item.nextDue, item.dayOfMonth) })
-  applyAccountDelta(batch, uid, accountId, -item.amount, liveAccountIds)
+  applyMoneyDelta(batch, uid, source, -item.amount, liveIds)
   return batch.commit()
 }
 
@@ -77,10 +77,10 @@ export function watchCategories(uid: string, onData: (names: string[]) => void) 
 
 export const addCategory = (uid: string, name: string) => addDoc(categoriesCol(uid), { name })
 
-// Borrar un pago devuelve el dinero a su cuenta (si tenía y sigue existiendo)
-export function deletePayment(uid: string, id: string, payment: Payment, liveAccountIds: string[] = []) {
+// Borrar un pago devuelve el dinero a su cuenta, o baja la deuda de su tarjeta (si sigue existiendo)
+export function deletePayment(uid: string, id: string, payment: Payment, liveIds: string[] = []) {
   const batch = writeBatch(db)
   batch.delete(doc(paymentsCol(uid, id), payment.id))
-  applyAccountDelta(batch, uid, payment.accountId, payment.amount, liveAccountIds)
+  applyMoneyDelta(batch, uid, payment, payment.amount, liveIds)
   return batch.commit()
 }
