@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Fondo: cuadrado redondeado con el morado principal y un brillo suave arriba -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7a6ce0" />
+      <stop offset="1" stop-color="#6c5dd3" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="116" fill="url(#bg)" />
+
+  <!-- Tarjeta asomando detrás de la cartera -->
+  <rect x="150" y="128" width="212" height="132" rx="22" fill="#ffce73" transform="rotate(-9 256 194)" />
+
+  <!-- Cartera -->
+  <rect x="112" y="176" width="288" height="200" rx="40" fill="#ffffff" />
+  <!-- Broche -->
+  <rect x="296" y="236" width="104" height="80" rx="40" fill="#e7e3fb" />
+  <circle cx="336" cy="276" r="14" fill="#6c5dd3" />
+</svg>

@@ -1,6 +1,6 @@
 # Plan: app instalable (PWA)
 
-**Estado:** propuesta, pendiente de tu aprobación. Aún no hay código.
+**Estado:** preguntas respondidas; pendiente de tu aprobación para implementar. Ícono creado.
 
 ## Objetivo
 
@@ -71,8 +71,15 @@ Instalar Finanzas desde el navegador del celular ("Agregar a la pantalla de inic
   - abrir sin conexión;
   - recibir una actualización.
 
-## Preguntas abiertas
+## Respuestas
 
-1. **¿Qué celular usas, iPhone o Android?** Cambia cómo se instala y cuánto pesa el riesgo del inicio de sesión.
-2. **Ícono:** ¿cartera, una "F" o tienes alguna idea?
-3. **¿Quieres el modo sin conexión (tareas 3 y 4)?** Se puede dejar solo en "instalable" y agregarlo después.
+1. **Android.** Se instala con el aviso de Chrome ("Instalar app"). El riesgo del inicio de sesión en iPhone no aplica; igual se prueba en tu Android dentro de la app instalada.
+2. **Ícono:** `public/icon.svg`.
+   - Cuadrado redondeado morado (#6C5DD3, con un brillo suave arriba);
+   - una cartera blanca con broche lila;
+   - una tarjeta amarilla (#FFCE73) asomando.
+
+   Revisado de 192 a 16 px en fondo claro y oscuro. Falta generar los PNG y la versión maskable (tarea 1).
+3. **Modo sin conexión: sí.** Se hacen las tareas 3 y 4.
+
+Ninguna pregunta abierta.
