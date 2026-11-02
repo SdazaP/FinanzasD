@@ -21,8 +21,14 @@ const e = (kind: HistoryEntry['kind'], amount: number, date: string): HistoryEnt
 test('totales por día y del mes: el pago de tarjeta no suma, los MSI sí', () => {
   const entries = [e('spending', 4500, '2026-11-03'), e('fixed', 29900, '2026-11-03'), e('msi', 27810, '2026-11-06'), e('card', 500000, '2026-11-06')]
   expect(dayTotals(entries)).toEqual({ '2026-11-03': 34400, '2026-11-06': 27810 })
-  expect(monthSummary(entries)).toEqual({ total: 62210, spending: 4500, fixed: 29900, credits: 27810 })
-  expect(monthSummary([])).toEqual({ total: 0, spending: 0, fixed: 0, credits: 0 })
+  expect(monthSummary(entries)).toEqual({ total: 62210, spending: 4500, fixed: 29900, credits: 27810, planned: 0, upcoming: 0 })
+  expect(monthSummary([])).toEqual({ total: 0, spending: 0, fixed: 0, credits: 0, planned: 0, upcoming: 0 })
+})
+
+test('un planeado gastado suma; uno por venir se muestra aparte y no suma', () => {
+  const entries = [e('planned', 280000, '2027-03-10'), e('upcoming', 900000, '2027-03-20')]
+  expect(dayTotals(entries)).toEqual({ '2027-03-10': 280000 })
+  expect(monthSummary(entries)).toMatchObject({ total: 280000, planned: 280000, upcoming: 900000 })
 })
 
 test.each([

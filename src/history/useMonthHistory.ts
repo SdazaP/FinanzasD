@@ -3,6 +3,7 @@ import { watchCredits, type Credit } from '../credits/api'
 import { monthRange } from '../lib/dates'
 import { watchMonthPaymentDocs, type PaymentDoc } from '../lib/periodPayments'
 import { watchRecurring, type Recurring } from '../recurring/api'
+import { watchMonthMovements, watchSavings, type Movement, type Saving } from '../savings/api'
 import { watchMonthSpending } from '../spending/api'
 import type { Spending } from '../spending/calc'
 import type { HistoryEntry } from './calc'
@@ -16,9 +17,15 @@ export function useMonthHistory(uid: string, date: string) {
   // Guardados con su mes: al navegar no se muestran los del mes anterior mientras llegan los nuevos
   const [loaded, setLoaded] = useState<{ from: string; items: Spending[] }>()
   const [payments, setPayments] = useState<Record<string, PaymentDoc[]>>({})
+  const [savings, setSavings] = useState<Saving[]>()
+  const [spentMoves, setSpentMoves] = useState<Record<string, Movement[]>>({})
 
   useEffect(() => {
-    const unsubscribes = [watchRecurring(uid, setRecurring, () => setRecurring([])), watchCredits(uid, setCredits, () => setCredits([]))]
+    const unsubscribes = [
+      watchRecurring(uid, setRecurring, () => setRecurring([])),
+      watchCredits(uid, setCredits, () => setCredits([])),
+      watchSavings(uid, setSavings, () => setSavings([])),
+    ]
     return () => unsubscribes.forEach((u) => u())
   }, [uid])
 
@@ -40,8 +47,17 @@ export function useMonthHistory(uid: string, date: string) {
     return () => unsubscribes.forEach((u) => u())
   }, [uid, keys, from])
 
+  // Solo los gastos planeados pueden tener movimientos 'spent' (gastados)
+  const planned = (savings ?? []).filter((s) => s.planned)
+  const plannedIds = planned.map((s) => s.id).join(',')
+  useEffect(() => {
+    if (!plannedIds) return
+    const unsubscribes = plannedIds.split(',').map((id) => watchMonthMovements(uid, id, from, to, (m) => setSpentMoves((p) => ({ ...p, [`${from}/${id}`]: m }))))
+    return () => unsubscribes.forEach((u) => u())
+  }, [uid, plannedIds, from, to])
+
   const paymentsOf = (key: string) => payments[`${from}/${key}`]
-  const ready = !!(recurring && credits && spending) && !!keys.split(',').filter(Boolean).every((k) => paymentsOf(k))
+  const ready = !!(recurring && credits && spending && savings) && !!keys.split(',').filter(Boolean).every((k) => paymentsOf(k))
 
   const entries: HistoryEntry[] = [
     ...(spending ?? []).map((s) => ({
@@ -55,6 +71,16 @@ export function useMonthHistory(uid: string, date: string) {
         id: `c-${p.id}`, kind: c.kind === 'card' ? ('card' as const) : ('msi' as const), label: c.name, amount: p.amount, date: p.date, href: `/creditos/${c.id}`,
       })),
     ),
+    ...planned.flatMap((s) =>
+      (spentMoves[`${from}/${s.id}`] ?? [])
+        .filter((m) => m.type === 'spent')
+        .map((m) => ({ id: `p-${m.id}`, kind: 'planned' as const, label: s.name, amount: m.amount, date: m.date, href: `/ahorro/${s.id}` })),
+    ),
+    ...planned
+      .filter((s) => !s.spentAt && s.deadline! >= from && s.deadline! <= to)
+      .map((s) => ({ id: `u-${s.id}`, kind: 'upcoming' as const, label: s.name, amount: s.target!, date: s.deadline!, href: `/ahorro/${s.id}` })),
   ]
-  return { ready, entries }
+  // Hasta qué mes se puede avanzar: el del último gasto planeado por venir
+  const lastPlanned = planned.filter((s) => !s.spentAt).reduce((max, s) => (s.deadline! > max ? s.deadline! : max), '')
+  return { ready, entries, lastPlanned }
 }

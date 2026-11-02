@@ -2,11 +2,14 @@ import { renderHook } from '@testing-library/react'
 import { beforeEach, expect, test, vi } from 'vitest'
 import { useMonthHistory } from './useMonthHistory'
 
-const m = vi.hoisted(() => ({ watchRecurring: vi.fn(), watchCredits: vi.fn(), watchMonthSpending: vi.fn(), watchMonthPaymentDocs: vi.fn() }))
+const m = vi.hoisted(() => ({
+  watchRecurring: vi.fn(), watchCredits: vi.fn(), watchMonthSpending: vi.fn(), watchMonthPaymentDocs: vi.fn(), watchSavings: vi.fn(), watchMonthMovements: vi.fn(),
+}))
 vi.mock('../recurring/api', () => ({ watchRecurring: m.watchRecurring }))
 vi.mock('../credits/api', () => ({ watchCredits: m.watchCredits }))
 vi.mock('../spending/api', () => ({ watchMonthSpending: m.watchMonthSpending }))
 vi.mock('../lib/periodPayments', () => ({ watchMonthPaymentDocs: m.watchMonthPaymentDocs }))
+vi.mock('../savings/api', () => ({ watchSavings: m.watchSavings, watchMonthMovements: m.watchMonthMovements }))
 
 beforeEach(() => {
   m.watchRecurring.mockImplementation((_u, onData) => (onData([{ id: 'tel', name: 'Plan Telcel' }]), () => {}))
@@ -18,6 +21,8 @@ beforeEach(() => {
     nu: [{ id: 'p3', amount: 100000, date: '2026-10-20' }],
   }
   m.watchMonthPaymentDocs.mockImplementation((_u, _col, id, _f, _t, onData) => (onData(docs[id] ?? []), () => {}))
+  m.watchSavings.mockImplementation((_u, onData) => (onData([{ id: 'viaje', name: 'Viaje', balance: 1 }]), () => {}))
+  m.watchMonthMovements.mockImplementation((_u, _id, _f, _t, onData) => (onData([]), () => {}))
 })
 
 test('reúne los gastos del mes elegido con su tipo y enlace', () => {
@@ -37,4 +42,24 @@ test('mientras no llegan los pagos no está listo', () => {
   m.watchMonthPaymentDocs.mockImplementation(() => () => {})
   const { result } = renderHook(() => useMonthHistory('owner', '2026-10-15'))
   expect(result.current.ready).toBe(false)
+})
+
+test('gastos planeados: el gastado suma en su día, el por venir aparece en su fecha y marca hasta dónde navegar', () => {
+  m.watchSavings.mockImplementation((_u, onData) => (
+    onData([
+      { id: 'bici', name: 'Bici', balance: 0, target: 400000, deadline: '2026-10-25', planned: true, spentAt: '2026-10-20' },
+      { id: 'lentes', name: 'Lentes', balance: 0, target: 300000, deadline: '2026-10-28', planned: true },
+      { id: 'tele', name: 'Tele', balance: 0, target: 900000, deadline: '2027-06-01', planned: true },
+    ]),
+    () => {}
+  ))
+  m.watchMonthMovements.mockImplementation((_u, id, _f, _t, onData) => (onData(id === 'bici' ? [{ id: 'g', type: 'spent', amount: 390000, date: '2026-10-20' }, { id: 'd', type: 'deposit', amount: 5, date: '2026-10-02' }] : []), () => {}))
+  const { result } = renderHook(() => useMonthHistory('owner', '2026-10-15'))
+  expect(m.watchMonthMovements).toHaveBeenCalledTimes(3) // solo los planeados
+  const planned = result.current.entries.filter((e) => e.kind === 'planned' || e.kind === 'upcoming')
+  expect(planned.map((e) => [e.kind, e.label, e.amount, e.date])).toEqual([
+    ['planned', 'Bici', 390000, '2026-10-20'],
+    ['upcoming', 'Lentes', 300000, '2026-10-28'],
+  ])
+  expect(result.current.lastPlanned).toBe('2027-06-01')
 })

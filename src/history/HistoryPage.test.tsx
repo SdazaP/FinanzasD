@@ -19,7 +19,7 @@ const nov: HistoryEntry[] = [
 beforeEach(() => {
   vi.useFakeTimers({ toFake: ['Date'] })
   vi.setSystemTime(new Date(2026, 10, 2, 12))
-  m.useMonthHistory.mockImplementation((_uid, month: string) => ({ ready: true, entries: month.startsWith('2026-11') ? nov : [] }))
+  m.useMonthHistory.mockImplementation((_uid, month: string) => ({ ready: true, entries: month.startsWith('2026-11') ? nov : [], lastPlanned: '' }))
 })
 afterEach(() => {
   vi.useRealTimers()
@@ -66,4 +66,21 @@ test('navega a meses anteriores y muestra el estado vacío', () => {
   expect(screen.getByText('No registraste gastos en octubre.')).toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'Registrar un gasto' })).toHaveAttribute('href', '/gastos-hormiga')
   expect(screen.getByRole('button', { name: 'Mes siguiente' })).toBeEnabled()
+})
+
+test('con gastos planeados se avanza hasta su mes y el día se marca sin sumar', () => {
+  const lentes: HistoryEntry = { id: 'u1', kind: 'upcoming', label: 'Lentes', amount: 300000, date: '2026-12-15', href: '/ahorro/lentes' }
+  m.useMonthHistory.mockImplementation((_uid, month: string) => ({
+    ready: true, entries: month.startsWith('2026-11') ? nov : month.startsWith('2026-12') ? [lentes] : [], lastPlanned: '2026-12-15',
+  }))
+  renderPage()
+  fireEvent.click(screen.getByRole('button', { name: 'Mes siguiente' }))
+  expect(screen.getByRole('heading', { name: 'Diciembre 2026' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Mes siguiente' })).toBeDisabled()
+  expect(screen.getByText('Planeado para diciembre: $3,000.00')).toBeInTheDocument()
+  expect(screen.getByText(/Gastaste/)).toHaveTextContent('Gastaste $0.00 en diciembre') // no suma al total
+  const day = screen.getByRole('gridcell', { name: 'martes, 15 de diciembre, sin gastos' })
+  expect(day).toHaveClass('border-dashed')
+  fireEvent.click(day)
+  expect(screen.getByText('Planeado · aún no se gasta')).toBeInTheDocument()
 })

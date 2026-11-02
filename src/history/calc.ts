@@ -1,5 +1,6 @@
-// Un gasto visto en el historial. 'card' = pago de una tarjeta: se muestra, pero no suma (ya se contó al gastar con ella)
-export type HistoryKind = 'spending' | 'fixed' | 'msi' | 'card'
+// Un gasto visto en el historial. 'card' = pago de una tarjeta: se muestra, pero no suma (ya se contó al gastar con ella).
+// 'planned' = gasto planeado ya gastado (suma); 'upcoming' = gasto planeado por venir (se muestra, no suma)
+export type HistoryKind = 'spending' | 'fixed' | 'msi' | 'card' | 'planned' | 'upcoming'
 export type HistoryEntry = { id: string; kind: HistoryKind; label: string; amount: number; date: string; href: string }
 
 const pad = (n: number) => String(n).padStart(2, '0')
@@ -17,7 +18,7 @@ export function monthGrid(date: string): (string | null)[][] {
   return Array.from({ length: cells.length / 7 }, (_, w) => cells.slice(w * 7, w * 7 + 7))
 }
 
-const counts = (e: HistoryEntry) => e.kind !== 'card'
+const counts = (e: HistoryEntry) => e.kind !== 'card' && e.kind !== 'upcoming'
 
 export function dayTotals(entries: HistoryEntry[]) {
   const totals: Record<string, number> = {}
@@ -30,7 +31,8 @@ export function monthSummary(entries: HistoryEntry[]) {
   const spending = sum('spending')
   const fixed = sum('fixed')
   const credits = sum('msi')
-  return { total: spending + fixed + credits, spending, fixed, credits }
+  const planned = sum('planned')
+  return { total: spending + fixed + credits + planned, spending, fixed, credits, planned, upcoming: sum('upcoming') }
 }
 
 // Monto corto que cabe en una celda de 38 px a 360 px: "$0.50", "$258", "$1.2k", "$12k", "$1.5M"

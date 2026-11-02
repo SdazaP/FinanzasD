@@ -9,7 +9,9 @@ import { useMonthHistory } from './useMonthHistory'
 
 const card = 'rounded-3xl bg-surface p-5 shadow-card'
 const weekdays = ['D', 'L', 'M', 'M', 'J', 'V', 'S']
-const kindLabel: Record<HistoryKind, string> = { spending: 'Hormiga', fixed: 'Fijo', msi: 'MSI', card: 'Pago de tarjeta · no suma' }
+const kindLabel: Record<HistoryKind, string> = {
+  spending: 'Hormiga', fixed: 'Fijo', msi: 'MSI', card: 'Pago de tarjeta · no suma', planned: 'Planeado', upcoming: 'Planeado · aún no se gasta',
+}
 
 // Intensidad del día según lo gastado contra el día más alto del mes
 const heat = (amount: number, max: number) => {
@@ -24,7 +26,9 @@ export default function HistoryPage() {
   const current = monthRange(now)[0]
   const [month, setMonth] = useState(current)
   const [picked, setPicked] = useState<string>()
-  const { ready, entries } = useMonthHistory(uid, month)
+  const { ready, entries, lastPlanned } = useMonthHistory(uid, month)
+  // Se avanza hasta el mes actual, o hasta el del último gasto planeado
+  const lastMonth = lastPlanned && lastPlanned > current ? monthRange(lastPlanned)[0] : current
 
   const [, end] = monthRange(month)
   // Día abierto: el que tocaste en este mes; si no, hoy (mes actual) o el último día del mes
@@ -33,6 +37,7 @@ export default function HistoryPage() {
   const max = Math.max(0, ...Object.values(totals))
   const summary = monthSummary(entries)
   const dayEntries = entries.filter((e) => e.date === selected).sort((a, b) => b.amount - a.amount)
+  const upcomingDays = new Set(entries.filter((e) => e.kind === 'upcoming').map((e) => e.date))
   const monthName = formatMonthName(month)
 
   const go = (delta: -1 | 1) => setMonth(monthRange(delta < 0 ? addDays(month, -1) : addDays(end, 1))[0])
@@ -48,7 +53,7 @@ export default function HistoryPage() {
           <button
             type="button"
             onClick={() => go(1)}
-            disabled={month >= current}
+            disabled={month >= lastMonth}
             aria-label="Mes siguiente"
             className="grid size-11 place-items-center rounded-xl text-primary active:bg-primary/10 disabled:opacity-30"
           >
@@ -72,7 +77,13 @@ export default function HistoryPage() {
             </p>
             <p className="mt-1 text-center text-xs text-zinc-500 tabular-nums">
               Hormiga {formatMXN(summary.spending)} · Fijos {formatMXN(summary.fixed)} · Créditos {formatMXN(summary.credits)}
+              {summary.planned > 0 && ` · Planeados ${formatMXN(summary.planned)}`}
             </p>
+            {summary.upcoming > 0 && (
+              <p className="mt-1 text-center text-xs font-medium text-primary tabular-nums">
+                Planeado para {monthName}: {formatMXN(summary.upcoming)}
+              </p>
+            )}
 
             <div role="grid" aria-label={`Calendario de ${monthName}`} className="mt-4">
               <div role="row" className="grid grid-cols-7 text-center text-xs font-medium text-zinc-500">
@@ -93,7 +104,7 @@ export default function HistoryPage() {
                         aria-label={`${formatLongDate(day)}, ${totals[day] ? formatMXN(totals[day]) : 'sin gastos'}`}
                         className={`flex min-h-12 flex-col items-center justify-center rounded-xl text-sm ${heat(totals[day] ?? 0, max)} ${
                           day === selected ? 'ring-2 ring-primary' : ''
-                        } ${day === now ? 'font-bold text-primary' : ''}`}
+                        } ${day === now ? 'font-bold text-primary' : ''} ${upcomingDays.has(day) ? 'border border-dashed border-primary' : ''}`}
                       >
                         <span>{Number(day.slice(8))}</span>
                         {totals[day] ? <span className="text-[10px] leading-tight tabular-nums">{compactMXN(totals[day])}</span> : null}
@@ -125,7 +136,7 @@ export default function HistoryPage() {
                       <p className="truncate font-medium">{e.label}</p>
                       <p className="text-sm text-zinc-500">{kindLabel[e.kind]}</p>
                     </div>
-                    <p className={`shrink-0 font-medium tabular-nums ${e.kind === 'card' ? 'text-zinc-500' : ''}`}>{formatMXN(e.amount)}</p>
+                    <p className={`shrink-0 font-medium tabular-nums ${e.kind === 'card' || e.kind === 'upcoming' ? 'text-zinc-500' : ''}`}>{formatMXN(e.amount)}</p>
                   </Link>
                 </li>
               ))}
