@@ -4,10 +4,11 @@ import {
 import { db } from '../firebase'
 import { applyAccountDelta } from '../lib/accountBalance'
 import { nextDueAfter } from '../lib/dates'
+import { toPayment } from '../lib/periodPayments'
 import type { RecurringInput } from './RecurringForm'
 
 export type Recurring = RecurringInput & { id: string; active: boolean }
-export type Payment = { id: string; dueDate: string; amount: number; accountId?: string }
+export type Payment = { id: string; dueDate: string; amount: number; accountId?: string; paidAt?: string }
 
 const recurringCol = (uid: string) => collection(db, 'users', uid, 'recurring')
 const recurringDoc = (uid: string, id: string) => doc(recurringCol(uid), id)
@@ -33,7 +34,7 @@ export function watchRecurringItem(uid: string, id: string, onData: (item: Recur
 export function watchPayments(uid: string, id: string, onData: (payments: Payment[]) => void, onError: (e: Error) => void) {
   return onSnapshot(
     query(paymentsCol(uid, id), orderBy('dueDate', 'desc')),
-    (snap) => onData(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Payment)),
+    (snap) => onData(snap.docs.map(toPayment)),
     onError,
   )
 }

@@ -6,6 +6,7 @@ import { applyAccountDelta } from '../lib/accountBalance'
 import { nextDueAfter } from '../lib/dates'
 import { creditPaymentError } from './calc'
 import type { Payment } from '../lib/PaymentHistory'
+import { toPayment } from '../lib/periodPayments'
 import type { CreditInput } from './CreditForm'
 
 export type Credit = CreditInput & { id: string }
@@ -22,7 +23,7 @@ export function watchCredit(uid: string, id: string, onData: (credit: Credit | n
 export function watchCreditPayments(uid: string, id: string, onData: (payments: Payment[]) => void, onError: (e: Error) => void) {
   return onSnapshot(
     query(paymentsCol(uid, id), orderBy('dueDate', 'desc')),
-    (snap) => onData(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Payment)),
+    (snap) => onData(snap.docs.map(toPayment)),
     onError,
   )
 }

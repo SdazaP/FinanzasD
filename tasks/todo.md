@@ -19,7 +19,7 @@
   - Verify: `npm test`
   - Files: `src/credits/CreditList.tsx`, `src/credits/CreditList.test.tsx`, `src/lib/AmountAction.tsx`
 
-- [ ] 3. Historial con el mes, revisión y deploy
+- [x] 3. Historial con el mes, revisión y deploy
   - Acceptance:
     - El historial de créditos y de gastos fijos muestra "Noviembre 2026" y "Pagado el 1 nov"; el de ahorro no cambia.
     - Revisión a 360 px con "Pagar cuota de septiembre" y un nombre largo.

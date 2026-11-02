@@ -19,7 +19,7 @@ const tarjeta: Credit = { id: 'c', kind: 'card', name: 'BBVA', balance: 500000, 
 
 beforeEach(() => {
   api.watchCredit.mockImplementation((_uid, _id, onData) => (onData(tarjeta), () => {}))
-  api.watchCreditPayments.mockImplementation((_uid, _id, onData) => (onData([{ id: 'p1', dueDate: '2026-03-10', amount: 300000 }]), () => {}))
+  api.watchCreditPayments.mockImplementation((_uid, _id, onData) => (onData([{ id: 'p1', dueDate: '2026-03-10', amount: 300000, paidAt: '2026-03-09' }]), () => {}))
   for (const fn of [api.updateCredit, api.deleteCredit, api.deleteCreditPayment]) fn.mockResolvedValue(undefined)
 })
 
@@ -44,6 +44,8 @@ test('precarga la tarjeta, muestra el historial y guarda el saldo actualizado', 
   renderDetail()
   expect(screen.getByLabelText('Saldo actual')).toHaveValue('5000.00')
   expect(screen.getByText('$3,000.00')).toBeInTheDocument()
+  expect(screen.getByText('Marzo 2026')).toBeInTheDocument()
+  expect(screen.getByText('Pagado el 9 mar')).toBeInTheDocument()
 
   fireEvent.change(screen.getByLabelText('Saldo actual'), { target: { value: '7,250.50' } })
   fireEvent.change(screen.getByLabelText('Límite de crédito (opcional)'), { target: { value: '' } })

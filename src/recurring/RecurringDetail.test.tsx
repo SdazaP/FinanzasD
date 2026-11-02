@@ -53,6 +53,8 @@ test('precarga el gasto y muestra el historial del más reciente al más antiguo
   const rows = screen.getAllByRole('listitem').map((li) => li.textContent)
   expect(rows[0]).toContain('$8,500.00')
   expect(rows[1]).toContain('$8,000.00')
+  expect(rows[0]).toContain('Marzo 2026')
+  expect(rows[1]).toContain('Febrero 2026')
 })
 
 test('pausar cambia el estado del gasto', () => {

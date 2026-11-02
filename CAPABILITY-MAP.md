@@ -30,7 +30,7 @@ Orden: month-context → paid-status, spending (cualquier orden) → money → a
 
 | Módulo | Estado | Responsabilidad | Depende de |
 |---|---|---|---|
-| `monthly-payment` | Pendiente | Un pago por mes en Créditos: MSI paga exactamente la cuota del mes (no se adelantan ni juntan meses); tarjeta, un solo pago por mes del monto que elijas | credits, paid-status |
+| `monthly-payment` | Listo | Un pago por mes en Créditos: MSI paga exactamente la cuota del mes (no se adelantan ni juntan meses); tarjeta, un solo pago por mes del monto que elijas | credits, paid-status |
 | `credit-cards` | Pendiente | Tarjetas de crédito como tipo de cuenta en Cuentas, con límite, deuda y disponible; las tarjetas de Créditos se mudan ahí; Créditos las paga desde una cuenta de débito; los selectores "Desde" pueden cargar a una tarjeta (sube su deuda); cada MSI se liga a una tarjeta y lo que falta cuenta como crédito usado | money, credits, monthly-payment, alerts |
 
 Orden: monthly-payment → credit-cards

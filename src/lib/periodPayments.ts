@@ -1,11 +1,18 @@
-import { Timestamp, collection, onSnapshot, query, where } from 'firebase/firestore'
+import { Timestamp, collection, onSnapshot, query, where, type QueryDocumentSnapshot } from 'firebase/firestore'
 import { db } from '../firebase'
 import { today } from './dates'
+import type { Payment } from './PaymentHistory'
 
 export type PaymentsCollection = 'recurring' | 'credits'
 export type PeriodPayments = { amount: number; lastPaidAt: string | null }
 
 const paymentsCol = (uid: string, col: PaymentsCollection, id: string) => collection(db, 'users', uid, col, id, 'payments')
+
+// Un pago del historial con su fecha de pago local; un paidAt pendiente (recién escrito) se estima
+export function toPayment(d: QueryDocumentSnapshot): Payment {
+  const { paidAt, ...data } = d.data({ serverTimestamps: 'estimate' })
+  return { id: d.id, ...data, ...(paidAt && { paidAt: today((paidAt as Timestamp).toDate()) }) } as Payment
+}
 
 // Pagos hechos (paidAt) en un rango de fechas: lo que usa Inicio para "pagado este mes".
 // shortcut: una suscripción por gasto/crédito; si llegan a cientos, cambiar a una consulta collectionGroup con índice

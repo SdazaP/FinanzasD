@@ -67,7 +67,7 @@ export default function CreditDetail() {
         </button>
       </section>
 
-      <PaymentHistory payments={payments} onDelete={(p) => run(() => deleteCreditPayment(uid, id, p, liveIds), 'No se pudo borrar el pago.')} />
+      <PaymentHistory byMonth payments={payments} onDelete={(p) => run(() => deleteCreditPayment(uid, id, p, liveIds), 'No se pudo borrar el pago.')} />
     </div>
   )
 }

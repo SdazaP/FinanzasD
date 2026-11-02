@@ -87,7 +87,7 @@ export default function RecurringDetail() {
         </button>
       </section>
 
-      <PaymentHistory payments={payments} onDelete={(p) => run(() => deletePayment(uid, id, p, liveIds), 'No se pudo borrar el pago.')} />
+      <PaymentHistory byMonth payments={payments} onDelete={(p) => run(() => deletePayment(uid, id, p, liveIds), 'No se pudo borrar el pago.')} />
     </div>
   )
 }

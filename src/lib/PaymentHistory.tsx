@@ -1,17 +1,18 @@
-import { formatDay } from './dates'
+import { formatDay, formatMonthLabel } from './dates'
 import { formatMXN } from './money'
 
-export type Payment = { id: string; dueDate: string; amount: number; label?: string; accountId?: string }
+export type Payment = { id: string; dueDate: string; amount: number; label?: string; accountId?: string; paidAt?: string }
 
 type Props = {
   payments: Payment[]
   onDelete: (p: Payment) => void
   title?: string
   emptyText?: string
+  byMonth?: boolean // pagos por mes (gastos fijos, créditos): "Noviembre 2026 · Pagado el 1 nov"
 }
 
 export default function PaymentHistory({
-  payments, onDelete, title = 'Historial de pagos', emptyText = 'Todavía no hay pagos registrados.',
+  payments, onDelete, title = 'Historial de pagos', emptyText = 'Todavía no hay pagos registrados.', byMonth,
 }: Props) {
   return (
     <section className="rounded-3xl bg-white p-5 shadow-card">
@@ -23,7 +24,8 @@ export default function PaymentHistory({
           {payments.map((p) => (
             <li key={p.id} className="flex items-center gap-3 py-2">
               <div className="min-w-0 flex-1">
-                <p className="text-zinc-600">{formatDay(p.dueDate, true)}</p>
+                <p className="text-zinc-600">{byMonth ? formatMonthLabel(p.dueDate) : formatDay(p.dueDate, true)}</p>
+                {byMonth && p.paidAt && <p className="text-xs text-zinc-500">Pagado el {formatDay(p.paidAt)}</p>}
                 {p.label && <p className="text-xs text-zinc-500">{p.label}</p>}
               </div>
               <p className="shrink-0 font-medium tabular-nums">{formatMXN(p.amount)}</p>
