@@ -86,10 +86,10 @@ export default function SavingDetail() {
   }
 
   return (
-    <div className="space-y-4">
-      {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
+    <div className="space-y-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-5 lg:space-y-0 lg:*:col-start-2">
+      {error && <p role="alert" className="text-sm text-red-700 lg:col-span-2 lg:col-start-1!">{error}</p>}
 
-      <section className={card}>
+      <section className={`${card} lg:col-start-1! lg:row-span-5`}>
         <div className="mb-5 flex items-baseline justify-between gap-3">
           <h2 className="truncate font-display text-lg font-semibold">{saving.name}</h2>
           <p className="shrink-0 font-display text-lg font-semibold tabular-nums">{formatMXN(saving.balance)}</p>
@@ -106,7 +106,7 @@ export default function SavingDetail() {
 
       {saving.planned && !saving.spentAt && <SpendPlanned uid={uid} saving={saving} />}
 
-      <section className={card}>
+      <section className={`${card} lg:order-last`}>
         <button
           type="button"
           disabled={busy}

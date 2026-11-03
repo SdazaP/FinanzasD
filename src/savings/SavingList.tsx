@@ -116,7 +116,7 @@ export default function SavingList() {
         {forPlanned > 0 && <p className="mt-1 text-sm text-white/80">De eso, <span className="font-medium text-white tabular-nums">{formatMXN(forPlanned)}</span> para gastos planeados</p>}
       </section>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 md:max-w-md">
         {[['/ahorro/nuevo', 'Agregar apartado'], ['/ahorro/planear', 'Planear gasto']].map(([to, text]) => (
           <Link
             key={to}
@@ -131,7 +131,7 @@ export default function SavingList() {
       {planned.length > 0 && (
         <section>
           <h2 className="mb-2 px-1 text-sm font-medium text-zinc-500">Gastos planeados</h2>
-          <ul className="space-y-3">{planned.map((s) => row(s, `${s.category} · ${formatDay(s.deadline!, true)}`))}</ul>
+          <ul className="grid gap-3 lg:grid-cols-2 lg:gap-4">{planned.map((s) => row(s, `${s.category} · ${formatDay(s.deadline!, true)}`))}</ul>
         </section>
       )}
 
@@ -141,13 +141,13 @@ export default function SavingList() {
           Aún no tienes apartados. Crea uno para tu fondo de emergencias o para una meta como un viaje.
         </p>
       ) : (
-        <ul className="space-y-3">{regular.map((s) => row(s))}</ul>
+        <ul className="grid gap-3 lg:grid-cols-2 lg:gap-4">{regular.map((s) => row(s))}</ul>
       )}
 
       {spent.length > 0 && (
         <section>
           <h2 className="mb-2 px-1 text-sm font-medium text-zinc-500">Gastados</h2>
-          <ul className="space-y-3">{spent.map((s) => row(s, `Gastado el ${formatDay(s.spentAt!, true)}`))}</ul>
+          <ul className="grid gap-3 lg:grid-cols-2 lg:gap-4">{spent.map((s) => row(s, `Gastado el ${formatDay(s.spentAt!, true)}`))}</ul>
         </section>
       )}
     </div>

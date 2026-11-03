@@ -44,10 +44,10 @@ export default function RecurringDetail() {
   const categories = allCategories.includes(item.category) ? allCategories : [...allCategories, item.category]
 
   return (
-    <div className="space-y-4">
-      {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
+    <div className="space-y-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-5 lg:space-y-0 lg:*:col-start-2">
+      {error && <p role="alert" className="text-sm text-red-700 lg:col-span-2 lg:col-start-1!">{error}</p>}
 
-      <section className={card}>
+      <section className={`${card} lg:col-start-1! lg:row-span-5`}>
         <div className="mb-5 flex items-center justify-between gap-3">
           <h2 className="truncate font-display text-lg font-semibold">{item.name}</h2>
           {!item.active && <span className="shrink-0 rounded-full bg-zinc-100 px-2.5 py-1 text-xs font-medium text-zinc-600">Pausado</span>}
@@ -64,7 +64,7 @@ export default function RecurringDetail() {
         />
       </section>
 
-      <section className={`${card} grid grid-cols-2 gap-3`}>
+      <section className={`${card} grid grid-cols-2 gap-3 lg:order-last`}>
         <button
           type="button"
           disabled={busy}

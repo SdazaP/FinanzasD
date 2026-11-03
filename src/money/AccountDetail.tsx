@@ -76,10 +76,10 @@ export default function AccountDetail() {
   const isDefault = account.id === defaultId
 
   return (
-    <div className="space-y-4">
-      {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
+    <div className="space-y-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-5 lg:space-y-0 lg:*:col-start-2">
+      {error && <p role="alert" className="text-sm text-red-700 lg:col-span-2 lg:col-start-1!">{error}</p>}
 
-      <section className="rounded-3xl bg-primary p-6 text-white shadow-card">
+      <section className="rounded-3xl bg-primary p-6 text-white shadow-card lg:col-span-2 lg:col-start-1! lg:p-8">
         <p className="truncate text-sm text-white/80">{account.name}{isDefault && ' · Predeterminada'}</p>
         <p className="mt-1 font-display text-[clamp(1.5rem,8vw,2.25rem)] font-semibold tracking-tight tabular-nums [overflow-wrap:anywhere]">{formatMXN(account.balance)}</p>
         {!isDefault && (
@@ -93,7 +93,7 @@ export default function AccountDetail() {
         )}
       </section>
 
-      <section className={card}>
+      <section className={`${card} lg:col-start-1! lg:row-span-5`}>
         <h2 className="mb-3 font-display text-lg font-semibold">Movimientos del mes</h2>
         {activity.length === 0 ? (
           <p className="text-zinc-500">Sin movimientos este mes.</p>
@@ -129,7 +129,7 @@ export default function AccountDetail() {
         />
       </section>
 
-      <section className={card}>
+      <section className={`${card} lg:order-last`}>
         <button
           type="button"
           onClick={async () => {
