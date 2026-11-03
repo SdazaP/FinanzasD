@@ -2,7 +2,7 @@
 
 Versión para tablet y escritorio, con el mismo estilo de la app (ver `CAPABILITY-MAP.md`, iteración 5). Depende de `core` (layout) y toca la presentación de todas las pantallas. No toca datos ni lógica.
 
-**Estado:** pendiente de tu aprobación. Aún no hay código.
+**Estado:** aprobado.
 
 ## Objetivo
 

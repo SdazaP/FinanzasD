@@ -1,9 +1,9 @@
-# Tareas: planned
+# Tareas: desktop
 
-Detalle y criterios en `SPEC-planned.md`. (Las tareas anteriores están completas; ver historial de git.)
+Detalle y criterios en `SPEC-desktop.md`. (Las tareas anteriores están completas; ver historial de git.)
 
-- [x] 1. Cálculo y API: `plannedSummary`, `spendError`, `plannedSaved`, `addPlanned`, `spendPlanned` y borrar un "Gastado". Verify: `npm test`.
-- [x] 2. "Planear gasto": formulario y ruta. Verify: `npm test`.
-- [x] 3. Ahorro: secciones, total con su parte de planeados y "Gastar" en el detalle. Verify: `npm test && npm run build`; panel.
-- [x] 4. Calendario: meses futuros, planeados punteados y gastados en el total. Verify: `npm test`; panel.
-- [x] 5. Revisión a 360 px (claro y oscuro), tests de reglas, mapa de capacidades y deploy.
+- [ ] 1. Estructura: menú lateral e inferior, encabezado, ancho máximo y avisos fijos desde 1280 px. Verify: tests y panel a 360, 768, 1024 y 1280 px.
+- [ ] 2. Inicio y Cuentas en cuadrícula. Verify: tests y panel a 1024 y 1440 px.
+- [ ] 3. Gastos fijos, Gastos hormiga e Historial. Verify: tests y panel.
+- [ ] 4. Créditos, Ahorro, detalles y formularios nuevos. Verify: tests y panel.
+- [ ] 5. Revisión completa en claro y oscuro, detector de impeccable, mapa de capacidades y deploy con tu permiso.

@@ -1,35 +1,33 @@
-# Plan: planned
+# Plan: desktop
 
-Implementa `SPEC-planned.md`. Tareas en `tasks/todo.md`. (Los planes anteriores están en el historial de git.)
+Implementa `SPEC-desktop.md`. Tareas en `tasks/todo.md`. (Los planes anteriores están en el historial de git.)
 
 ## Orden
 
-1. **Cálculo y API (TDD):**
-   - `plannedSummary`, `spendError` y `plannedSaved`;
-   - `addPlanned`;
-   - `spendPlanned`: un solo batch con el movimiento 'spent', el `increment` y `spentAt`, sin tocar cuentas.
-   - Va primero porque todo lo demás lo usa.
-2. **Planear un gasto:** `PlannedForm` y la ruta `/ahorro/planear`, con validación.
-3. **Ahorro:**
-   - secciones "Gastos planeados" y "Gastados";
-   - "De eso, $X para gastos planeados" en la tarjeta del total;
-   - en el detalle: "Gastar", "Gastar antes de tiempo", el aviso si falta o sobra dinero, y "Gastado" en el historial de movimientos.
-4. **Calendario:**
-   - navegar hasta el mes del último planeado;
-   - planeados futuros punteados, que no suman;
-   - "Gastado" en su día, que sí suma, con "Planeados" en el desglose.
-5. **Cierre:** revisión a 360 px (claro y oscuro), tests de reglas, mapa de capacidades y deploy con tu permiso.
+1. **Estructura:**
+   - `AppLayout` con el mismo `<nav>` como barra inferior en el celular y barra lateral desde 768 px;
+   - encabezado con saludo y título grande;
+   - ancho máximo del contenido;
+   - `AlertsPanel` compartido por la campana y la columna fija desde 1280 px.
+
+   Va primero porque todas las pantallas viven dentro.
+2. **Inicio y Cuentas:** cuadrícula de 3 y de 2 columnas.
+3. **Gastos:** Gastos fijos (2 columnas), Gastos hormiga (formulario | lista) e Historial (calendario | día).
+4. **Créditos, Ahorro, detalles y formularios nuevos:** cuadrículas de 2 columnas; detalle con el formulario | historial; formularios centrados de hasta 560 px.
+5. **Cierre:**
+   - revisión en el panel a 360, 768, 1024, 1280 y 1440 px, en claro y oscuro;
+   - detector de impeccable;
+   - mapa de capacidades;
+   - deploy con tu permiso.
+
+Antes de cada cambio de interfaz se aplican las reglas de calidad de impeccable (craft-floor), la skill de taste (design-taste-frontend) y la de addy (frontend-ui-engineering).
 
 ## Riesgos
 
-- **Un tipo de movimiento nuevo (`'spent'`)** pasa por pantallas que hoy asumen aporte o retiro:
-  - la etiqueta del historial;
-  - `savingsNet` ya no existe;
-  - `deleteMovement` revierte según el tipo.
-
-  Borrar un "Gastado" debe devolver el saldo al apartado y quitar `spentAt`. Se cubre con un test.
-- **El historial lee los movimientos de cada apartado** del mes elegido: una suscripción por apartado, como ya hacen Cuentas e Inicio.
+- **Celular:** que algo cambie sin querer a 360 px. Todo se agrega con `md:`, `lg:` y `xl:`, y en cada tarea se revisa 360 px.
+- **Menú duplicado:** dos menús en el DOM romperían los tests y la accesibilidad. Es un solo `<nav>` con clases según el ancho.
+- **Formularios estirados:** se limitan a 560 px.
 
 ## Verificación
 
-`npm run lint && npm test` en cada tarea; `npm run build` y revisión en el panel en la 3, la 4 y la 5.
+`npm run lint && npm test && npm run build` en cada tarea y revisión en el panel en los anchos que toca cada una.
