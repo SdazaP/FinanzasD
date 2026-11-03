@@ -1,9 +1,7 @@
-# Tareas: desktop
+# Tareas: theme
 
-Detalle y criterios en `SPEC-desktop.md`. (Las tareas anteriores están completas; ver historial de git.)
+Detalle y criterios en `SPEC-theme.md`. (Las tareas anteriores están completas; ver historial de git.)
 
-- [x] 1. Estructura: menú lateral e inferior, encabezado, ancho máximo y avisos fijos desde 1280 px. Verify: tests y panel a 360, 768, 1024 y 1280 px.
-- [x] 2. Inicio y Cuentas en cuadrícula. Verify: tests y panel a 1024 y 1440 px.
-- [x] 3. Gastos fijos, Gastos hormiga e Historial. Verify: tests y panel.
-- [x] 4. Créditos, Ahorro, detalles y formularios nuevos. Verify: tests y panel.
-- [x] 5. Revisión completa en claro y oscuro, detector de impeccable, mapa de capacidades y deploy con tu permiso.
+- [ ] 1. Base del tema: `theme.ts` con tests, colores por `data-theme` en `index.css` y script antes de pintar en `index.html`. Verify: tests y panel recargando con cada valor guardado.
+- [ ] 2. Botón y menú `ThemeMenu` en el encabezado y la barra lateral. Verify: tests del componente y panel a 360, 768 y 1440 px.
+- [ ] 3. Revisión en claro y oscuro, sin destello, mapa de capacidades y deploy con tu permiso.

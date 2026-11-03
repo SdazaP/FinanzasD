@@ -1,33 +1,34 @@
-# Plan: desktop
+# Plan: theme
 
-Implementa `SPEC-desktop.md`. Tareas en `tasks/todo.md`. (Los planes anteriores están en el historial de git.)
+Implementa `SPEC-theme.md`. Tareas en `tasks/todo.md`. (Los planes anteriores están en el historial de git.)
 
 ## Orden
 
-1. **Estructura:**
-   - `AppLayout` con el mismo `<nav>` como barra inferior en el celular y barra lateral desde 768 px;
-   - encabezado con saludo y título grande;
-   - ancho máximo del contenido;
-   - `AlertsPanel` compartido por la campana y la columna fija desde 1280 px.
+1. **Base del tema:**
+   - `src/lib/theme.ts` lee y guarda la elección, la aplica a `<html>` y a `theme-color`, y sigue al sistema en "Sistema";
+   - `index.css`: los colores oscuros aplican con `data-theme="dark"`, o en "Sistema" cuando el dispositivo está en oscuro;
+   - `index.html`: un script en línea aplica el tema antes de pintar.
 
-   Va primero porque todas las pantallas viven dentro.
-2. **Inicio y Cuentas:** cuadrícula de 3 y de 2 columnas.
-3. **Gastos:** Gastos fijos (2 columnas), Gastos hormiga (formulario | lista) e Historial (calendario | día).
-4. **Créditos, Ahorro, detalles y formularios nuevos:** cuadrículas de 2 columnas; detalle con el formulario | historial; formularios centrados de hasta 560 px.
-5. **Cierre:**
-   - revisión en el panel a 360, 768, 1024, 1280 y 1440 px, en claro y oscuro;
-   - detector de impeccable;
+   Va primero porque el botón solo llama a `setTheme`. Se prueba cambiando `localStorage` a mano y recargando.
+2. **Botón y menú:**
+   - `ThemeMenu` con el ícono del tema actual y el menú de tres opciones (teclado, Escape, tocar fuera);
+   - colocado en el encabezado del celular y en la barra lateral de escritorio;
+   - revisar que el título de Gastos no se corte a 360 px.
+3. **Cierre:**
+   - revisión en el panel a 360, 768 y 1440 px, con el sistema en claro y en oscuro;
+   - recargar sin destello;
    - mapa de capacidades;
    - deploy con tu permiso.
 
-Antes de cada cambio de interfaz se aplican las reglas de calidad de impeccable (craft-floor), la skill de taste (design-taste-frontend) y la de addy (frontend-ui-engineering).
+Antes de cada cambio de interfaz se aplican las reglas de impeccable (craft-floor), taste y addy (frontend-ui-engineering).
 
 ## Riesgos
 
-- **Celular:** que algo cambie sin querer a 360 px. Todo se agrega con `md:`, `lg:` y `xl:`, y en cada tarea se revisa 360 px.
-- **Menú duplicado:** dos menús en el DOM romperían los tests y la accesibilidad. Es un solo `<nav>` con clases según el ancho.
-- **Formularios estirados:** se limitan a 560 px.
+- **Destello al abrir:** si el tema se aplicara desde React, se vería el otro tema un instante. Por eso va un script en línea en `index.html`.
+- **Colores duplicados en CSS:** el bloque oscuro aparece dos veces (sistema y forzado). Si cambias un color, hay que cambiarlo en ambos; un comentario lo recuerda.
+- **Encabezado en el celular:** son cuatro íconos en Gastos. Se revisa a 360 px, y si no cabe, te lo muestro antes de seguir.
+- **CSP:** el script en línea no se bloquea porque hoy no hay `Content-Security-Policy`. Si se agrega después, hay que permitirlo.
 
 ## Verificación
 
-`npm run lint && npm test && npm run build` en cada tarea y revisión en el panel en los anchos que toca cada una.
+`npm run lint && npm test && npm run build` en cada tarea, y revisión en el panel en los anchos que toca cada una.
