@@ -50,8 +50,9 @@ No cuentan los ingresos, los aportes a ahorro ni los pagos que aún no hiciste.
 ### En las dos
 
 12. **Ubicación:** en Inicio, debajo de "Este mes".
-    - En el celular van una debajo de otra.
+    - En el celular y en tablet (hasta 1023 px) van una debajo de otra, a todo el ancho.
     - Desde 1024 px van lado a lado, en la cuadrícula de 6 columnas: 3 columnas cada una.
+    - La leyenda va siempre debajo de la dona, en dos columnas: al lado de la dona cortaba los %.
 13. **Accesibilidad:** cada gráfica tiene un título visible y una tabla oculta para lectores de pantalla con los mismos datos. Las barras y los segmentos se pueden recorrer con el teclado y anuncian su valor.
 14. **Modo oscuro:** cada modo tiene sus propios colores, ya validados (abajo), así que no es una inversión automática.
 15. **Carga y datos:**

@@ -60,7 +60,7 @@ Orden: history → planned
 
 | Módulo | Estado | Responsabilidad | Depende de |
 |---|---|---|---|
-| `charts` | Pendiente | En Inicio: dona de gastos del mes por categoría y barras de los últimos 6 meses, con todos los gastos (como el Historial) | history, dashboard |
+| `charts` | Listo | En Inicio: dona de gastos del mes por categoría y barras de los últimos 6 meses, con todos los gastos (como el Historial) | history, dashboard |
 
 Specs: `SPEC-<módulo>.md` en la raíz.
 

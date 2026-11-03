@@ -4,8 +4,8 @@ import { formatMXN } from '../lib/money'
 import type { Slice } from './calc'
 
 // Clases completas para que Tailwind las encuentre; el índice es el slot (0 = "Otros")
-export const strokeOf = ['stroke-chart-0', 'stroke-chart-1', 'stroke-chart-2', 'stroke-chart-3', 'stroke-chart-4']
-export const bgOf = ['bg-chart-0', 'bg-chart-1', 'bg-chart-2', 'bg-chart-3', 'bg-chart-4']
+const strokeOf = ['stroke-chart-0', 'stroke-chart-1', 'stroke-chart-2', 'stroke-chart-3', 'stroke-chart-4']
+const bgOf = ['bg-chart-0', 'bg-chart-1', 'bg-chart-2', 'bg-chart-3', 'bg-chart-4']
 
 const R = 47
 const C = 2 * Math.PI * R
@@ -18,13 +18,11 @@ export default function CategoryDonut({ total, slices }: { total: number; slices
   const [active, setActive] = useState<number>()
   const current = active === undefined ? undefined : slices[active]
 
-  let offset = 0
-  const arcs = slices.map((s) => {
-    const length = (s.amount / total) * C
-    const arc = { length: Math.max(length - (slices.length > 1 ? GAP : 0), 0.5), offset }
-    offset += length
-    return arc
-  })
+  // Cada arco empieza donde terminan los anteriores
+  const arcs = slices.map((s, i) => ({
+    length: Math.max((s.amount / total) * C - (slices.length > 1 ? GAP : 0), 0.5),
+    offset: slices.slice(0, i).reduce((sum, prev) => sum + (prev.amount / total) * C, 0),
+  }))
 
   return (
     <div className="grid justify-items-center gap-4">

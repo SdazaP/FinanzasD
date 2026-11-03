@@ -4,7 +4,7 @@ import { byCategory, lastMonths, monthTotals } from './calc'
 import CategoryDonut from './CategoryDonut'
 import MonthBars from './MonthBars'
 
-const card = 'rounded-3xl bg-surface p-5 shadow-card md:col-span-1 lg:col-span-3'
+const card = 'rounded-3xl bg-surface p-5 shadow-card md:col-span-2 lg:col-span-3'
 
 // Esqueleto del tamaño final mientras cargan los 6 meses, para que Inicio no salte
 function Loading({ title }: { title: string }) {
