@@ -56,6 +56,12 @@ Orden: history → planned
 |---|---|---|---|
 | `theme` | Listo | Elegir Sistema, Claro u Oscuro desde tu foto en el celular o la barra lateral en escritorio; se guarda en el dispositivo y se aplica antes de pintar | core (layout), modo oscuro existente |
 
+## Iteración 7: gráficas
+
+| Módulo | Estado | Responsabilidad | Depende de |
+|---|---|---|---|
+| `charts` | Pendiente | En Inicio: dona de gastos del mes por categoría y barras de los últimos 6 meses, con todos los gastos (como el Historial) | history, dashboard |
+
 Specs: `SPEC-<módulo>.md` en la raíz.
 
-Fuera de alcance: importar extractos bancarios, gráficas avanzadas, gastos variables por categoría, presupuestos, notificaciones push/correo, multi-moneda, precios automáticos.
+Fuera de alcance: importar extractos bancarios, gráficas avanzadas (más allá de `charts`), gastos variables por categoría, presupuestos, notificaciones push/correo, multi-moneda, precios automáticos.

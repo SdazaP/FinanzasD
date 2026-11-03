@@ -1,7 +1,8 @@
-# Tareas: theme
+# Tareas: charts
 
-Detalle y criterios en `SPEC-theme.md`. (Las tareas anteriores están completas; ver historial de git.)
+Detalle y criterios en `SPEC-charts.md`. (Las tareas anteriores están completas; ver historial de git.)
 
-- [x] 1. Base del tema: `theme.ts` con tests, colores por `data-theme` en `index.css` y script antes de pintar en `index.html`. Verify: tests y panel recargando con cada valor guardado.
-- [x] 2. Botón y menú `ThemeMenu` en el encabezado y la barra lateral. Verify: tests del componente y panel a 360, 768 y 1440 px.
-- [x] 3. Revisión en claro y oscuro, sin destello, mapa de capacidades y deploy con tu permiso.
+- [ ] 1. Datos y cálculos: `category` en el historial, `useSpendingMonths` y `charts/calc.ts` con tests. Verify: tests.
+- [ ] 2. Dona por categoría en Inicio (tokens de color, leyenda, vacío, teclado, tabla oculta). Verify: tests del componente y panel a 360 y 1440 px, en claro y oscuro.
+- [ ] 3. Barras de 6 meses al lado de la dona (eje, etiqueta flotante, comparación, meses sin datos). Verify: tests y panel.
+- [ ] 4. Revisión con impeccable, taste, addy y dataviz; mapa de capacidades y deploy con tu permiso.
