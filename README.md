@@ -1,6 +1,6 @@
 # FinanzasD
 
-App web personal, pensada primero para el celular, para llevar tus finanzas en pesos mexicanos (MXN). En un solo lugar ves cuánto dinero tienes, qué te toca pagar este mes y cuánto te queda. Se puede instalar en el celular como app y funciona sin conexión.
+App web personal para llevar tus finanzas. En un solo lugar ves cuánto dinero tienes, qué te toca pagar este mes y cuánto te queda. Se puede instalar en el celular como app y funciona sin conexión.
 
 Publicada en <https://finanzasd.vercel.app>.
 
