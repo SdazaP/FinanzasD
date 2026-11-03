@@ -48,7 +48,7 @@ Orden: history → planned
 
 | Módulo | Estado | Responsabilidad | Depende de |
 |---|---|---|---|
-| `desktop` | Pendiente | Versión para tablet y escritorio con el mismo estilo: barra lateral (solo íconos en tablet), encabezado con saludo y título grande, pantallas en cuadrícula de 2–3 columnas y avisos en un panel fijo a la derecha desde 1280 px; el celular no cambia | core (layout) y la presentación de todas las pantallas |
+| `desktop` | Listo | Versión para tablet y escritorio con el mismo estilo: barra lateral (solo íconos en tablet), encabezado con saludo y título grande, pantallas en cuadrícula de 2–3 columnas y avisos en un panel fijo a la derecha desde 1280 px; el celular no cambia | core (layout) y la presentación de todas las pantallas |
 
 Specs: `SPEC-<módulo>.md` en la raíz.
 

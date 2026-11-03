@@ -6,4 +6,4 @@ Detalle y criterios en `SPEC-desktop.md`. (Las tareas anteriores están completa
 - [x] 2. Inicio y Cuentas en cuadrícula. Verify: tests y panel a 1024 y 1440 px.
 - [x] 3. Gastos fijos, Gastos hormiga e Historial. Verify: tests y panel.
 - [x] 4. Créditos, Ahorro, detalles y formularios nuevos. Verify: tests y panel.
-- [ ] 5. Revisión completa en claro y oscuro, detector de impeccable, mapa de capacidades y deploy con tu permiso.
+- [x] 5. Revisión completa en claro y oscuro, detector de impeccable, mapa de capacidades y deploy con tu permiso.
