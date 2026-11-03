@@ -19,6 +19,8 @@ const mocks = vi.hoisted(() => ({
 vi.mock('../money/useAccounts', () => ({ useAccounts: mocks.useAccounts }))
 vi.mock('../money/useMonthMoney', () => ({ useMonthMoney: () => ({ ready: true, left: -50000 }) }))
 vi.mock('../spending/api', () => ({ watchMonthSpending: mocks.watchMonthSpending }))
+// Las gráficas se prueban en src/charts; aquí solo estorbarían con sus propias suscripciones
+vi.mock('../charts/SpendingCharts', () => ({ default: () => null }))
 vi.mock('../recurring/api', () => ({ watchRecurring: mocks.watchRecurring }))
 vi.mock('../credits/api', () => ({ watchCredits: mocks.watchCredits }))
 vi.mock('../savings/api', () => ({ watchSavings: mocks.watchSavings }))

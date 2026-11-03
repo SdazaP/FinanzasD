@@ -16,6 +16,7 @@ import { useAccounts } from '../money/useAccounts'
 import { useMonthMoney } from '../money/useMonthMoney'
 import { watchMonthSpending } from '../spending/api'
 import type { Spending } from '../spending/calc'
+import SpendingCharts from '../charts/SpendingCharts'
 import { monthCommitments, monthRange, upcoming } from './calc'
 
 const badges = {
@@ -155,6 +156,8 @@ export default function Dashboard() {
         </div>
         {hasCardPending && <p className="mt-2 text-xs text-white/70">Tarjetas: saldo completo</p>}
       </section>
+
+      <SpendingCharts uid={uid} now={now} />
 
       <Section title="Próximos pagos">
         {next.length === 0 ? (

@@ -13,6 +13,13 @@
   --color-surface: #ffffff; /* tarjetas y campos; en oscuro cambia, a diferencia de white (texto y barras sobre morado) */
 
   --shadow-card: 0 8px 30px rgb(27 29 33 / 0.06);
+
+  /* Gráficas: orden fijo, validado con el validador de dataviz (claro sobre #fff, oscuro sobre #1c1e25). 0 = "Otros" */
+  --color-chart-0: #c9cad3;
+  --color-chart-1: #6c5dd3;
+  --color-chart-2: #ec7aa5;
+  --color-chart-3: #d9962b;
+  --color-chart-4: #2f9bc0;
 }
 
 /* Modo oscuro: data-theme lo pone src/lib/theme.ts (o el script de index.html) según tu elección o el sistema;
@@ -48,6 +55,12 @@
   --color-amber-900: #fde68a;
 
   --shadow-card: 0 8px 30px rgb(0 0 0 / 0.35);
+
+  --color-chart-0: #5d606d;
+  --color-chart-1: #7d6fe6;
+  --color-chart-2: #cc6690;
+  --color-chart-3: #c08425;
+  --color-chart-4: #3a9cc4;
 }
 
 @layer base {
