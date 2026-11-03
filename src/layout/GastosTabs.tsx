@@ -3,7 +3,7 @@ import { NavLink } from 'react-router'
 // Selector Fijos | Hormiga dentro de la sección Gastos (el historial va como ícono en el encabezado)
 export default function GastosTabs() {
   return (
-    <nav aria-label="Tipo de gasto" className="grid grid-cols-2 gap-1 rounded-2xl bg-zinc-200/60 p-1">
+    <nav aria-label="Tipo de gasto" className="grid grid-cols-2 gap-1 rounded-2xl bg-zinc-200/60 p-1 md:max-w-xs">
       {[['/gastos-fijos', 'Fijos'], ['/gastos-hormiga', 'Hormiga']].map(([to, label]) => (
         <NavLink
           key={to}

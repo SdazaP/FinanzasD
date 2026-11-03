@@ -97,7 +97,8 @@ export default function SpendingList() {
       {!items && !loadError && <p className="text-zinc-500">Cargando…</p>}
 
       {items && (
-        <>
+        <div className="space-y-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-5 lg:space-y-0">
+          <div className="space-y-4 lg:sticky lg:top-6">
           <MonthCard uid={uid} total={total} count={items.length} cap={cap} />
 
           <section className="rounded-3xl bg-surface p-5 shadow-card">
@@ -112,7 +113,9 @@ export default function SpendingList() {
               onCreateCategory={(name) => addSpendingCategory(uid, name)}
             />
           </section>
+          </div>
 
+          <div className="space-y-4">
           {items.length === 0 ? (
             <p className="rounded-3xl bg-surface p-6 text-zinc-600 shadow-card">Aún no registras gastos hormiga este mes.</p>
           ) : (
@@ -152,7 +155,8 @@ export default function SpendingList() {
               ))}
             </>
           )}
-        </>
+          </div>
+        </div>
       )}
     </div>
   )

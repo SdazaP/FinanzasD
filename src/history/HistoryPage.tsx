@@ -43,11 +43,11 @@ export default function HistoryPage() {
   const go = (delta: -1 | 1) => setMonth(monthRange(delta < 0 ? addDays(month, -1) : addDays(end, 1))[0])
 
   return (
-    <div className="space-y-4">
-      <section className={card}>
+    <div className="space-y-4 lg:grid lg:grid-cols-3 lg:items-start lg:gap-5 lg:space-y-0">
+      <section className={`${card} lg:col-span-2`}>
         <div className="flex items-center justify-between gap-2">
           <button type="button" onClick={() => go(-1)} aria-label="Mes anterior" className="grid size-11 place-items-center rounded-xl text-primary active:bg-primary/10">
-            ‹
+            <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6" /></svg>
           </button>
           <h2 className="font-display text-lg font-semibold">{formatMonthLabel(month)}</h2>
           <button
@@ -57,7 +57,7 @@ export default function HistoryPage() {
             aria-label="Mes siguiente"
             className="grid size-11 place-items-center rounded-xl text-primary active:bg-primary/10 disabled:opacity-30"
           >
-            ›
+            <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
           </button>
         </div>
 
@@ -121,7 +121,7 @@ export default function HistoryPage() {
       </section>
 
       {ready && entries.length > 0 && (
-        <section className={card}>
+        <section className={`${card} lg:sticky lg:top-6`}>
           <h2 className="mb-2 font-display text-lg font-semibold first-letter:uppercase">
             {formatLongDate(selected)} · <span className="tabular-nums">{formatMXN(totals[selected] ?? 0)}</span>
           </h2>

@@ -88,7 +88,7 @@ export default function RecurringList() {
 
       <Link
         to="/gastos-fijos/nuevo"
-        className="flex min-h-12 items-center justify-center rounded-2xl bg-surface font-medium text-primary shadow-card transition-transform duration-150 ease-out active:scale-[0.98]"
+        className="flex min-h-12 items-center justify-center rounded-2xl bg-surface font-medium text-primary shadow-card transition-transform duration-150 ease-out active:scale-[0.98] md:max-w-xs"
       >
         Agregar gasto
       </Link>
@@ -104,7 +104,7 @@ export default function RecurringList() {
       {due.length > 0 && (
         <section>
           <GroupTitle>Por pagar</GroupTitle>
-          <ul className="space-y-3">
+          <ul className="grid gap-3 space-y-0 lg:grid-cols-2 lg:gap-4">
             {due.map((item) => {
               const badge = badges[status(item.nextDue, now)]
               return (
@@ -144,7 +144,7 @@ export default function RecurringList() {
       {notDueLoaded && paid.length > 0 && (
         <section>
           <GroupTitle>Pagado este mes</GroupTitle>
-          <ul className="space-y-3">
+          <ul className="grid gap-3 space-y-0 lg:grid-cols-2 lg:gap-4">
             {paid.map((item) => {
               const period = periodOf(item.id)!
               return (
@@ -166,7 +166,7 @@ export default function RecurringList() {
       {notDueLoaded && later.length > 0 && (
         <section>
           <GroupTitle>Más adelante</GroupTitle>
-          <ul className="space-y-3">
+          <ul className="grid gap-3 space-y-0 lg:grid-cols-2 lg:gap-4">
             {later.map((item) => (
               <li key={item.id} className="rounded-3xl bg-surface p-4 shadow-card">
                 {header(item, `Vence el ${formatDay(item.nextDue)}`)}
@@ -179,7 +179,7 @@ export default function RecurringList() {
       {paused.length > 0 && (
         <section>
           <GroupTitle>Pausados</GroupTitle>
-          <ul className="space-y-3">
+          <ul className="grid gap-3 space-y-0 lg:grid-cols-2 lg:gap-4">
             {paused.map((item) => (
               <li key={item.id}>
                 <Link

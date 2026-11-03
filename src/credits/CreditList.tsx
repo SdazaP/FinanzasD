@@ -145,7 +145,7 @@ export default function CreditList() {
 
       <Link
         to="/creditos/nuevo"
-        className="flex min-h-12 items-center justify-center rounded-2xl bg-surface font-medium text-primary shadow-card transition-transform duration-150 ease-out active:scale-[0.98]"
+        className="flex min-h-12 items-center justify-center rounded-2xl bg-surface font-medium text-primary shadow-card transition-transform duration-150 ease-out active:scale-[0.98] md:max-w-xs"
       >
         Agregar crédito
       </Link>
@@ -159,7 +159,7 @@ export default function CreditList() {
       {due.length > 0 && (
         <section>
           <GroupTitle>Por pagar</GroupTitle>
-          <ul className="space-y-3">
+          <ul className="grid gap-3 space-y-0 lg:grid-cols-2 lg:gap-4">
             {due.map((credit) => (
               <li key={credit.id} className="rounded-3xl bg-surface p-4 shadow-card">
                 <CreditHeader credit={credit} detail={formatDay(credit.nextDue)} cardNames={cardNames} />
@@ -175,7 +175,7 @@ export default function CreditList() {
       {notDueLoaded && paid.length > 0 && (
         <section>
           <GroupTitle>Pagado este mes</GroupTitle>
-          <ul className="space-y-3">
+          <ul className="grid gap-3 space-y-0 lg:grid-cols-2 lg:gap-4">
             {paid.map((credit) => {
               const period = periodOf(credit.id)!
               const when = period.lastPaidAt ? ` el ${formatDay(period.lastPaidAt)}` : ''
@@ -198,7 +198,7 @@ export default function CreditList() {
       {notDueLoaded && later.length > 0 && (
         <section>
           <GroupTitle>Más adelante</GroupTitle>
-          <ul className="space-y-3">
+          <ul className="grid gap-3 space-y-0 lg:grid-cols-2 lg:gap-4">
             {later.map((credit) => (
               <li key={credit.id} className="rounded-3xl bg-surface p-4 shadow-card">
                 <CreditHeader credit={credit} detail={`Vence el ${formatDay(credit.nextDue)}`} cardNames={cardNames} />
@@ -211,7 +211,7 @@ export default function CreditList() {
       {settled.length > 0 && (
         <section>
           <GroupTitle>Liquidados</GroupTitle>
-          <ul className="space-y-3">
+          <ul className="grid gap-3 space-y-0 lg:grid-cols-2 lg:gap-4">
             {settled.map((credit) => (
               <li key={credit.id}>
                 <Link to={`/creditos/${credit.id}`} className="flex items-center gap-3 rounded-3xl bg-surface/60 p-4 text-zinc-500 active:bg-surface">
