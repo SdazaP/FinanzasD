@@ -1,7 +1,8 @@
 import { useHistoryRange } from '../history/useMonthHistory'
 import { monthRange } from '../lib/dates'
-import { byCategory, lastMonths } from './calc'
+import { byCategory, lastMonths, monthTotals } from './calc'
 import CategoryDonut from './CategoryDonut'
+import MonthBars from './MonthBars'
 
 const card = 'rounded-3xl bg-surface p-5 shadow-card md:col-span-1 lg:col-span-3'
 
@@ -28,11 +29,19 @@ export default function SpendingCharts({ uid, now }: { uid: string; now: string 
   const [monthStart, monthEnd] = monthRange(now)
   const { ready, entries } = useHistoryRange(uid, lastMonths(now)[0], monthEnd)
 
-  if (!ready) return <Loading title="En qué se fue" />
+  if (!ready) {
+    return (
+      <>
+        <Loading title="En qué se fue" />
+        <Loading title="Últimos 6 meses" />
+      </>
+    )
+  }
 
   const { total, slices } = byCategory(entries.filter((e) => e.date >= monthStart))
 
   return (
+    <>
     <section className={card}>
       <h2 className="mb-4 font-display text-lg font-semibold">En qué se fue</h2>
       {total ? (
@@ -44,5 +53,11 @@ export default function SpendingCharts({ uid, now }: { uid: string; now: string 
         </div>
       )}
     </section>
+
+    <section className={card}>
+      <h2 className="mb-4 font-display text-lg font-semibold">Últimos 6 meses</h2>
+      <MonthBars months={monthTotals(entries, now)} />
+    </section>
+    </>
   )
 }

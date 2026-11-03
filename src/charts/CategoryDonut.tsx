@@ -27,7 +27,7 @@ export default function CategoryDonut({ total, slices }: { total: number; slices
   })
 
   return (
-    <div className="grid justify-items-center gap-4 lg:grid-cols-[9rem_minmax(0,1fr)] lg:items-center lg:justify-items-stretch lg:gap-5">
+    <div className="grid justify-items-center gap-4">
       <div className="relative size-36" onMouseLeave={() => setActive(undefined)}>
         <svg viewBox="0 0 120 120" className="size-full -rotate-90" aria-hidden="true">
           <circle cx="60" cy="60" r={R} fill="none" strokeWidth="12" className="stroke-zinc-100" />
@@ -53,7 +53,7 @@ export default function CategoryDonut({ total, slices }: { total: number; slices
         </div>
       </div>
 
-      <ul className="grid w-full min-w-0 grid-cols-2 gap-x-2 gap-y-0.5 lg:grid-cols-1">
+      <ul className="grid w-full min-w-0 grid-cols-2 gap-x-2 gap-y-0.5">
         {slices.map((s, i) => (
           <li key={s.name}>
             <button
