@@ -15,34 +15,39 @@
   --shadow-card: 0 8px 30px rgb(27 29 33 / 0.06);
 }
 
-/* Modo oscuro según el sistema: se redefinen los colores que usa la app; las clases no cambian */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-canvas: #111216;
-    --color-surface: #1c1e25;
-    --color-ink: #ececf1;
-    --color-primary: #7d6fe6;
+/* Modo oscuro: data-theme lo pone src/lib/theme.ts (o el script de index.html) según tu elección o el sistema;
+   se redefinen los colores que usa la app y las clases no cambian */
+:root {
+  color-scheme: light;
+}
 
-    --color-zinc-50: #23252d;
-    --color-zinc-100: #2a2c35;
-    --color-zinc-200: #353844;
-    --color-zinc-300: #4a4d5a;
-    --color-zinc-400: #7c7f8c;
-    --color-zinc-500: #a0a3b0;
-    --color-zinc-600: #b8bac4;
-    --color-zinc-700: #d4d5dc;
+:root[data-theme='dark'] {
+  color-scheme: dark;
 
-    --color-red-50: #3a1d22;
-    --color-red-500: #f87171;
-    --color-red-600: #f26b6b;
-    --color-red-700: #ff9b9b;
-    --color-emerald-50: #173328;
-    --color-emerald-700: #6ee7b7;
-    --color-amber-600: #fbbf24;
-    --color-amber-900: #fde68a;
+  --color-canvas: #111216;
+  --color-surface: #1c1e25;
+  --color-ink: #ececf1;
+  --color-primary: #7d6fe6;
 
-    --shadow-card: 0 8px 30px rgb(0 0 0 / 0.35);
-  }
+  --color-zinc-50: #23252d;
+  --color-zinc-100: #2a2c35;
+  --color-zinc-200: #353844;
+  --color-zinc-300: #4a4d5a;
+  --color-zinc-400: #7c7f8c;
+  --color-zinc-500: #a0a3b0;
+  --color-zinc-600: #b8bac4;
+  --color-zinc-700: #d4d5dc;
+
+  --color-red-50: #3a1d22;
+  --color-red-500: #f87171;
+  --color-red-600: #f26b6b;
+  --color-red-700: #ff9b9b;
+  --color-emerald-50: #173328;
+  --color-emerald-700: #6ee7b7;
+  --color-amber-600: #fbbf24;
+  --color-amber-900: #fde68a;
+
+  --shadow-card: 0 8px 30px rgb(0 0 0 / 0.35);
 }
 
 @layer base {

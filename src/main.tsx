@@ -5,9 +5,11 @@ import './index.css'
 import App from './App.tsx'
 import AuthProvider from './auth/AuthProvider'
 import RequireAuth from './auth/RequireAuth'
+import { followSystemTheme } from './lib/theme'
 import { registerServiceWorker } from './pwa/pwa'
 
 registerServiceWorker()
+followSystemTheme()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
