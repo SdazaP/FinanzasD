@@ -31,12 +31,12 @@ function MoneyLine({ uid, now, accounts }: { uid: string; now: string; accounts:
   const total = availableTotal(accounts)
   const month = useMonthMoney(uid, now, total)
   return (
-    <Link to="/cuentas" className={`${card} flex items-center gap-4 active:bg-zinc-50`}>
+    <Link to="/cuentas" className={`${card} flex items-center gap-4 active:bg-zinc-50 lg:h-full lg:flex-col lg:items-stretch lg:justify-center lg:gap-5 lg:hover:bg-zinc-50`}>
       <div className="min-w-0 flex-1">
         <p className="text-sm text-zinc-500">Disponible</p>
         <p className={`font-display text-2xl font-semibold tabular-nums [overflow-wrap:anywhere] ${total < 0 ? 'text-red-600' : ''}`}>{formatMXN(total)}</p>
       </div>
-      <div className="min-w-0 flex-1 text-right">
+      <div className="min-w-0 flex-1 text-right lg:flex-none lg:text-left">
         <p className="text-sm text-zinc-500">Te queda este mes</p>
         <p className={`font-display text-lg font-semibold tabular-nums [overflow-wrap:anywhere] ${month.ready && month.left < 0 ? 'text-red-600' : ''}`}>
           {month.ready ? formatMXN(month.left) : '…'}
@@ -62,7 +62,7 @@ function Money({ uid, now }: { uid: string; now: string }) {
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className={card}>
+    <section className={`${card} lg:col-span-3`}>
       <h2 className="mb-3 font-display text-lg font-semibold">{title}</h2>
       {children}
     </section>
@@ -128,14 +128,16 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 md:grid md:grid-cols-2 md:gap-5 md:space-y-0 lg:grid-cols-6">
       {failed.length > 0 && (
-        <p role="alert" className="text-sm text-red-700">No se pudieron cargar: {failed.join(', ')}. Revisa tu conexión.</p>
+        <p role="alert" className="text-sm text-red-700 md:col-span-full">No se pudieron cargar: {failed.join(', ')}. Revisa tu conexión.</p>
       )}
 
-      <Money uid={uid} now={now} />
+      <div className="md:col-span-2 lg:col-start-5 lg:row-start-1">
+        <Money uid={uid} now={now} />
+      </div>
 
-      <section className="rounded-3xl bg-primary p-6 text-white shadow-card">
+      <section className="rounded-3xl bg-primary p-6 text-white shadow-card md:col-span-2 lg:col-span-4 lg:row-start-1 lg:p-8">
         <p className="text-sm text-white/80">Este mes</p>
         <p className="mt-1 font-display text-[clamp(1.5rem,8vw,2.25rem)] font-semibold tracking-tight tabular-nums [overflow-wrap:anywhere]">{formatMXN(month.total)}</p>
         <div className="mt-4">

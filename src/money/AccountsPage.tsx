@@ -54,8 +54,8 @@ export default function AccountsPage() {
   }
 
   return (
-    <div className="space-y-4">
-      <section className="rounded-3xl bg-primary p-6 text-white shadow-card">
+    <div className="space-y-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-5 lg:space-y-0">
+      <section className="rounded-3xl bg-primary p-6 text-white shadow-card lg:col-span-2 lg:p-8">
         <p className="text-sm text-white/80">Disponible</p>
         <p className="mt-1 font-display text-[clamp(1.5rem,8vw,2.25rem)] font-semibold tracking-tight tabular-nums [overflow-wrap:anywhere]">{formatMXN(availableTotal(accounts))}</p>
         <p className="mt-2 text-sm">
@@ -67,7 +67,7 @@ export default function AccountsPage() {
         )}
       </section>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 lg:col-span-2 lg:max-w-md">
         <button
           type="button"
           onClick={() => setAdding((a) => !a)}
@@ -82,7 +82,7 @@ export default function AccountsPage() {
       </div>
 
       {adding && (
-        <section className={card}>
+        <section className={`${card} lg:col-span-2`}>
           <h2 className="mb-4 font-display text-lg font-semibold">Nuevo ingreso</h2>
           <IncomeForm
             accounts={accounts}
@@ -96,8 +96,9 @@ export default function AccountsPage() {
         </section>
       )}
 
-      {actionError && <p role="alert" className="text-sm text-red-700">{actionError}</p>}
+      {actionError && <p role="alert" className="text-sm text-red-700 lg:col-span-2">{actionError}</p>}
 
+      <div className="space-y-4">
       <section className={card}>
         <h2 className="mb-2 font-display text-lg font-semibold">Tus cuentas</h2>
         <ul className="-mx-2">
@@ -119,7 +120,9 @@ export default function AccountsPage() {
       </section>
 
       <CardsSection cards={cards} credits={credits} />
+      </div>
 
+      <div className="space-y-4">
       <section className={card}>
         <h2 className="mb-2 font-display text-lg font-semibold">Ingresos del mes</h2>
         {month.incomes.length === 0 ? (
@@ -181,6 +184,7 @@ export default function AccountsPage() {
       </section>
 
       <PreferencesCard uid={uid} frequency={month.frequency} />
+      </div>
     </div>
   )
 }
