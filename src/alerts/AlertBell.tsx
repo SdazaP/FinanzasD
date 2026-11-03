@@ -19,15 +19,112 @@ export function LevelIcon({ level }: { level: Alert['level'] }) {
   )
 }
 
-export default function AlertBell({ uid, now }: { uid: string; now: string }) {
-  const { visible, hidden } = useAlerts(uid, now)
-  const [open, setOpen] = useState(false)
+type Alerts = ReturnType<typeof useAlerts>
+
+// La lista de avisos: la usan el panel de la campana y la columna fija de escritorio
+function AlertsList({ uid, now, alerts, onNavigate }: { uid: string; now: string; alerts: Alerts; onNavigate?: () => void }) {
+  const { visible, hidden } = alerts
   const [showHidden, setShowHidden] = useState(false)
   const [error, setError] = useState('')
+  const uploadFailed = useUploadFailed()
+  const month = now.slice(0, 7)
+
+  async function run(action: Promise<unknown>) {
+    setError('')
+    try {
+      await action
+    } catch {
+      setError('No se pudo guardar. Revisa tu conexión.')
+    }
+  }
+
+  return (
+    <>
+      {error && <p role="alert" className="mb-2 text-sm text-red-700">{error}</p>}
+
+      {uploadFailed && (
+        <div className="flex gap-3 border-b border-zinc-100 py-3">
+          <LevelIcon level="red" />
+          <div className="min-w-0 flex-1 text-sm">
+            <p>
+              <span className="block font-semibold text-red-600">
+                Urgente<span className="sr-only">:</span>
+              </span>{' '}
+              No se pudo subir un cambio que hiciste sin conexión. Revisa tus registros.
+            </p>
+            <button type="button" onClick={dismissUploadFailed} className="mt-1 -ml-2 min-h-11 rounded-xl px-2 font-medium text-primary active:bg-primary/10">
+              Entendido
+            </button>
+          </div>
+        </div>
+      )}
+
+      {visible.length === 0 && !uploadFailed ? (
+        <p className="py-2 text-zinc-500">No tienes avisos.</p>
+      ) : (
+        <ul className="divide-y divide-zinc-100">
+          {visible.map((a) => (
+            <li key={a.key} className="py-3">
+              <Link to={a.href} onClick={onNavigate} className="flex gap-3 rounded-xl active:bg-zinc-50">
+                <LevelIcon level={a.level} />
+                <span className="min-w-0 flex-1 text-sm [overflow-wrap:anywhere]">
+                  <span className={`block font-semibold ${levelStyle[a.level].icon}`}>
+                    {levelStyle[a.level].word}
+                    <span className="sr-only">:</span>
+                  </span>{' '}
+                  {a.text}
+                </span>
+              </Link>
+              <button type="button" onClick={() => run(hideAlert(uid, a.key, month))} className="mt-1 ml-8 min-h-11 rounded-xl px-2 text-sm font-medium text-primary active:bg-primary/10">
+                Ocultar este mes
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {hidden.length > 0 && (
+        <div className="mt-2 border-t border-zinc-100 pt-2">
+          <button type="button" onClick={() => setShowHidden((s) => !s)} aria-expanded={showHidden} className="min-h-11 rounded-xl px-2 text-sm font-medium text-zinc-500 active:bg-zinc-100">
+            {showHidden ? 'Esconder ocultos' : `Mostrar ocultos (${hidden.length})`}
+          </button>
+          {showHidden && (
+            <ul className="space-y-2">
+              {hidden.map((a) => (
+                <li key={a.key} className="flex items-center gap-3 text-sm text-zinc-500">
+                  <LevelIcon level={a.level} />
+                  <span className="min-w-0 flex-1 [overflow-wrap:anywhere]">{a.text}</span>
+                  <button type="button" onClick={() => run(showAlert(uid, a.key))} className="min-h-11 shrink-0 rounded-xl px-2 font-medium text-primary active:bg-primary/10">
+                    Mostrar
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+    </>
+  )
+}
+
+// Escritorio ancho: los avisos siempre a la vista, en la columna derecha
+export function AlertsRail({ uid, now }: { uid: string; now: string }) {
+  const alerts = useAlerts(uid, now)
+  return (
+    <section aria-labelledby="alerts-rail-title" className="rounded-3xl bg-surface p-5 shadow-card">
+      <h2 id="alerts-rail-title" className="mb-2 font-display text-lg font-semibold">Avisos</h2>
+      <AlertsList uid={uid} now={now} alerts={alerts} />
+    </section>
+  )
+}
+
+export default function AlertBell({ uid, now }: { uid: string; now: string }) {
+  const alerts = useAlerts(uid, now)
+  const { visible } = alerts
+  const [open, setOpen] = useState(false)
   const button = useRef<HTMLButtonElement>(null)
   const panel = useRef<HTMLDivElement>(null)
   const panelId = useId()
-  const month = now.slice(0, 7)
   // Un cambio hecho sin conexión que el servidor rechazó también cuenta como aviso urgente
   const uploadFailed = useUploadFailed()
   const count = visible.length + (uploadFailed ? 1 : 0)
@@ -53,15 +150,6 @@ export default function AlertBell({ uid, now }: { uid: string; now: string }) {
       document.removeEventListener('pointerdown', onPointer)
     }
   }, [open])
-
-  async function run(action: Promise<unknown>) {
-    setError('')
-    try {
-      await action
-    } catch {
-      setError('No se pudo guardar. Revisa tu conexión.')
-    }
-  }
 
   return (
     <div className="relative">
@@ -99,70 +187,7 @@ export default function AlertBell({ uid, now }: { uid: string; now: string }) {
               Cerrar
             </button>
           </div>
-
-          {error && <p role="alert" className="mb-2 text-sm text-red-700">{error}</p>}
-
-          {uploadFailed && (
-            <div className="flex gap-3 border-b border-zinc-100 py-3">
-              <LevelIcon level="red" />
-              <div className="min-w-0 flex-1 text-sm">
-                <p>
-                  <span className="block font-semibold text-red-600">
-                    Urgente<span className="sr-only">:</span>
-                  </span>{' '}
-                  No se pudo subir un cambio que hiciste sin conexión. Revisa tus registros.
-                </p>
-                <button type="button" onClick={dismissUploadFailed} className="mt-1 -ml-2 min-h-11 rounded-xl px-2 font-medium text-primary active:bg-primary/10">
-                  Entendido
-                </button>
-              </div>
-            </div>
-          )}
-
-          {count === 0 ? (
-            <p className="py-2 text-zinc-500">No tienes avisos.</p>
-          ) : (
-            <ul className="divide-y divide-zinc-100">
-              {visible.map((a) => (
-                <li key={a.key} className="py-3">
-                  <Link to={a.href} onClick={() => setOpen(false)} className="flex gap-3 rounded-xl active:bg-zinc-50">
-                    <LevelIcon level={a.level} />
-                    <span className="min-w-0 flex-1 text-sm [overflow-wrap:anywhere]">
-                      <span className={`block font-semibold ${levelStyle[a.level].icon}`}>
-                        {levelStyle[a.level].word}
-                        <span className="sr-only">:</span>
-                      </span>{' '}
-                      {a.text}
-                    </span>
-                  </Link>
-                  <button type="button" onClick={() => run(hideAlert(uid, a.key, month))} className="mt-1 ml-8 min-h-11 rounded-xl px-2 text-sm font-medium text-primary active:bg-primary/10">
-                    Ocultar este mes
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-
-          {hidden.length > 0 && (
-            <div className="mt-2 border-t border-zinc-100 pt-2">
-              <button type="button" onClick={() => setShowHidden((s) => !s)} aria-expanded={showHidden} className="min-h-11 rounded-xl px-2 text-sm font-medium text-zinc-500 active:bg-zinc-100">
-                {showHidden ? 'Esconder ocultos' : `Mostrar ocultos (${hidden.length})`}
-              </button>
-              {showHidden && (
-                <ul className="space-y-2">
-                  {hidden.map((a) => (
-                    <li key={a.key} className="flex items-center gap-3 text-sm text-zinc-500">
-                      <LevelIcon level={a.level} />
-                      <span className="min-w-0 flex-1 [overflow-wrap:anywhere]">{a.text}</span>
-                      <button type="button" onClick={() => run(showAlert(uid, a.key))} className="min-h-11 shrink-0 rounded-xl px-2 font-medium text-primary active:bg-primary/10">
-                        Mostrar
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
+          <AlertsList uid={uid} now={now} alerts={alerts} onNavigate={() => setOpen(false)} />
         </div>
       )}
     </div>

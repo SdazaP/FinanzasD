@@ -46,7 +46,12 @@
 }
 
 @layer base {
+  ::selection {
+    background: color-mix(in oklab, var(--color-primary) 28%, transparent);
+  }
+
   html {
+    scrollbar-color: color-mix(in oklab, var(--color-zinc-500) 45%, transparent) transparent;
     -webkit-tap-highlight-color: transparent;
     -webkit-text-size-adjust: 100%;
     overscroll-behavior: none;

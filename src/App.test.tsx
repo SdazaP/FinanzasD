@@ -62,6 +62,20 @@ test('el ícono de historial solo aparece en Gastos y lleva a su página', () =>
   expect(screen.getByRole('link', { name: 'Gastos' })).toHaveAttribute('aria-current', 'page')
 })
 
+test('un solo menú con el logo; en pantallas anchas los avisos van en una columna fija y no hay campana', () => {
+  renderAt('/')
+  expect(screen.getAllByRole('navigation', { name: 'Secciones' })).toHaveLength(1)
+  expect(screen.getByRole('link', { name: 'FinanzasD, inicio' })).toHaveAttribute('href', '/')
+  expect(screen.getByRole('button', { name: /^Avisos,/ })).toBeInTheDocument()
+  cleanup()
+
+  vi.stubGlobal('matchMedia', (q: string) => ({ matches: q === '(min-width: 1280px)', addEventListener() {}, removeEventListener() {} }))
+  renderAt('/')
+  expect(screen.getByRole('complementary', { name: 'Avisos' })).toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: /^Avisos,/ })).not.toBeInTheDocument()
+  vi.unstubAllGlobals()
+})
+
 test('el encabezado muestra el mes en curso y la fecha de hoy', () => {
   vi.useFakeTimers({ toFake: ['Date'] })
   vi.setSystemTime(new Date(2026, 10, 1, 10, 0))
