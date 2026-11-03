@@ -15,7 +15,7 @@ La elección se guarda solo en ese dispositivo y aplica al instante, sin parpade
 ## Criterios de aceptación
 
 1. **Botón de tema** en el encabezado:
-   - En el celular va junto a la campana y tu foto.
+   - En el celular es tu foto, con el ícono del tema encima: con un ícono más, el título de Gastos se cortaba a 360 px (decidido contigo).
    - En escritorio va en la barra lateral, junto a tu nombre. El panel de avisos no cambia.
    - Su ícono muestra el tema elegido (sol, luna o monitor). Su nombre accesible es "Tema: Sistema", "Tema: Claro" o "Tema: Oscuro".
 2. **Menú de opciones:** al tocar el botón se abre un menú pequeño con las tres opciones, que se elige con dedo o teclado.
@@ -27,7 +27,7 @@ La elección se guarda solo en ese dispositivo y aplica al instante, sin parpade
    - Al abrir no hay destello del otro tema: el tema se aplica antes de pintar la página.
 5. **Barra del sistema:** la barra de estado de Android (`theme-color`) toma el color del tema elegido, no el del sistema.
    - Los controles nativos (fecha, selects, scroll) usan el tema elegido mediante `color-scheme`.
-6. **Celular a 360 px:** el título del encabezado no se corta, ni en Gastos, que tiene cuatro íconos (historial, tema, campana, foto).
+6. **Celular a 360 px:** el título del encabezado no se corta, ni en Gastos (historial, campana y foto-tema).
 7. **Sin cambios** en los colores de cada tema, en los datos ni en las reglas.
    - Si `localStorage` no está disponible (modo privado), la app usa "Sistema" y no falla.
 
@@ -62,10 +62,8 @@ src/layout/AppLayout.tsx→ ThemeMenu en el encabezado (celular) y en la barra l
 Un solo atributo en `<html>` decide el tema, y las clases de Tailwind no cambian:
 
 ```css
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) { /* colores oscuros */ }
-}
-:root[data-theme='dark'] { /* los mismos colores oscuros */ }
+:root[data-theme='dark'] { /* colores oscuros, una sola vez */ }
+/* data-theme siempre lleva el tema efectivo: en "Sistema" lo resuelve theme.ts según el dispositivo */
 ```
 
 ```ts

@@ -6,6 +6,7 @@ import UpdateBanner from '../pwa/UpdateBanner'
 import { formatLongDate, formatMonthLabel } from '../lib/dates'
 import { useMediaQuery } from '../lib/useMediaQuery'
 import { useToday } from '../lib/useToday'
+import ThemeMenu from './ThemeMenu'
 import { sections } from '../sections'
 
 export default function AppLayout() {
@@ -19,6 +20,8 @@ export default function AppLayout() {
   const now = useToday()
   // Desde 1280 px los avisos viven en la columna derecha y la campana sobra
   const wide = useMediaQuery('(min-width: 1280px)')
+  // Un solo botón de tema: en el encabezado del celular o en la barra lateral desde 768 px
+  const rail = useMediaQuery('(min-width: 768px)')
 
   return (
     // Celular: columna de 576 px con barra inferior. Desde 768 px la barra se vuelve lateral y el contenido se ensancha
@@ -51,9 +54,7 @@ export default function AppLayout() {
               </Link>
             )}
             {user && !wide && <AlertBell uid={user.uid} now={now} />}
-            {user?.photoURL && (
-              <img src={user.photoURL} alt="" referrerPolicy="no-referrer" className="size-9 rounded-full ring-2 ring-surface md:hidden" />
-            )}
+            {!rail && <ThemeMenu photoURL={user?.photoURL} />}
           </div>
         </div>
         <OfflineNotice />
@@ -101,9 +102,10 @@ export default function AppLayout() {
           ))}
         </ul>
         {user && (
-          <div className="hidden items-center gap-3 px-5 py-7 md:flex md:justify-center lg:justify-start lg:px-7">
+          <div className="hidden flex-col-reverse items-center gap-3 px-5 py-7 md:flex lg:flex-row lg:px-7">
             {user.photoURL && <img src={user.photoURL} alt="" referrerPolicy="no-referrer" className="size-10 shrink-0 rounded-full ring-2 ring-surface" />}
-            <span className="hidden min-w-0 truncate text-sm font-medium lg:block">{user.displayName}</span>
+            <span className="hidden min-w-0 flex-1 truncate text-sm font-medium lg:block">{user.displayName}</span>
+            {rail && <ThemeMenu up />}
           </div>
         )}
       </nav>

@@ -25,7 +25,7 @@ Antes de cada cambio de interfaz se aplican las reglas de impeccable (craft-floo
 ## Riesgos
 
 - **Destello al abrir:** si el tema se aplicara desde React, se vería el otro tema un instante. Por eso va un script en línea en `index.html`.
-- **Colores duplicados en CSS:** el bloque oscuro aparece dos veces (sistema y forzado). Si cambias un color, hay que cambiarlo en ambos; un comentario lo recuerda.
+- **Colores duplicados en CSS:** evitado. `data-theme` siempre lleva el tema efectivo, así que el bloque oscuro aparece una sola vez.
 - **Encabezado en el celular:** son cuatro íconos en Gastos. Se revisa a 360 px, y si no cabe, te lo muestro antes de seguir.
 - **CSP:** el script en línea no se bloquea porque hoy no hay `Content-Security-Policy`. Si se agrega después, hay que permitirlo.
 

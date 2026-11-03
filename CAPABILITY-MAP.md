@@ -54,7 +54,7 @@ Orden: history → planned
 
 | Módulo | Estado | Responsabilidad | Depende de |
 |---|---|---|---|
-| `theme` | Pendiente | Elegir Sistema, Claro u Oscuro desde un ícono en el encabezado; se guarda en el dispositivo y se aplica antes de pintar | core (layout), modo oscuro existente |
+| `theme` | Listo | Elegir Sistema, Claro u Oscuro desde tu foto en el celular o la barra lateral en escritorio; se guarda en el dispositivo y se aplica antes de pintar | core (layout), modo oscuro existente |
 
 Specs: `SPEC-<módulo>.md` en la raíz.
 
