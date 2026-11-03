@@ -10,10 +10,10 @@ const m = vi.hoisted(() => ({ useMonthHistory: vi.fn() }))
 vi.mock('./useMonthHistory', () => ({ useMonthHistory: m.useMonthHistory }))
 
 const nov: HistoryEntry[] = [
-  { id: 's1', kind: 'spending', label: 'Café · Oxxo', amount: 4500, date: '2026-11-02', href: '/gastos-hormiga/a' },
-  { id: 'r1', kind: 'fixed', label: 'Plan Telcel', amount: 29900, date: '2026-11-02', href: '/gastos-fijos/tel' },
-  { id: 'c1', kind: 'msi', label: 'Excavadora', amount: 27810, date: '2026-11-01', href: '/creditos/exc' },
-  { id: 'c2', kind: 'card', label: 'Nu', amount: 100000, date: '2026-11-01', href: '/creditos/nu' },
+  { id: 's1', kind: 'spending', category: 'Café', label: 'Café · Oxxo', amount: 4500, date: '2026-11-02', href: '/gastos-hormiga/a' },
+  { id: 'r1', kind: 'fixed', category: 'Servicios', label: 'Plan Telcel', amount: 29900, date: '2026-11-02', href: '/gastos-fijos/tel' },
+  { id: 'c1', kind: 'msi', category: 'Créditos', label: 'Excavadora', amount: 27810, date: '2026-11-01', href: '/creditos/exc' },
+  { id: 'c2', kind: 'card', category: 'Créditos', label: 'Nu', amount: 100000, date: '2026-11-01', href: '/creditos/nu' },
 ]
 
 beforeEach(() => {
@@ -69,7 +69,7 @@ test('navega a meses anteriores y muestra el estado vacío', () => {
 })
 
 test('con gastos planeados se avanza hasta su mes y el día se marca sin sumar', () => {
-  const lentes: HistoryEntry = { id: 'u1', kind: 'upcoming', label: 'Lentes', amount: 300000, date: '2026-12-15', href: '/ahorro/lentes' }
+  const lentes: HistoryEntry = { id: 'u1', kind: 'upcoming', category: 'Planeados', label: 'Lentes', amount: 300000, date: '2026-12-15', href: '/ahorro/lentes' }
   m.useMonthHistory.mockImplementation((_uid, month: string) => ({
     ready: true, entries: month.startsWith('2026-11') ? nov : month.startsWith('2026-12') ? [lentes] : [], lastPlanned: '2026-12-15',
   }))

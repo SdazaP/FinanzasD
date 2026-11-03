@@ -16,7 +16,7 @@ test('monthGrid: semanas de domingo a sábado con huecos', () => {
   expect(monthGrid('2026-12-01').every((w) => w.length === 7)).toBe(true)
 })
 
-const e = (kind: HistoryEntry['kind'], amount: number, date: string): HistoryEntry => ({ id: `${kind}${date}${amount}`, kind, label: kind, amount, date, href: '/' })
+const e = (kind: HistoryEntry['kind'], amount: number, date: string): HistoryEntry => ({ id: `${kind}${date}${amount}`, kind, category: kind, label: kind, amount, date, href: '/' })
 
 test('totales por día y del mes: el pago de tarjeta no suma, los MSI sí', () => {
   const entries = [e('spending', 4500, '2026-11-03'), e('fixed', 29900, '2026-11-03'), e('msi', 27810, '2026-11-06'), e('card', 500000, '2026-11-06')]
